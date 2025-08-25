@@ -52,7 +52,7 @@ var PageLoader = /** @class */ (function () {
     PageLoader = __decorate([
         core_1.Component({
             selector: 'page-loader',
-            templateUrl: 'page-loader.pug',
+            template: '<div class="page-loader text-muted text-center text-large" *ngIf="loading || updating"><fa-icon [icon]="spinnerIcon" [fixedWidth]="true" [spin]="true"></fa-icon><div *ngIf="updating"><p class="page-updating text-muted">Updating...</p><p class="text-unsafe" *ngIf="updatingTakesLongTime">Updating is taking longer than expected, <button class="btn btn-outline-danger" (click)="reload()">restart</button></p></div><div *ngIf="loadingError && !updating"><div [ngSwitch]="loadingError"><p class="text-unsafe" *ngSwitchCase="\'request-limit\'">Server is under heavy load, please wait...</p><p class="text-unsafe" *ngSwitchCase="\'cannot-connect\'">Cannot connect to the server, retrying...</p><p class="text-unsafe" *ngSwitchCase="\'cloudflare-error\'">Cloudflare protection error, <button class="btn btn-outline-danger" (click)="reload()">reload</button> to continue.</p><p class="text-unsafe" *ngSwitchDefault>Unexpected error occurred, <button class="btn btn-outline-danger" (click)="reload()">reload</button> to continue.</p></div></div></div>',
             styleUrls: ['page-loader.scss'],
         }),
         __metadata("design:paramtypes", [model_1.Model])
