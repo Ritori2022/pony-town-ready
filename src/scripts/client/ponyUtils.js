@@ -152,8 +152,8 @@ exports.mergedFaceAccessories = mergeSpriteSets(sprites.faceAccessories, sprites
 exports.mergedChestAccessories = mergeSpriteSets(sprites.chestAccessoriesBehind[1], sprites.chestAccessories[1]);
 exports.mergedBackAccessories = mergeSpriteSets(exports.backAccessories[1], [undefined, undefined, undefined, undefined, undefined].concat(sprites.backLegSleeves[1]));
 exports.mergedExtraAccessories = mergeSpriteSets(sprites.extraAccessoriesBehind, sprites.extraAccessories)
-    .slice(0, DEVELOPMENT ? 100 : 2);
-if (DEVELOPMENT) {
+    .slice(0, (typeof DEVELOPMENT !== 'undefined' ? DEVELOPMENT : false) ? 100 : 2);
+if (typeof DEVELOPMENT !== 'undefined' && DEVELOPMENT) {
     assertSizes('HEAD_ACCESSORY_OFFSETS', offsets_1.HEAD_ACCESSORY_OFFSETS, exports.mergedManes);
     assertSizes('EXTRA_ACCESSORY_OFFSETS', offsets_1.EXTRA_ACCESSORY_OFFSETS, exports.mergedManes);
     assertSizes('EAR_ACCESSORY_OFFSETS', offsets_1.EAR_ACCESSORY_OFFSETS, sprites.ears);

@@ -30,7 +30,7 @@ var MenuItem = /** @class */ (function () {
     MenuItem = __decorate([
         core_1.Component({
             selector: 'menu-item',
-            templateUrl: 'menu-item.pug',
+            template: '<div class="navbar-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: route === \'/\' }"><a [routerLink]="route" tabindex linkCurrent><div class="d-none d-sm-inline">{{name}}</div><fa-icon class="d-inline-block d-sm-none" [icon]="icon" [title]="name" [attr.aria-label]="name" [fixedWidth]="true" size="lg"></fa-icon></a></div>',
             styleUrls: ['menu-item.scss'],
         })
     ], MenuItem);

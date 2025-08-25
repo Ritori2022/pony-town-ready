@@ -114,7 +114,7 @@ function roundedColliderList(x, y, w, h, stepsCount, tall) {
     if (tall === void 0) { tall = true; }
     var list = [];
     var steps = predefinedSteps[stepsCount];
-    if (DEVELOPMENT && !steps) {
+    if (typeof DEVELOPMENT !== 'undefined' && DEVELOPMENT && !steps) {
         console.error('Invalid step count', steps);
     }
     for (var i = 0; i < steps.length; i++) {

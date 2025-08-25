@@ -98,7 +98,7 @@ var Home = /** @class */ (function () {
     Home = __decorate([
         core_1.Component({
             selector: 'home',
-            templateUrl: 'home.pug',
+            template: '<div *ngIf="!playing"><div class="text-center heading"><img class="pixelart home-logo" revSrc="images/logo-large.png" alt="Pony Town"></div><div class="mx-auto home-content"><page-loader></page-loader><div *ngIf="!loading"><h1 class="sr-only" focusTitle>Home</h1><div class="form-group" *ngIf="authError"><div class="alert alert-danger" role="alert">{{authError}}</div><div class="alert alert-warning" role="alert" *ngIf="accountAlert">{{accountAlert}}</div></div><div class="form-group" *ngIf="!account"><sign-in-box (signIn)="signIn($event)"></sign-in-box></div><div *ngIf="!!account"><div class="form-group"><support-button></support-button></div><div class="form-group" *ngIf="canInstall"><install-button></install-button></div><div class="form-group"><character-select [(error)]="error" [editButton]="true" (preview)="previewPony = $event"></character-select></div><div class="form-group"><character-preview [pony]="previewInfo" [state]="state" [passive]="true" [name]="previewName" [tag]="previewTag"></character-preview></div><div class="form-group text-center"><play-box [(error)]="error"></play-box></div><play-notice></play-notice></div></div></div></div>',
             styleUrls: ['home.scss'],
         }),
         __metadata("design:paramtypes", [gameService_1.GameService,

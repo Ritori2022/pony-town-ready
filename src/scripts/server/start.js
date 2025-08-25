@@ -1,5 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+global.DEVELOPMENT = process.env.DEVELOPMENT === 'true' || false;
+global.BETA = process.env.BETA === 'true' || false;
+global.TESTS = process.env.TESTS === 'true' || false;
+global.TIMING = process.env.TIMING === 'true' || false;
+global.TOOLS = process.env.TOOLS === 'true' || false;
+global.SERVER = true;
 const fs_1 = require("fs");
 const ctrl = require("./controllers");
 const world_1 = require("./world");
