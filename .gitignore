@@ -8,3 +8,4 @@ package-lock.json
 config.json
 build/
 build-copy/
+assets-source/
