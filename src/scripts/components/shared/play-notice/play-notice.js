@@ -17,7 +17,7 @@ var PlayNotice = /** @class */ (function () {
     PlayNotice = __decorate([
         core_1.Component({
             selector: 'play-notice',
-            templateUrl: 'play-notice.pug',
+            template: '<div class="mx-auto text-left text-large" style="max-width: 400px;"><h5>General rules</h5><ul class="text-muted list-rules"><li *ngFor="let r of rules">{{r}}</li></ul><h5>Notice</h5><p class="text-muted">This game is very <strong>early in development</strong>. There might be bugs and occasional downtimes.</p><p class="text-muted">Please do not redistribute any of the game files or code.</p></div>',
         })
     ], PlayNotice);
     return PlayNotice;
