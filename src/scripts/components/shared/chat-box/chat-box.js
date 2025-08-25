@@ -83,7 +83,7 @@ var ChatBox = /** @class */ (function () {
     });
     Object.defineProperty(ChatBox.prototype, "input", {
         get: function () {
-            return this.inputElement.nativeElement;
+            return this.inputElement && this.inputElement.nativeElement;
         },
         enumerable: true,
         configurable: true
