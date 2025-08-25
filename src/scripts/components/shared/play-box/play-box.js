@@ -267,7 +267,7 @@ var PlayBox = /** @class */ (function () {
     PlayBox = __decorate([
         core_1.Component({
             selector: 'play-box',
-            templateUrl: 'play-box.pug',
+            template: '<div class="play-box-placeholder">Game will be available soon</div>',
             styleUrls: ['play-box.scss'],
         }),
         __metadata("design:paramtypes", [gameService_1.GameService,

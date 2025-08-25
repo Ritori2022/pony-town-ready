@@ -190,7 +190,7 @@ var CharacterSelect = /** @class */ (function () {
     CharacterSelect = __decorate([
         core_1.Component({
             selector: 'character-select',
-            templateUrl: 'character-select.pug',
+            template: '<div class="character-select-placeholder">Character selection will be available soon</div>',
             styleUrls: ['character-select.scss'],
         }),
         __metadata("design:paramtypes", [core_1.ElementRef,

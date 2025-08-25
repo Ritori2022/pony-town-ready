@@ -27,7 +27,7 @@ var SupportButton = /** @class */ (function () {
     SupportButton = __decorate([
         core_1.Component({
             selector: 'support-button',
-            templateUrl: 'support-button.pug',
+            template: '<a class="btn btn-lg btn-outline-patreon btn-block mb-2" *ngIf="patreonLink" (mouseenter)="pony.excite()" (mouseout)="pony.reset()" [href]="patreonLink" target="_blank" rel="noopener noreferrer">{{supporter ? \'Thank you for supporting us!\' : \'Support us on Patreon!\'}}<svg class="patreon-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150"><circle fill="#f9685f" cx="75" cy="75" r="75"></circle><path fill="#052d49" d="M31.729 27.659h17.578v95.888H31.729z"></path><circle fill="#fff" cy="63.565" cx="95.783" r="35.955"></circle></svg><div class="supporter-pony"><supporter-pony #pony [scale]="2"></supporter-pony></div></a>',
             styleUrls: ['support-button.scss'],
         }),
         __metadata("design:paramtypes", [model_1.Model])

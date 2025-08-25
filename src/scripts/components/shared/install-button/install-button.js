@@ -41,7 +41,7 @@ var InstallButton = /** @class */ (function () {
     InstallButton = __decorate([
         core_1.Component({
             selector: 'install-button',
-            templateUrl: 'install-button.pug',
+            template: '<div class="btn-group d-flex" *ngIf="canInstall"><button class="btn btn-lg btn-outline-success text-wrap flex-grow-1" (click)="install()">Add <b>Pony Town</b> to {{isMobile ? \'home screen\' : \'desktop\'}}</button><button class="btn btn-lg btn-outline-success flex-grow-0" (click)="dismiss()" title="Dismiss" [attr.aria-label]="\'Dismiss add to \' + (isMobile ? \'home screen\' : \'desktop\')"><fa-icon [icon]="closeIcon"></fa-icon></button></div>',
             styleUrls: ['install-button.scss'],
         }),
         __metadata("design:paramtypes", [installService_1.InstallService])
