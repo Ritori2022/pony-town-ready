@@ -13,13 +13,16 @@
 git clone https://github.com/Ritori2022/pony-town-ready.git
 cd pony-town-ready
 
-# 2. 设置环境 (一次性设置)
+# 2. 设置环境 (⚠️ 重要：必须使用Node.js 9.11.2)
 nvm use 9.11.2  # 或 nvm install 9.11.2
 
 # 3. 安装依赖 (一次性安装)
 npm install --legacy-peer-deps --ignore-scripts
 
-# 4. 启动游戏！
+# 4. 创建logs目录 (如果需要)
+mkdir -p logs
+
+# 5. 启动游戏！
 npm start
 ```
 
@@ -47,11 +50,21 @@ npm start
 
 ## 🔐 测试登录
 
-游戏包含便捷的测试登录功能：
+游戏包含便捷的TestPony测试角色，多种登录方式：
 
-- 访问 http://localhost:8090/mock-login.html
-- 使用预设的TestPony角色登录
-- 立即开始游戏！
+### 🚀 **超快速登录（推荐）**
+直接点击链接立即进入游戏：
+- **一键登录**: http://localhost:8090/auth/local/68acdc3543a9ff7ce48a3daa
+
+### 📋 **标准测试登录**
+- **登录页面**: http://localhost:8090/mock-login.html
+- **测试账户**: 
+  - 账户ID: `68acdc3543a9ff7ce48a3daa`
+  - 角色名: `TestPony`  
+  - 密码: `test`
+
+### 🎮 **开始游戏**
+登录后即可创建小马角色，探索2D像素世界！
 
 ## ⚙️ 启动选项
 
@@ -68,10 +81,16 @@ nohup npm start &
 
 ## 🎯 系统要求
 
-- **Node.js** 9.11.2 (推荐) 或更高版本
+- **Node.js** 9.11.2 (⚠️ **必须使用此版本**，新版本会导致WebSocket模块不兼容)
 - **现代浏览器** (Chrome, Firefox, Safari, Edge)
 - **RAM**: 至少512MB可用内存
 - **网络**: 局域网或互联网连接 (多人游戏)
+
+### ⚠️ **重要提醒**
+必须使用Node.js 9.11.2！使用新版本Node.js会遇到以下错误：
+```
+Error: Cannot find module './uws_darwin_127'
+```
 
 ## 📚 这个版本包含什么？
 
@@ -135,7 +154,8 @@ npm start
 
 4. **访问游戏**
 - 浏览器打开: http://localhost:8090
-- 快速登录: http://localhost:8090/mock-login.html
+- 一键登录TestPony: http://localhost:8090/auth/local/68acdc3543a9ff7ce48a3daa
+- 标准登录页面: http://localhost:8090/mock-login.html
 
 ### 🎉 完成！
 现在就可以创建小马角色，探索2D像素世界了！
@@ -145,8 +165,9 @@ npm start
 ## 🛠️ 故障排除
 
 ### 常见问题
+- **UWS模块错误**: 必须使用Node.js 9.11.2版本，运行 `nvm use 9.11.2`
 - **端口占用**: 确保8090端口未被占用
-- **Node.js版本**: 推荐使用9.11.2版本
+- **日志错误**: 运行 `mkdir -p logs` 创建日志目录
 - **权限问题**: 确保有读写权限
 
 ### 获取帮助
