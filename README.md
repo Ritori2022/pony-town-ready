@@ -2,6 +2,24 @@
 
 A game of ponies building a town
 
+## 🚨 **最新版本已迁移到新分支！**
+
+**⭐ 推荐使用最新的稳定版本：**
+```bash
+git clone https://github.com/Ritori2022/pony-town-ready.git -b source-clean-20250827
+```
+
+**新分支包含：**
+- ✅ **完整版本锁定** - Node.js 9.11.2, package-lock.json
+- ✅ **优化的README** - 详细安装和配置说明
+- ✅ **音乐下载指南** - 自动获取游戏音乐资源
+- ✅ **Colab笔记本** - 一键云端部署支持
+- ✅ **所有技术修复** - TestServer在线，WebSocket兼容性等
+
+**当前main分支为历史版本，建议使用新分支获得最佳体验！**
+
+---
+
 ## 🎉 Working Version - 完全恢复成功！
 
 此版本已完全恢复并可正常运行！TestServer在线，游戏完全可玩。
