@@ -11,8 +11,8 @@ import * as Rollbar from 'rollbar';
 import * as passport from 'passport';
 import * as connectMongo from 'connect-mongo';
 import * as express from 'express';
-// import { WebSocketServer } from '@clusterws/cws';
-import { WebSocketServer } from 'clusterws-uws';
+// import { WebSocket.Server } from '@clusterws/cws';
+import * as WebSocket from 'ws';
 import { compact, once } from 'lodash';
 import { copySync, removeSync, ensureDirSync } from 'fs-extra';
 import { createServerHost, createClientOptions, ServerOptions, ClientExtensions, Packet } from 'ag-sockets';
@@ -206,7 +206,7 @@ const stats = new StatsTracker(statsPath);
 const sessionMiddlewares = once(() => [createSession(), passport.initialize(), passport.session()] as express.RequestHandler[]);
 const adminMiddlewares = once(() => [...sessionMiddlewares(), isAdmin(server)]);
 const socketOptionsBase: ServerOptions = {
-	ws: { Server: WebSocketServer },
+	ws: { Server: WebSocket.Server },
 	hash: STAMP,
 };
 
@@ -215,7 +215,7 @@ initLogSwearingAndSpamming(stats.logSwearing, stats.logSpamming);
 
 const host = createServerHost(httpServer, {
 	path: args.standaloneadmin && !args.game ? '/admin/ws-admin' : server.path,
-	ws: { Server: WebSocketServer },
+	ws: { Server: WebSocket.Server },
 	perMessageDeflate: false,
 	errorHandler,
 });
