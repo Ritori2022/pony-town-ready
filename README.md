@@ -27,12 +27,27 @@ nvm use 9.11.2
 - **确定性构建** - 保证在任何环境都能复现相同结果
 
 #### 快速启动
+
+**🚀 方法1: Google Colab 一键部署 (推荐)**
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Ritori2022/pony-town-ready/blob/source-clean-20250827/PonyTown_Colab_Deploy.ipynb)
+
+- ✅ **零配置** - 无需本地安装任何软件
+- ✅ **免费使用** - 使用Google免费GPU/CPU资源  
+- ✅ **公网访问** - 自动生成可分享的游戏链接
+- ✅ **3分钟部署** - 点击运行所有代码块即可
+
+**🔧 方法2: 本地安装**
 ```bash
 # 确保使用正确的Node.js版本
-nvm use 9.11.2
+nvm use                    # 自动使用.nvmrc中的9.11.2版本
+
+# 安装依赖
+npm install
+
+# 下载音乐资源 (可选，参见下方说明)
 
 # 启动服务器（登录+游戏混合模式）
-node pony-town.js --login --local --game=test
+node pony-town.js --login --local --game
 ```
 
 #### 关键修复说明
