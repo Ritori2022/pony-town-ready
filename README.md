@@ -6,6 +6,20 @@
 ![Status](https://img.shields.io/badge/Status-FULLY_WORKING-success)
 ![Node](https://img.shields.io/badge/Node.js-v9.11.2-green)
 
+## 🌐 云端一键部署 (推荐)
+
+无需本地安装，5分钟内在线体验：
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Ritori2022/pony-town-ready/blob/main/PonyTown_Colab_Deploy.ipynb)
+
+**✨ 特色**：
+- 🌐 **无需本地安装** - 直接在Google Colab运行
+- 🔗 **公网访问** - 使用ngrok映射，任何人都可访问
+- 📱 **跨平台** - 支持手机和电脑浏览器
+- ⚡ **5分钟部署** - 点击运行即可
+
+[📚 详细说明](COLAB_DEPLOY.md)
+
 ## 🚀 3分钟启动游戏
 
 ```bash
