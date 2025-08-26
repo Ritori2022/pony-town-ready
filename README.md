@@ -12,10 +12,19 @@ A game of ponies building a town
 **必须使用 Node.js 9.11.2！** 新版本会导致WebSocket模块不兼容。
 
 ```bash
-# 安装并使用正确的Node.js版本
+# 方法1: 使用 .nvmrc 文件（推荐）
+nvm use                    # 自动读取 .nvmrc 文件使用 9.11.2
+
+# 方法2: 手动指定版本
 nvm install 9.11.2
 nvm use 9.11.2
 ```
+
+#### 🔒 版本锁定保证
+项目包含以下版本锁定文件，确保环境一致性：
+- **`.nvmrc`** - 锁定 Node.js 9.11.2
+- **`package-lock.json`** - 锁定所有 npm 依赖的确切版本
+- **确定性构建** - 保证在任何环境都能复现相同结果
 
 #### 快速启动
 ```bash
