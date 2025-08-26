@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mock Login Test</title>
+</head>
+<body>
+    <h1>Mock Login Test</h1>
+    <form action="http://localhost:8090/auth/local" method="post">
+        <label for="username">Account ID:</label>
+        <input type="text" id="username" name="username" value="68acdc3543a9ff7ce48a3daa" />
+        <br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" value="test" />
+        <br><br>
+        <input type="submit" value="Mock Login" />
+    </form>
+
+    <h2>Direct Links:</h2>
+    <p><a href="http://localhost:8090/auth/local?username=68acdc3543a9ff7ce48a3daa&password=test">GET with params</a></p>
+    
+    <script>
+        // Test with JavaScript POST
+        function testLogin() {
+            fetch('http://localhost:8090/auth/local', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'username=68acdc3543a9ff7ce48a3daa&password=test',
+                credentials: 'include'
+            }).then(response => {
+                console.log('Response:', response);
+                if (response.redirected) {
+                    window.location.href = response.url;
+                }
+            });
+        }
+    </script>
+    
+    <button onclick="testLogin()">Test with JS</button>
+</body>
+</html>

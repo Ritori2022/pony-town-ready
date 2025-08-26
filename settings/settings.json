@@ -1,0 +1,8 @@
+{
+  "canCreateAccounts": true,
+  "servers": {
+    "test": {
+      "isServerOffline": false
+    }
+  }
+}

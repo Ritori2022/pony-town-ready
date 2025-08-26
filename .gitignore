@@ -1,0 +1,13 @@
+build/
+build-copy/
+node_modules/
+logs/
+package-lock.json
+assets-source/
+
+# 排除音乐文件但保留图片
+assets/music/
+
+# 保留必要的配置和设置
+!settings/settings.json
+!config.json

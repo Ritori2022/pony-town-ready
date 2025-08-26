@@ -1,0 +1,15 @@
+(node:12007) [MONGODB DRIVER] Warning: Current Server Discovery and Monitoring engine is deprecated, and will be removed in a future version. To use the new Server Discover and Monitoring engine, pass option { useUnifiedTopology: true } to the MongoClient constructor.
+[Aug 25 22:28:01] [info] Listening on port 8090 (production, login, admin, game:test) (server.js:346)
+[Aug 25 22:28:01] [info] Admin service loaded (adminService.ts:220)
+[Aug 25 22:38:00] [error] { Error: ENOENT: no such file or directory, open '/Users/ritori/Desktop/pt_server/ponyTown-master/settings/hiding-test.json'
+  cause: 
+   { Error: ENOENT: no such file or directory, open '/Users/ritori/Desktop/pt_server/ponyTown-master/settings/hiding-test.json'
+     errno: -2,
+     code: 'ENOENT',
+     syscall: 'open',
+     path: '/Users/ritori/Desktop/pt_server/ponyTown-master/settings/hiding-test.json' },
+  isOperational: true,
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/ritori/Desktop/pt_server/ponyTown-master/settings/hiding-test.json' } (hiding.ts:45)
