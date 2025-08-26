@@ -2,10 +2,14 @@ build/
 build-copy/
 node_modules/
 logs/
-settings/
-
-package-lock.json
-config.json
-build/
-build-copy/
 assets-source/
+
+# 排除音乐文件但保留图片
+assets/music/
+
+# 保留必要的配置和设置
+!settings/settings.json
+!config.json
+
+# 保留版本锁定文件（确保环境一致性）  
+!package-lock.json

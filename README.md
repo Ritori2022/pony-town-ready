@@ -2,6 +2,76 @@
 
 A game of ponies building a town
 
+## 🎉 Working Version - 完全恢复成功！
+
+此版本已完全恢复并可正常运行！TestServer在线，游戏完全可玩。
+
+### ⚠️ 重要注意事项
+
+#### Node.js 版本要求
+**必须使用 Node.js 9.11.2！** 新版本会导致WebSocket模块不兼容。
+
+```bash
+# 方法1: 使用 .nvmrc 文件（推荐）
+nvm use                    # 自动读取 .nvmrc 文件使用 9.11.2
+
+# 方法2: 手动指定版本
+nvm install 9.11.2
+nvm use 9.11.2
+```
+
+#### 🔒 版本锁定保证
+项目包含以下版本锁定文件，确保环境一致性：
+- **`.nvmrc`** - 锁定 Node.js 9.11.2
+- **`package-lock.json`** - 锁定所有 npm 依赖的确切版本
+- **确定性构建** - 保证在任何环境都能复现相同结果
+
+#### 快速启动
+```bash
+# 确保使用正确的Node.js版本
+nvm use 9.11.2
+
+# 启动服务器（登录+游戏混合模式）
+node pony-town.js --login --local --game=test
+```
+
+#### 关键修复说明
+1. **WebSocket兼容性** - 替换clusterws-uws为标准ws库，针对ARM64 Mac优化
+2. **服务器状态** - 修复TestServer在线状态显示问题  
+3. **静态资源** - 修复生产模式下assets路径404问题
+4. **配置优化** - 将IP地址从192.168.3.36改为localhost避免连接问题
+
+#### 访问游戏
+- 游戏地址: http://localhost:8090
+- 快速登录: http://localhost:8090/auth/local/68acdc3543a9ff7ce48a3daa
+
+游戏现在完全可玩，包括角色创建、多人游戏、地图切换等所有功能！
+
+## 📁 游戏音乐资源下载
+
+为了保持仓库精简，音乐文件未包含在此版本中。请按以下步骤下载音乐资源：
+
+1. **下载音乐文件**：
+   - 访问：https://github.com/Ritori2022/ponyTown/tree/master/assets/music
+   - 下载整个 `music` 文件夹到本地项目的 `assets/music/` 目录
+
+2. **或使用命令下载**：
+   ```bash
+   # 克隆原始仓库的音乐文件
+   git clone --depth 1 --filter=blob:none --sparse https://github.com/Ritori2022/ponyTown.git temp-music
+   cd temp-music
+   git sparse-checkout set assets/music
+   cp -r assets/music ../assets/
+   cd .. && rm -rf temp-music
+   ```
+
+3. **验证音乐文件**：
+   ```bash
+   ls assets/music/  # 应该看到 .mp3 和 .webm 音乐文件
+   ```
+
+完成后游戏将包含完整的背景音乐！
+
 ## Prerequisites
 
 * [Node.js](https://nodejs.org/download/release/v9.11.2/) (version 9)
