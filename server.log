@@ -1,3 +1,6 @@
 (node:16710) [MONGODB DRIVER] Warning: Current Server Discovery and Monitoring engine is deprecated, and will be removed in a future version. To use the new Server Discover and Monitoring engine, pass option { useUnifiedTopology: true } to the MongoClient constructor.
 [Aug 31 08:31:36] [info] Listening on port 8090 (production, login, game:test) (server.js:346)
 [Aug 31 08:35:28] [log] joined [test] as "TestPony" [127.0.0.1] (reporter.ts:89)
+[Aug 31 08:36:48] [log] left [test] (disconnected) (1m 20s) (reporter.ts:89)
+[Aug 31 08:38:52] [log] joined [test] as "TestPony" [127.0.0.1] (reporter.ts:89)
+[Aug 31 08:38:52] [debug] resize buffer to 8192 (Offset is outside the bounds of the DataView) (regionUtils.ts:28)
