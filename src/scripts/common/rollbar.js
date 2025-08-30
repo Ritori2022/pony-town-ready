@@ -1,25 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var lodash_1 = require("lodash");
-var errors_1 = require("./errors");
-var IGNORE = new RegExp([
+const lodash_1 = require("lodash");
+const errors_1 = require("./errors");
+const IGNORE = new RegExp([
     // adware / extensions
     'plantsandplay', 'anyplacetrivial', 'surfbuyermac', 'hotshoppymac', 'GM_getValue', '__gCrWeb.autofill',
     '.com/affs', 'advpartners', 'tlscdn', 'yaaknaa', 'mecash', 'digitaloptout',
-    'Script error', 'NS_ERROR_', 'davebestdeals', 'mflcdn', "'feedConf' of null", 'n46gd0nenr1az.ru',
+    'Script error', 'NS_ERROR_', 'davebestdeals', 'mflcdn', `'feedConf' of null`, 'n46gd0nenr1az.ru',
     'googst2.ru', 'downloader12.ru', 'adsafeprotected', 'gobobr.info', 'elt.parentNode',
-    "getElementsByTagName('video')", 'chrome-extension', 'bestpriceninja', "'tgt' of null",
+    `getElementsByTagName('video')`, 'chrome-extension', 'bestpriceninja', `'tgt' of null`,
     'jh8hrfnvs.ru', 'OperaIce', 'blueblockgames', 'adguard.com', 'kaspersky', 'igamesecrets.com',
     'Unexpected identifier', 'UnknownError', 'diableNightMode', 'Unexpected end of script',
     'Internal Server Error', 'hilitor', 'kejnoj7.ru', 'v207.info', 'inj_js',
-    'object is not a function', "'Float32Array' is undefined", 'vertamedia', '.ru/', 'v24s.net',
+    'object is not a function', `'Float32Array' is undefined`, 'vertamedia', '.ru/', 'v24s.net',
     'window.document.location is null', 'mediaonspot', 'ydpi.pw', 'moz-extension', 'trafficanalytics',
     'amazonaws', 'adtelligent', 'searchsens.info', 'solid-waste.top', 'cdn.immereeako.info',
-    'technologiecoloniale.com', 'cloudcnfare.com', 'MyAppGet', 'rugged-r.top', "Can't find variable: webkit",
-    "rgvqcsxqge.com", 'all_small_polls', "Cannot read property 'document' of undefined", "extAbbr is not defined",
+    'technologiecoloniale.com', 'cloudcnfare.com', 'MyAppGet', 'rugged-r.top', `Can't find variable: webkit`,
+    `rgvqcsxqge.com`, 'all_small_polls', `Cannot read property 'document' of undefined`, `extAbbr is not defined`,
     '__gCrWeb', 'DOMBnbPlug',
     // GPU errors
-    "Failed to execute 'shaderSource'",
+    `Failed to execute 'shaderSource'`,
     'compiling shader',
     'Failed to create WebGL context',
     'CONTEXT_LOST_WEBGL',
@@ -34,7 +34,7 @@ var IGNORE = new RegExp([
     'GPU device instance has been suspended',
     'Die GPU-Geräteinstanz wurde angehalten',
     'GPU zostało zawieszone',
-    "GPU \u043F\u0440\u0438\u043E\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u0435\u043D",
+    `GPU приостановлен`,
     'GPU se ha suspendido',
     'GPU aygıt örneği askıya alınmış',
     'GPU-enhetsinstansen har försatts',
@@ -53,7 +53,7 @@ var IGNORE = new RegExp([
     'Ikke nok minneressurser tilgjengelig',
     'suficientes recursos de memoria',
     'Onvoldoende geheugenbronnen',
-    "Cannot read property 'version' of undefined",
+    `Cannot read property 'version' of undefined`,
     'Maximum call stack size exceeded',
     // user errors
     errors_1.CHARACTER_LIMIT_ERROR,
@@ -80,7 +80,7 @@ function isIgnoredMessage(message) {
 }
 exports.isIgnoredMessage = isIgnoredMessage;
 function isIgnoredError(error) {
-    return isIgnoredMessage(error.message || "" + error || '') || isIgnoredMessage(error.stack || '');
+    return isIgnoredMessage(error.message || `${error}` || '') || isIgnoredMessage(error.stack || '');
 }
 exports.isIgnoredError = isIgnoredError;
 function rollbarCheckIgnore(_isUncaught, args, _payload) {
@@ -89,3 +89,4 @@ function rollbarCheckIgnore(_isUncaught, args, _payload) {
         .some(isIgnoredMessage);
 }
 exports.rollbarCheckIgnore = rollbarCheckIgnore;
+//# sourceMappingURL=rollbar.js.map

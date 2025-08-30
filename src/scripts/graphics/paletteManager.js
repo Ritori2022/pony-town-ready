@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var texture2d_1 = require("./webgl/texture2d");
-var utils_1 = require("../common/utils");
-var INITIAL_SIZE = 512;
-var MAX_SIZE = 2048;
+const texture2d_1 = require("./webgl/texture2d");
+const utils_1 = require("../common/utils");
+const INITIAL_SIZE = 512;
+const MAX_SIZE = 2048;
 function createPalette(colors) {
-    return { x: 0, y: 0, u: 0, v: 0, refs: 1, colors: colors };
+    return { x: 0, y: 0, u: 0, v: 0, refs: 1, colors };
 }
 exports.createPalette = createPalette;
 function releasePalette(palette) {
@@ -21,7 +21,7 @@ function colorsEqual(a, b) {
     if (a.length !== b.length) {
         return false;
     }
-    for (var i = 0; i < a.length; i++) {
+    for (let i = 0; i < a.length; i++) {
         if (a[i] !== b[i]) {
             return false;
         }
@@ -32,11 +32,10 @@ exports.colorsEqual = colorsEqual;
 function isInUse(palette) {
     return palette.refs > 0;
 }
-var PaletteManager = /** @class */ (function () {
-    function PaletteManager(size) {
-        if (size === void 0) { size = INITIAL_SIZE; }
+class PaletteManager {
+    constructor(size = INITIAL_SIZE) {
         this.size = size;
-        this.palettes = utils_1.times(512, function () { return []; });
+        this.palettes = utils_1.times(512, () => []);
         this.dirty = [];
         this.dirtyMinY = 0;
         this.dirtyMaxY = -1;
@@ -45,56 +44,44 @@ var PaletteManager = /** @class */ (function () {
         this.initialized = true;
         this.deduplicate = true;
     }
-    Object.defineProperty(PaletteManager.prototype, "texture", {
-        get: function () {
-            return this.paletteTexture;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(PaletteManager.prototype, "textureSize", {
-        get: function () {
-            return this.size;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(PaletteManager.prototype, "pixelSize", {
-        get: function () {
-            return 256 / this.size;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    PaletteManager.prototype.activePalettes = function () {
-        return this.palettes.reduce(function (sum, p) { return sum + p.reduce(function (sum, p) { return sum + (p.refs > 0 ? 1 : 0); }, 0); }, 0);
-    };
-    PaletteManager.prototype.add = function (colorValues) {
-        var colors = new Uint32Array(colorValues.length);
-        for (var i = 0; i < colorValues.length; i++) {
+    get texture() {
+        return this.paletteTexture;
+    }
+    get textureSize() {
+        return this.size;
+    }
+    get pixelSize() {
+        return 256 / this.size;
+    }
+    activePalettes() {
+        return this.palettes.reduce((sum, p) => sum + p.reduce((sum, p) => sum + (p.refs > 0 ? 1 : 0), 0), 0);
+    }
+    add(colorValues) {
+        const colors = new Uint32Array(colorValues.length);
+        for (let i = 0; i < colorValues.length; i++) {
             colors[i] = colorValues[i] >>> 0;
         }
         return this.addArray(colors);
-    };
-    PaletteManager.prototype.addArray = function (colors) {
-        var hash = utils_1.computeCRC(colors) & 0x1ff;
-        var palettes = this.palettes[hash];
+    }
+    addArray(colors) {
+        const hash = utils_1.computeCRC(colors) & 0x1ff;
+        const palettes = this.palettes[hash];
         if (this.deduplicate) {
-            for (var i = 0; i < palettes.length; i++) {
-                var existing = palettes[i];
+            for (let i = 0; i < palettes.length; i++) {
+                const existing = palettes[i];
                 if (colorsEqual(existing.colors, colors)) {
                     existing.refs = (existing.refs + 1) | 0;
                     return existing;
                 }
             }
         }
-        var palette = createPalette(colors);
+        const palette = createPalette(colors);
         palettes.push(palette);
         this.dirty.push(palette);
         return palette;
-    };
-    PaletteManager.prototype.commit = function (gl) {
-        var changed = this.initialized;
+    }
+    commit(gl) {
+        let changed = this.initialized;
         if (!this.paletteTexture) {
             this.initializeTexture(gl, this.size);
             changed = true;
@@ -117,40 +104,40 @@ var PaletteManager = /** @class */ (function () {
         }
         this.initialized = false;
         return changed;
-    };
-    PaletteManager.prototype.init = function (gl) {
+    }
+    init(gl) {
         this.initialized = true;
         this.paletteTexture = undefined;
         this.initializeTexture(gl, this.size);
-    };
-    PaletteManager.prototype.dispose = function (gl) {
+    }
+    dispose(gl) {
         this.paletteTexture = texture2d_1.disposeTexture(gl, this.paletteTexture);
-        for (var i = 0; i < this.palettes.length; i++) {
+        for (let i = 0; i < this.palettes.length; i++) {
             if (this.palettes[i].length > 0) {
                 this.palettes[i] = [];
             }
         }
         this.size = INITIAL_SIZE;
         this.resetPalettes();
-    };
-    PaletteManager.prototype.cleanup = function () {
+    }
+    cleanup() {
         this.cleanupPalettes();
-    };
-    PaletteManager.prototype.resetPalettes = function () {
+    }
+    resetPalettes() {
         this.dirty = utils_1.flatten(this.palettes);
         this.lastX = 0;
         this.lastY = 0;
-    };
-    PaletteManager.prototype.cleanupPalettes = function () {
-        var palettes = this.palettes;
-        for (var i = 0; i < palettes.length; i++) {
+    }
+    cleanupPalettes() {
+        const palettes = this.palettes;
+        for (let i = 0; i < palettes.length; i++) {
             if (palettes[i].length > 0) {
                 palettes[i] = palettes[i].filter(isInUse);
             }
         }
         this.resetPalettes();
-    };
-    PaletteManager.prototype.initializeTexture = function (gl, size) {
+    }
+    initializeTexture(gl, size) {
         try {
             if (!this.paletteTexture) {
                 this.paletteTexture = texture2d_1.createEmptyTexture(gl, size, size, gl.RGBA, gl.UNSIGNED_BYTE);
@@ -160,23 +147,23 @@ var PaletteManager = /** @class */ (function () {
             }
         }
         catch (e) {
-            throw new Error("Failed to create/resize texture (" + size + ") " + e.stack);
+            throw new Error(`Failed to create/resize texture (${size}) ${e.stack}`);
         }
         this.size = size;
         this.resetPalettes();
-    };
-    PaletteManager.prototype.arrange = function (palettes) {
+    }
+    arrange(palettes) {
         if (!palettes.length) {
             return true;
         }
-        var size = this.size | 0;
-        var x = this.lastX | 0;
-        var y = this.lastY | 0;
-        var minY = -1;
-        var maxY = -1;
-        for (var i = 0; i < palettes.length; i++) {
-            var p = palettes[i];
-            var colorCount = p.colors.length | 0;
+        const size = this.size | 0;
+        let x = this.lastX | 0;
+        let y = this.lastY | 0;
+        let minY = -1;
+        let maxY = -1;
+        for (let i = 0; i < palettes.length; i++) {
+            const p = palettes[i];
+            const colorCount = p.colors.length | 0;
             if ((size - x) < colorCount) {
                 x = 0;
                 y++;
@@ -197,22 +184,22 @@ var PaletteManager = /** @class */ (function () {
         this.dirtyMinY = minY;
         this.dirtyMaxY = maxY;
         return true;
-    };
-    PaletteManager.prototype.updateTexture = function (gl) {
+    }
+    updateTexture(gl) {
         if (!this.paletteTexture || this.dirtyMinY > this.dirtyMaxY)
             return;
-        var width = this.size;
-        var height = (this.dirtyMaxY - this.dirtyMinY) + 1;
-        var data = new Uint8Array(width * height * 4);
-        for (var k = 0; k < this.palettes.length; k++) {
-            var palettes = this.palettes[k];
-            for (var i = 0; i < palettes.length; i++) {
-                var _a = palettes[i], x = _a.x, y = _a.y, colors = _a.colors;
+        const width = this.size;
+        const height = (this.dirtyMaxY - this.dirtyMinY) + 1;
+        const data = new Uint8Array(width * height * 4);
+        for (let k = 0; k < this.palettes.length; k++) {
+            const palettes = this.palettes[k];
+            for (let i = 0; i < palettes.length; i++) {
+                const { x, y, colors } = palettes[i];
                 if (y < this.dirtyMinY || y > this.dirtyMaxY)
                     continue;
-                var offset = (x + (y - this.dirtyMinY) * width) << 2;
-                for (var j = 0; j < colors.length; j++) {
-                    var c = colors[j];
+                let offset = (x + (y - this.dirtyMinY) * width) << 2;
+                for (let j = 0; j < colors.length; j++) {
+                    const c = colors[j];
                     data[offset++] = (c >>> 24) & 0xff;
                     data[offset++] = (c >>> 16) & 0xff;
                     data[offset++] = (c >>> 8) & 0xff;
@@ -224,7 +211,7 @@ var PaletteManager = /** @class */ (function () {
         gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, this.dirtyMinY, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
         this.dirtyMinY = 0;
         this.dirtyMaxY = -1;
-    };
-    return PaletteManager;
-}());
+    }
+}
 exports.PaletteManager = PaletteManager;
+//# sourceMappingURL=paletteManager.js.map

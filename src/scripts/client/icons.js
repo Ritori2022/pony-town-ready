@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var fa_icons_1 = require("../generated/fa-icons");
+const fa_icons_1 = require("../generated/fa-icons");
 var fa_icons_2 = require("../generated/fa-icons");
 exports.faHashtag = fa_icons_2.faHashtag;
 exports.faCog = fa_icons_2.faCog;
@@ -111,7 +111,7 @@ exports.faHorseHead = fa_icons_2.faHorseHead;
 exports.faMapMarkerAlt = fa_icons_2.faMapMarkerAlt;
 exports.faChartPie = fa_icons_2.faChartPie;
 exports.faCalendar = fa_icons_2.faCalendar;
-var fa_icons_3 = require("../generated/fa-icons");
+const fa_icons_3 = require("../generated/fa-icons");
 var fa_icons_4 = require("../generated/fa-icons");
 exports.faPatreon = fa_icons_4.faPatreon;
 exports.faDeviantart = fa_icons_4.faDeviantart;
@@ -173,3 +173,4 @@ exports.uaIcons = {
     'tablet': fa_icons_1.faTablet,
     'smarttv': fa_icons_1.faTv,
 };
+//# sourceMappingURL=icons.js.map

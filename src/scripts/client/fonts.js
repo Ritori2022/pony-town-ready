@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var spriteFont_1 = require("../graphics/spriteFont");
-var sprites = require("../generated/sprites");
+const spriteFont_1 = require("../graphics/spriteFont");
+const sprites = require("../generated/sprites");
 function createFonts() {
     exports.font = spriteFont_1.createSpriteFont(sprites.font, sprites.emoji, 3);
     exports.font.lineSpacing = 3;
@@ -27,3 +27,4 @@ function createFonts() {
     exports.fontMonoPal.letterHeightReal += 2;
 }
 exports.createFonts = createFonts;
+//# sourceMappingURL=fonts.js.map

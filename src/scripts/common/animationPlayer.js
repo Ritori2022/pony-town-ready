@@ -1,9 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var lodash_1 = require("lodash");
-var graphicsUtils_1 = require("../graphics/graphicsUtils");
-var utils_1 = require("./utils");
-var colors_1 = require("./colors");
+const lodash_1 = require("lodash");
+const graphicsUtils_1 = require("../graphics/graphicsUtils");
+const utils_1 = require("./utils");
+const colors_1 = require("./colors");
+var AnimationPhase;
+(function (AnimationPhase) {
+    AnimationPhase[AnimationPhase["Starting"] = 0] = "Starting";
+    AnimationPhase[AnimationPhase["Playing"] = 1] = "Playing";
+    AnimationPhase[AnimationPhase["Ending"] = 2] = "Ending";
+})(AnimationPhase || (AnimationPhase = {}));
 function createAnimationPlayer(palette) {
     return {
         nextAnimation: undefined,
@@ -12,7 +18,7 @@ function createAnimationPlayer(palette) {
         frame: 0,
         phase: 0 /* Starting */,
         dirty: true,
-        palette: palette,
+        palette,
     };
 }
 exports.createAnimationPlayer = createAnimationPlayer;
@@ -51,8 +57,8 @@ exports.playAnimation = playAnimation;
 function updateAnimation(player, delta) {
     if (player.currentAnimation !== undefined) {
         player.time += delta;
-        var _a = player.currentAnimation, start = _a.start, middle = _a.middle, end = _a.end, fps = _a.fps, loop = _a.loop;
-        var extraFrame = Math.floor(player.time * fps);
+        const { start, middle, end, fps, loop } = player.currentAnimation;
+        let extraFrame = Math.floor(player.time * fps);
         if (player.phase === 0 /* Starting */ && extraFrame > start) {
             player.phase = loop ? 1 /* Playing */ : 2 /* Ending */;
             player.dirty = true;
@@ -64,7 +70,7 @@ function updateAnimation(player, delta) {
             player.currentAnimation = undefined;
             player.dirty = true;
             if (player.nextAnimation !== undefined) {
-                var nextAnimation = player.nextAnimation;
+                const nextAnimation = player.nextAnimation;
                 player.nextAnimation = undefined;
                 playAnimation(player, nextAnimation);
             }
@@ -76,15 +82,12 @@ function updateAnimation(player, delta) {
     }
 }
 exports.updateAnimation = updateAnimation;
-function drawAnimation(batch, player, x, y, color, flip, maxY) {
-    if (color === void 0) { color = colors_1.WHITE; }
-    if (flip === void 0) { flip = false; }
-    if (maxY === void 0) { maxY = 0; }
-    var animation = player.currentAnimation;
+function drawAnimation(batch, player, x, y, color = colors_1.WHITE, flip = false, maxY = 0) {
+    const animation = player.currentAnimation;
     if (animation !== undefined) {
-        var frames_1 = (flip && animation.flipFrames) ? animation.flipFrames : animation.frames;
-        if (player.frame < frames_1.length) {
-            var frame = frames_1[player.frame];
+        const frames = (flip && animation.flipFrames) ? animation.flipFrames : animation.frames;
+        if (player.frame < frames.length) {
+            const frame = frames[player.frame];
             if (DEVELOPMENT && !frame) {
                 throw new Error('Undefined frame in sprite animation');
             }
@@ -100,3 +103,4 @@ function drawAnimation(batch, player, x, y, color, flip, maxY) {
     }
 }
 exports.drawAnimation = drawAnimation;
+//# sourceMappingURL=animationPlayer.js.map

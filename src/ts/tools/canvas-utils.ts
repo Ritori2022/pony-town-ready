@@ -1,16 +1,33 @@
 import * as fs from 'fs';
-import { createCanvas, Image } from 'canvas';
 import { ExtCanvas, Point } from './types';
 
+// 🌍 跨平台Canvas支持 - 工具专用
+let canvasImpl: any;
+let ImageImpl: any;
+
+try {
+	// 尝试加载原生Canvas库
+	const nativeCanvas = require('canvas');
+	canvasImpl = nativeCanvas.createCanvas;
+	ImageImpl = nativeCanvas.Image;
+	console.log('🎨 [Tools] 使用原生Canvas库');
+} catch (error) {
+	// 使用模拟实现
+	console.log('🎭 [Tools] 使用Canvas模拟实现');
+	const mockCanvas = require('../../../canvas-mock');
+	canvasImpl = mockCanvas.createCanvas;
+	ImageImpl = mockCanvas.Image;
+}
+
 export function loadImage(filePath: string) {
-	const image = new Image();
+	const image = new ImageImpl();
 	image.src = fs.readFileSync(filePath);
 	(image as any).currentSrc = filePath;
 	return image;
 }
 
 export function createExtCanvas(width: number, height: number, info: string): ExtCanvas {
-	const canvas: ExtCanvas = createCanvas(width, height) as any;
+	const canvas: ExtCanvas = canvasImpl(width, height) as any;
 	canvas.info = info;
 	return canvas;
 }

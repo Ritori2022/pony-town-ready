@@ -112,37 +112,45 @@ exports.SUPPORTER_PONY = 'CAfz9PUFLUnapSD/1wD5aFT////+hHM2QIJkJ8AQLkkADAA6jXrsBT
 exports.rewardLevel1 = '2255086';
 exports.rewardLevel2 = '2411886';
 exports.rewardLevel3 = '2411888';
-var SUPPORTER_REWARDS_COMMON = [
-    "In-game supporter tag",
-    "Supporter chat color",
+const SUPPORTER_REWARDS_COMMON = [
+    `In-game supporter tag`,
+    `Supporter chat color`,
 ];
-var SUPPORTER_REWARDS_MORE = [
-    "Access to patreon posts",
-    "Early access to new and experimental features",
+const SUPPORTER_REWARDS_MORE = [
+    `Access to patreon posts`,
+    `Early access to new and experimental features`,
 ];
 exports.SUPPORTER_REWARDS = [
     [],
-    SUPPORTER_REWARDS_COMMON.concat([
-        exports.ADDITIONAL_CHARACTERS_SUPPORTER1 + " additional slots for saving ponies",
-    ]),
-    SUPPORTER_REWARDS_COMMON.concat(SUPPORTER_REWARDS_MORE, [
-        exports.ADDITIONAL_CHARACTERS_SUPPORTER2 + " additional slots for saving ponies",
-    ]),
-    SUPPORTER_REWARDS_COMMON.concat(SUPPORTER_REWARDS_MORE, [
-        exports.ADDITIONAL_CHARACTERS_SUPPORTER3 + " additional slots for saving ponies",
-    ]),
+    [
+        ...SUPPORTER_REWARDS_COMMON,
+        `${exports.ADDITIONAL_CHARACTERS_SUPPORTER1} additional slots for saving ponies`,
+    ],
+    [
+        ...SUPPORTER_REWARDS_COMMON,
+        ...SUPPORTER_REWARDS_MORE,
+        `${exports.ADDITIONAL_CHARACTERS_SUPPORTER2} additional slots for saving ponies`,
+    ],
+    [
+        ...SUPPORTER_REWARDS_COMMON,
+        ...SUPPORTER_REWARDS_MORE,
+        `${exports.ADDITIONAL_CHARACTERS_SUPPORTER3} additional slots for saving ponies`,
+    ],
 ];
-exports.SUPPORTER_REWARDS_LIST = SUPPORTER_REWARDS_COMMON.concat(SUPPORTER_REWARDS_MORE, [
-    "Additional slots for saving ponies",
-]);
+exports.SUPPORTER_REWARDS_LIST = [
+    ...SUPPORTER_REWARDS_COMMON,
+    ...SUPPORTER_REWARDS_MORE,
+    `Additional slots for saving ponies`,
+];
 exports.PAST_SUPPORTER_REWARDS = [
-    exports.ADDITIONAL_CHARACTERS_PAST_SUPPORTER + " additional slots for saving ponies",
+    `${exports.ADDITIONAL_CHARACTERS_PAST_SUPPORTER} additional slots for saving ponies`,
 ];
 exports.GENERAL_RULES = [
-    "Be kind to others",
-    "Don't spam",
-    "Don't use multiple accounts",
-    "Don't modify the game with hacks or scripts",
-    "Don't encourage behaviour violating the rules",
-    "Violation of the rules may result in temporary or permanent ban",
+    `Be kind to others`,
+    `Don't spam`,
+    `Don't use multiple accounts`,
+    `Don't modify the game with hacks or scripts`,
+    `Don't encourage behaviour violating the rules`,
+    `Violation of the rules may result in temporary or permanent ban`,
 ];
+//# sourceMappingURL=constants.js.map

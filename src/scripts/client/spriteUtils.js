@@ -1,22 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var lodash_1 = require("lodash");
-var sprites_1 = require("../generated/sprites");
-var canvasUtils_1 = require("../client/canvasUtils");
-var rev_1 = require("./rev");
-var fonts_1 = require("./fonts");
+const lodash_1 = require("lodash");
+const sprites_1 = require("../generated/sprites");
+const canvasUtils_1 = require("../client/canvasUtils");
+const rev_1 = require("./rev");
+const fonts_1 = require("./fonts");
 function createSprite(x, y, w, h, ox, oy, type) {
-    return { x: x, y: y, w: w, h: h, ox: ox, oy: oy, type: type };
+    return { x, y, w, h, ox, oy, type };
 }
 exports.createSprite = createSprite;
 function addTitles(sprites, titles) {
-    return sprites && sprites.map(function (ns, i) {
-        return ns && ns.map(function (s) { return s && { color: s.color, colors: s.colors, title: titles[i], label: titles[i] }; });
-    });
+    return sprites && sprites.map((ns, i) => ns && ns.map(s => s && { color: s.color, colors: s.colors, title: titles[i], label: titles[i] }));
 }
 exports.addTitles = addTitles;
 function addLabels(sprites, labels) {
-    sprites && sprites.forEach(function (s, i) { return s && s[0] ? s[0].label = labels[i] : undefined; });
+    sprites && sprites.forEach((s, i) => s && s[0] ? s[0].label = labels[i] : undefined);
     return sprites;
 }
 exports.addLabels = addLabels;
@@ -33,8 +31,8 @@ function createSpriteUtils() {
 }
 exports.createSpriteUtils = createSpriteUtils;
 function getImageData(img) {
-    var canvas = canvasUtils_1.createCanvas(img.width, img.height);
-    var context = canvas.getContext('2d');
+    const canvas = canvasUtils_1.createCanvas(img.width, img.height);
+    const context = canvas.getContext('2d');
     context.drawImage(img, 0, 0);
     return context.getImageData(0, 0, img.width, img.height);
 }
@@ -43,34 +41,34 @@ function loadSpriteSheet(sheet, loadImage) {
         loadImage(sheet.src),
         sheet.srcA ? loadImage(sheet.srcA) : Promise.resolve(undefined)
     ])
-        .then(function (_a) {
-        var img = _a[0], imgA = _a[1];
+        .then(([img, imgA]) => {
         sheet.data = getImageData(img);
         if (imgA) {
-            var alpha = getImageData(imgA);
-            var alphaData = alpha.data;
-            var sheedData = sheet.data.data;
-            for (var i = 0; i < sheedData.length; i += 4) {
+            const alpha = getImageData(imgA);
+            const alphaData = alpha.data;
+            const sheedData = sheet.data.data;
+            for (let i = 0; i < sheedData.length; i += 4) {
                 sheedData[i + 3] = alphaData[i];
             }
         }
     });
 }
 function loadSpriteSheets(sheets, loadImage) {
-    return Promise.all(sheets.map(function (s) { return loadSpriteSheet(s, loadImage); })).then(lodash_1.noop);
+    return Promise.all(sheets.map(s => loadSpriteSheet(s, loadImage))).then(lodash_1.noop);
 }
 exports.loadSpriteSheets = loadSpriteSheets;
 exports.spriteSheetsLoaded = false;
 function loadAndInitSheets(sheets, loadImage) {
     return loadSpriteSheets(sheets, loadImage)
         .then(createSpriteUtils)
-        .then(function () { return true; })
-        .catch(function (e) { return (console.error(e), false); })
-        .then(function (loaded) { return exports.spriteSheetsLoaded = loaded; });
+        .then(() => true)
+        .catch(e => (console.error(e), false))
+        .then(loaded => exports.spriteSheetsLoaded = loaded);
 }
 exports.loadAndInitSheets = loadAndInitSheets;
 function loadImageFromUrl(url) {
     return canvasUtils_1.loadImage(rev_1.getUrl(url));
 }
 exports.loadImageFromUrl = loadImageFromUrl;
-exports.loadAndInitSpriteSheets = lodash_1.once(function () { return loadAndInitSheets(sprites_1.spriteSheets, loadImageFromUrl); });
+exports.loadAndInitSpriteSheets = lodash_1.once(() => loadAndInitSheets(sprites_1.spriteSheets, loadImageFromUrl));
+//# sourceMappingURL=spriteUtils.js.map

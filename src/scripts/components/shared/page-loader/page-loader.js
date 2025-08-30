@@ -1,62 +1,38 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = require("@angular/core");
-var icons_1 = require("../../../client/icons");
-var model_1 = require("../../services/model");
-var clientUtils_1 = require("../../../client/clientUtils");
-var PageLoader = /** @class */ (function () {
-    function PageLoader(model) {
+const tslib_1 = require("tslib");
+const core_1 = require("@angular/core");
+const icons_1 = require("../../../client/icons");
+const model_1 = require("../../services/model");
+const clientUtils_1 = require("../../../client/clientUtils");
+let PageLoader = class PageLoader {
+    constructor(model) {
         this.model = model;
         this.spinnerIcon = icons_1.faSpinner;
     }
-    Object.defineProperty(PageLoader.prototype, "loading", {
-        get: function () {
-            return this.model.loading;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(PageLoader.prototype, "updating", {
-        get: function () {
-            return this.model.updating;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(PageLoader.prototype, "updatingTakesLongTime", {
-        get: function () {
-            return this.model.updatingTakesLongTime;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(PageLoader.prototype, "loadingError", {
-        get: function () {
-            return this.model.loadingError;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    PageLoader.prototype.reload = function () {
+    get loading() {
+        return this.model.loading;
+    }
+    get updating() {
+        return this.model.updating;
+    }
+    get updatingTakesLongTime() {
+        return this.model.updatingTakesLongTime;
+    }
+    get loadingError() {
+        return this.model.loadingError;
+    }
+    reload() {
         clientUtils_1.hardReload();
-    };
-    PageLoader = __decorate([
-        core_1.Component({
-            selector: 'page-loader',
-            template: '<div class="page-loader text-muted text-center text-large" *ngIf="loading || updating"><fa-icon [icon]="spinnerIcon" [fixedWidth]="true" [spin]="true"></fa-icon><div *ngIf="updating"><p class="page-updating text-muted">Updating...</p><p class="text-unsafe" *ngIf="updatingTakesLongTime">Updating is taking longer than expected, <button class="btn btn-outline-danger" (click)="reload()">restart</button></p></div><div *ngIf="loadingError && !updating"><div [ngSwitch]="loadingError"><p class="text-unsafe" *ngSwitchCase="\'request-limit\'">Server is under heavy load, please wait...</p><p class="text-unsafe" *ngSwitchCase="\'cannot-connect\'">Cannot connect to the server, retrying...</p><p class="text-unsafe" *ngSwitchCase="\'cloudflare-error\'">Cloudflare protection error, <button class="btn btn-outline-danger" (click)="reload()">reload</button> to continue.</p><p class="text-unsafe" *ngSwitchDefault>Unexpected error occurred, <button class="btn btn-outline-danger" (click)="reload()">reload</button> to continue.</p></div></div></div>',
-            styleUrls: ['page-loader.scss'],
-        }),
-        __metadata("design:paramtypes", [model_1.Model])
-    ], PageLoader);
-    return PageLoader;
-}());
+    }
+};
+PageLoader = tslib_1.__decorate([
+    core_1.Component({
+        selector: 'page-loader',
+        templateUrl: 'page-loader.pug',
+        styleUrls: ['page-loader.scss'],
+    }),
+    tslib_1.__metadata("design:paramtypes", [model_1.Model])
+], PageLoader);
 exports.PageLoader = PageLoader;
+//# sourceMappingURL=page-loader.js.map

@@ -1,46 +1,27 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = require("@angular/core");
-var router_1 = require("@angular/router");
-var http_1 = require("@angular/common/http");
-var lodash_1 = require("lodash");
-var rxjs_1 = require("rxjs");
-var hash_1 = require("../../generated/hash");
-var ponyInfo_1 = require("../../common/ponyInfo");
-var utils_1 = require("../../common/utils");
-var accountUtils_1 = require("../../common/accountUtils");
-var errors_1 = require("../../common/errors");
-var data_1 = require("../../client/data");
-var clientUtils_1 = require("../../client/clientUtils");
-var errorReporter_1 = require("./errorReporter");
-var stringUtils_1 = require("../../common/stringUtils");
-var storageService_1 = require("./storageService");
-var compressPony_1 = require("../../common/compressPony");
-var constants_1 = require("../../common/constants");
-var tags_1 = require("../../common/tags");
-var LIMIT_ERROR = 'Request limit reached, please wait';
-var noneSite = { id: '', name: 'none', url: '', icon: '', color: '#222' };
-var modStatus = {
+const tslib_1 = require("tslib");
+const core_1 = require("@angular/core");
+const router_1 = require("@angular/router");
+const http_1 = require("@angular/common/http");
+const lodash_1 = require("lodash");
+const rxjs_1 = require("rxjs");
+const hash_1 = require("../../generated/hash");
+const ponyInfo_1 = require("../../common/ponyInfo");
+const utils_1 = require("../../common/utils");
+const accountUtils_1 = require("../../common/accountUtils");
+const errors_1 = require("../../common/errors");
+const data_1 = require("../../client/data");
+const clientUtils_1 = require("../../client/clientUtils");
+const errorReporter_1 = require("./errorReporter");
+const stringUtils_1 = require("../../common/stringUtils");
+const storageService_1 = require("./storageService");
+const compressPony_1 = require("../../common/compressPony");
+const constants_1 = require("../../common/constants");
+const tags_1 = require("../../common/tags");
+const LIMIT_ERROR = 'Request limit reached, please wait';
+const noneSite = { id: '', name: 'none', url: '', icon: '', color: '#222' };
+const modStatus = {
     mod: false,
     check: {},
     editor: {
@@ -56,8 +37,8 @@ function comparePonies(a, b) {
     return compareStrings(a.name, b.name) || compareStrings(a.id, b.id);
 }
 function getDefaultPony(ponies) {
-    var result = ponies[0];
-    for (var i = 1; i < ponies.length; i++) {
+    let result = ponies[0];
+    for (let i = 1; i < ponies.length; i++) {
         if (compareStrings(result.lastUsed, ponies[i].lastUsed) < 0) {
             result = ponies[i];
         }
@@ -75,16 +56,16 @@ function createDefaultPonyObject() {
 exports.createDefaultPonyObject = createDefaultPonyObject;
 function getPonyTag(pony, account) {
     if (account) {
-        var tag = tags_1.canUseTag(account, pony.tag || '') ? pony.tag : undefined;
-        return (!tag && account.supporter && !pony.hideSupport) ? "sup" + account.supporter : tag;
+        const tag = tags_1.canUseTag(account, pony.tag || '') ? pony.tag : undefined;
+        return (!tag && account.supporter && !pony.hideSupport) ? `sup${account.supporter}` : tag;
     }
     else {
         return undefined;
     }
 }
 exports.getPonyTag = getPonyTag;
-var entityTypeToName = new Map();
-var entityNameToTypes = new Map();
+const entityTypeToName = new Map();
+const entityNameToTypes = new Map();
 function getEntityNames() {
     return modStatus.editor.names;
 }
@@ -101,9 +82,8 @@ function compareFriends(a, b) {
     return a.online !== b.online ? (a.online ? -1 : 1) : a.accountName.localeCompare(b.accountName);
 }
 exports.compareFriends = compareFriends;
-var Model = /** @class */ (function () {
-    function Model(http, router, storage, errorReporter) {
-        var _this = this;
+let Model = class Model {
+    constructor(http, router, storage, errorReporter) {
         this.http = http;
         this.router = router;
         this.storage = storage;
@@ -123,23 +103,23 @@ var Model = /** @class */ (function () {
         this.initialize();
         // handle completed sign-in
         if (typeof window !== 'undefined') {
-            window.addEventListener('message', function (event) {
+            window.addEventListener('message', event => {
                 if (event.data && event.data.type === 'loaded-page') {
-                    var path_1 = event.data.path;
+                    const path = event.data.path;
                     if (event.source && 'close' in event.source) {
                         event.source.close();
                     }
-                    _this.initialize();
-                    _this.accountPromise.then(function () { return router.navigateByUrl(path_1); });
+                    this.initialize();
+                    this.accountPromise.then(() => router.navigateByUrl(path));
                 }
             });
         }
         if (DEVELOPMENT) {
-            clientUtils_1.attachDebugMethod('ddos', function () { return _this.protectionErrors.next(); });
+            clientUtils_1.attachDebugMethod('ddos', () => this.protectionErrors.next());
             clientUtils_1.attachDebugMethod('userModel', this);
         }
     }
-    Model.prototype.initialize = function () {
+    initialize() {
         this.loading = true;
         this.account = undefined;
         this.loadingError = undefined;
@@ -150,18 +130,17 @@ var Model = /** @class */ (function () {
         this._pony = createDefaultPonyObject();
         this.storage.setItem('bid', this.storage.getItem('bid') || stringUtils_1.randomString(20));
         this.accountPromise = this.initializeAccount();
-    };
-    Model.prototype.initializeAccount = function () {
-        var _this = this;
+    }
+    initializeAccount() {
         return this.getAccount()
-            .then(function (account) {
+            .then(account => {
             if (!account) {
                 throw new Error(errors_1.ACCESS_ERROR);
             }
             if ('limit' in account) {
                 throw new Error(LIMIT_ERROR);
             }
-            _this.errorReporter.configureUser({ id: account.id, username: account.name });
+            this.errorReporter.configureUser({ id: account.id, username: account.name });
             try {
                 modStatus.mod = accountUtils_1.isMod(account);
                 modStatus.check = account.check;
@@ -169,213 +148,168 @@ var Model = /** @class */ (function () {
             }
             catch (_a) { }
             if (modStatus.editor) {
-                modStatus.editor.typeToName.forEach(function (_a) {
-                    var type = _a.type, name = _a.name;
-                    return entityTypeToName.set(type, name);
-                });
-                modStatus.editor.nameToTypes.forEach(function (_a) {
-                    var types = _a.types, name = _a.name;
-                    return entityNameToTypes.set(name, types);
-                });
+                modStatus.editor.typeToName.forEach(({ type, name }) => entityTypeToName.set(type, name));
+                modStatus.editor.nameToTypes.forEach(({ types, name }) => entityNameToTypes.set(name, types));
             }
-            _this.account = account;
-            _this.sites = [noneSite].concat((account.sites || []).map(clientUtils_1.toSocialSiteInfo));
-            _this.ponies = account.ponies ? account.ponies.sort(comparePonies) : [];
-            _this.friends = undefined;
-            _this.selectPony(getDefaultPony(_this.ponies));
-            _this.storage.setItem('vid', account.id);
-            _this.loading = false;
-            _this.accountAlert = account.alert;
-            _this.accountChanged.next();
-            _this.fetchFriends();
+            this.account = account;
+            this.sites = [noneSite, ...(account.sites || []).map(clientUtils_1.toSocialSiteInfo)];
+            this.ponies = account.ponies ? account.ponies.sort(comparePonies) : [];
+            this.friends = undefined;
+            this.selectPony(getDefaultPony(this.ponies));
+            this.storage.setItem('vid', account.id);
+            this.loading = false;
+            this.accountAlert = account.alert;
+            this.accountChanged.next();
+            this.fetchFriends();
             return account;
         })
-            .catch(function (e) {
+            .catch((e) => {
             if (e.message === errors_1.ACCESS_ERROR) {
-                _this.loading = false;
-                _this.storage.setItem('vid', '---');
+                this.loading = false;
+                this.storage.setItem('vid', '---');
             }
             else if (e.message === LIMIT_ERROR) {
-                _this.loadingError = 'request-limit';
-                return utils_1.delay(5000).then(function () { return _this.initializeAccount(); });
+                this.loadingError = 'request-limit';
+                return utils_1.delay(5000).then(() => this.initializeAccount());
             }
             else if (e.message === errors_1.OFFLINE_ERROR) {
-                _this.loadingError = 'cannot-connect';
-                return utils_1.delay(5000).then(function () { return _this.initializeAccount(); });
+                this.loadingError = 'cannot-connect';
+                return utils_1.delay(5000).then(() => this.initializeAccount());
             }
             else if (e.message === errors_1.PROTECTION_ERROR) {
-                _this.loadingError = 'cloudflare-error';
-                _this.protectionErrors.next();
+                this.loadingError = 'cloudflare-error';
+                this.protectionErrors.next();
                 // } else if (e.message === VERSION_ERROR) {
                 // 	this.updating = true;
             }
             else {
-                setTimeout(function () { return _this.loadingError = 'unexpected-error'; }, 5 * constants_1.SECOND);
+                setTimeout(() => this.loadingError = 'unexpected-error', 5 * constants_1.SECOND);
                 console.error(e);
             }
             return undefined;
         });
-    };
-    Model.prototype.fetchFriends = function () {
-        var _this = this;
+    }
+    fetchFriends() {
         this.getFriends()
-            .then(function (friends) {
-            _this.friends = friends.map(function (f) { return (__assign({}, f, { online: false, entityId: 0, crc: 0, ponyInfo: f.pony && compressPony_1.decodePonyInfo(f.pony, ponyInfo_1.mockPaletteManager) || undefined, actualName: '' })); }).sort(compareFriends);
+            .then(friends => {
+            this.friends = friends.map(f => (Object.assign({}, f, { online: false, entityId: 0, crc: 0, ponyInfo: f.pony && compressPony_1.decodePonyInfo(f.pony, ponyInfo_1.mockPaletteManager) || undefined, actualName: '' }))).sort(compareFriends);
         })
-            .catch(function (e) {
+            .catch(e => {
             DEVELOPMENT && console.error(e);
-            setTimeout(function () { return _this.fetchFriends(); }, 5000);
+            setTimeout(() => this.fetchFriends(), 5000);
         });
-    };
-    Object.defineProperty(Model.prototype, "characterLimit", {
-        get: function () {
-            return this.account ? accountUtils_1.getCharacterLimit(this.account) : 0;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Model.prototype, "supporterInviteLimit", {
-        get: function () {
-            return this.account ? accountUtils_1.getSupporterInviteLimit(this.account) : 0;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Model.prototype, "isMod", {
-        get: function () {
-            return modStatus.mod;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Model.prototype, "modCheck", {
-        get: function () {
-            return modStatus.check;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Model.prototype, "editorInfo", {
-        get: function () {
-            return modStatus.editor;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Model.prototype, "pony", {
-        get: function () {
-            return this._pony;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Model.prototype, "supporter", {
-        get: function () {
-            return this.account && this.account.supporter || 0;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Model.prototype, "missingBirthdate", {
-        get: function () {
-            return !!this.account && !this.account.birthdate;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Model.prototype.computeFriendsCRC = function () {
-        return this.friends ? utils_1.computeFriendsCRC(this.friends.map(function (f) { return f.accountId; })) : 0;
-    };
-    Model.prototype.parsePonyObject = function (pony) {
+    }
+    get characterLimit() {
+        return this.account ? accountUtils_1.getCharacterLimit(this.account) : 0;
+    }
+    get supporterInviteLimit() {
+        return this.account ? accountUtils_1.getSupporterInviteLimit(this.account) : 0;
+    }
+    get isMod() {
+        return modStatus.mod;
+    }
+    get modCheck() {
+        return modStatus.check;
+    }
+    get editorInfo() {
+        return modStatus.editor;
+    }
+    get pony() {
+        return this._pony;
+    }
+    get supporter() {
+        return this.account && this.account.supporter || 0;
+    }
+    get missingBirthdate() {
+        return !!this.account && !this.account.birthdate;
+    }
+    computeFriendsCRC() {
+        return this.friends ? utils_1.computeFriendsCRC(this.friends.map(f => f.accountId)) : 0;
+    }
+    parsePonyObject(pony) {
         try {
-            var ponyInfo = compressPony_1.decompressPonyString(pony.info, true);
-            return __assign({ ponyInfo: ponyInfo }, pony);
+            const ponyInfo = compressPony_1.decompressPonyString(pony.info, true);
+            return Object.assign({ ponyInfo }, pony);
         }
         catch (e) {
             this.errorReporter.reportError(e, { ponyInfo: pony.info });
             this.errorReporter.reportError('Pony info reading error', { originalError: e.message, ponyInfo: pony.info });
             throw new Error('Error while reading pony info');
         }
-    };
-    Model.prototype.selectPony = function (pony) {
-        var copy = this.parsePonyObject(pony);
+    }
+    selectPony(pony) {
+        const copy = this.parsePonyObject(pony);
         copy.ponyInfo && ponyInfo_1.syncLockedPonyInfo(copy.ponyInfo);
         this._pony = copy;
-    };
+    }
     // account
-    Model.prototype.signIn = function (provider) {
+    signIn(provider) {
         this.authError = undefined;
         this.openAuth(provider.url);
-    };
-    Model.prototype.connectSite = function (provider) {
+    }
+    connectSite(provider) {
         this.authError = undefined;
-        this.openAuth(provider.url + "/merge");
-    };
-    Model.prototype.signOut = function () {
-        var _this = this;
+        this.openAuth(`${provider.url}/merge`);
+    }
+    signOut() {
         this.authError = undefined;
         return this.post('/auth/sign-out', {}, false)
-            .catch(function (e) { return console.error(e); })
-            .then(function () { return _this.initialize(); })
-            .then(function () { return _this.router.navigate(['/']); });
-    };
-    Model.prototype.openAuth = function (url) {
-        url = "" + data_1.host.replace(/\/$/, '') + url;
+            .catch(e => console.error(e))
+            .then(() => this.initialize())
+            .then(() => this.router.navigate(['/']));
+    }
+    openAuth(url) {
+        url = `${data_1.host.replace(/\/$/, '')}${url}`;
         if (clientUtils_1.isStandalone()) {
             window.open(url);
         }
         else {
             location.href = url;
         }
-    };
-    Model.prototype.getAccount = function () {
-        return this.post('/api1/account', { version: data_1.version }, false);
-    };
-    Model.prototype.getAccountCharacters = function () {
+    }
+    getAccount() {
+        return this.post('/api1/account', {}, false);
+    }
+    getAccountCharacters() {
         return this.post('/api/account-characters', {});
-    };
-    Model.prototype.updateAccount = function (account) {
-        var _this = this;
-        return this.post('/api/account-update', { account: account })
-            .then(function (a) { return lodash_1.merge(_this.account, a); });
-    };
-    Model.prototype.saveSettings = function (settings) {
-        var _this = this;
-        return this.post('/api/account-settings', { settings: settings })
-            .then(function (a) { return lodash_1.merge(_this.account, a); });
-    };
-    Model.prototype.removeSite = function (siteId) {
-        var _this = this;
-        return this.post('/api/remove-site', { siteId: siteId })
-            .then(function () {
-            if (_this.account && _this.account.sites) {
-                utils_1.removeById(_this.account.sites, siteId);
+    }
+    updateAccount(account) {
+        return this.post('/api/account-update', { account })
+            .then(a => lodash_1.merge(this.account, a));
+    }
+    saveSettings(settings) {
+        return this.post('/api/account-settings', { settings })
+            .then(a => lodash_1.merge(this.account, a));
+    }
+    removeSite(siteId) {
+        return this.post('/api/remove-site', { siteId })
+            .then(() => {
+            if (this.account && this.account.sites) {
+                utils_1.removeById(this.account.sites, siteId);
             }
         });
-    };
-    Model.prototype.unhidePlayer = function (hideId) {
-        return this.post('/api/remove-hide', { hideId: hideId });
-    };
-    Model.prototype.verifyAccount = function () {
-        var verificationId = this.storage.getItem('vid');
-        var accountId = this.account && this.account.id || '---';
+    }
+    unhidePlayer(hideId) {
+        return this.post('/api/remove-hide', { hideId });
+    }
+    verifyAccount() {
+        const verificationId = this.storage.getItem('vid');
+        const accountId = this.account && this.account.id || '---';
         if (!this.loading && verificationId && accountId !== verificationId) {
             this.initialize();
         }
-    };
-    Model.prototype.getHides = function (page) {
-        return this.post('/api/get-hides', { page: page });
-    };
-    Model.prototype.getFriends = function () {
+    }
+    getHides(page) {
+        return this.post('/api/get-hides', { page });
+    }
+    getFriends() {
         return this.post('/api/get-friends', {});
-    };
+    }
     // ponies
-    Model.prototype.savePony = function (pony, fast) {
-        var _this = this;
-        if (fast === void 0) { fast = false; }
+    savePony(pony, fast = false) {
         return Promise.resolve()
-            .then(function () {
-            if (_this.pending) {
+            .then(() => {
+            if (this.pending) {
                 throw new Error('Saving in progress');
             }
             pony.name = clientUtils_1.cleanName(pony.name);
@@ -386,87 +320,84 @@ var Model = /** @class */ (function () {
             if (pony.ponyInfo) {
                 pony.info = compressPony_1.compressPonyString(pony.ponyInfo);
             }
-            var id = pony.id, name = pony.name, desc = pony.desc, site = pony.site, tag = pony.tag, info = pony.info, hideSupport = pony.hideSupport, respawnAtSpawn = pony.respawnAtSpawn;
+            const { id, name, desc, site, tag, info, hideSupport, respawnAtSpawn } = pony;
             if (!fast) {
-                _this.pending = true;
+                this.pending = true;
             }
-            return _this.post('/api/pony/save', {
-                pony: { id: id, name: name, desc: desc, site: site, tag: tag, info: info, hideSupport: hideSupport, respawnAtSpawn: respawnAtSpawn }
+            return this.post('/api/pony/save', {
+                pony: { id, name, desc, site, tag, info, hideSupport, respawnAtSpawn }
             });
         })
-            .catch(function (e) {
+            .catch((e) => {
             if (e.message === errors_1.CHARACTER_SAVING_ERROR) {
-                _this.errorReporter.reportError(e, { pony: pony });
+                this.errorReporter.reportError(e, { pony });
             }
             throw e;
         })
-            .then(function (newPony) {
+            .then(newPony => {
             if (!newPony) {
                 throw new Error('Failed to save pony');
             }
             if (pony.id) {
-                utils_1.removeById(_this.ponies, pony.id);
+                utils_1.removeById(this.ponies, pony.id);
             }
             else {
-                _this.account.characterCount++;
+                this.account.characterCount++;
             }
-            _this.ponies.push(newPony);
-            _this.ponies.sort(comparePonies);
-            if (_this.pony === pony) {
-                _this.selectPony(newPony);
+            this.ponies.push(newPony);
+            this.ponies.sort(comparePonies);
+            if (this.pony === pony) {
+                this.selectPony(newPony);
             }
             return newPony;
         })
-            .finally(function () { return _this.pending = false; });
-    };
-    Model.prototype.removePony = function (pony) {
-        var _this = this;
+            .finally(() => this.pending = false);
+    }
+    removePony(pony) {
         return this.post('/api/pony/remove', { id: pony.id })
-            .then(function () {
-            utils_1.removeById(_this.ponies, pony.id);
-            _this.account.characterCount--;
-            if (_this.pony === pony) {
-                _this.selectPony(getDefaultPony(_this.ponies));
+            .then(() => {
+            utils_1.removeById(this.ponies, pony.id);
+            this.account.characterCount--;
+            if (this.pony === pony) {
+                this.selectPony(getDefaultPony(this.ponies));
             }
         });
-    };
-    Model.prototype.loadPonies = function () {
-        var _this = this;
+    }
+    loadPonies() {
         return this.getAccountCharacters()
-            .then(function (ponies) {
-            if (_this.account) {
-                _this.account.ponies = ponies || [];
-                _this.ponies = _this.account.ponies.sort(comparePonies);
+            .then(ponies => {
+            if (this.account) {
+                this.account.ponies = ponies || [];
+                this.ponies = this.account.ponies.sort(comparePonies);
             }
         });
-    };
-    Model.prototype.sortPonies = function () {
+    }
+    sortPonies() {
         this.ponies.sort(comparePonies);
-    };
+    }
     // game
-    Model.prototype.status = function (short) {
-        var age = 6;
+    status(short) {
+        let age = 6;
         if (this.account) {
-            var now = new Date();
-            var currentYear = now.getFullYear();
-            var currentMonth = now.getMonth() + 1;
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth() + 1;
             if (this.account.birthyear) {
                 age = currentYear - this.account.birthyear;
             }
             else if (this.account.birthdate) {
-                var _a = this.account.birthdate.split('-'), year = _a[0], month = _a[1];
-                var before_1 = parseInt(month, 10) > currentMonth;
-                age = Math.max(0, currentYear - parseInt(year, 10) - (before_1 ? 1 : 0));
+                const [year, month] = this.account.birthdate.split('-');
+                const before = parseInt(month, 10) > currentMonth;
+                age = Math.max(0, currentYear - parseInt(year, 10) - (before ? 1 : 0));
             }
         }
-        var params = new http_1.HttpParams()
+        const params = new http_1.HttpParams()
             .set('short', short.toString())
             .set('d', age.toString())
             .set('t', (Date.now() % 0x10000).toString(16));
-        return utils_1.observableToPromise(this.http.get('/api2/game/status', { params: params }));
-    };
-    Model.prototype.join = function (serverId, ponyId) {
-        var _this = this;
+        return utils_1.observableToPromise(this.http.get('/api2/game/status', { params }));
+    }
+    join(serverId, ponyId) {
         if (this.pending)
             return Promise.reject(new Error('Joining in progress'));
         if (!serverId)
@@ -474,32 +405,31 @@ var Model = /** @class */ (function () {
         if (!ponyId)
             return Promise.reject(new Error('Invalid pony ID'));
         this.pending = true;
-        var alert = !!this.accountAlert ? 'y' : '';
-        return this.post('/api/game/join', { version: data_1.version, ponyId: ponyId, serverId: serverId, alert: alert, url: location.href })
-            .finally(function () { return _this.pending = false; });
-    };
-    Model.prototype.post = function (url, data, authenticate) {
-        if (authenticate === void 0) { authenticate = true; }
+        const alert = !!this.accountAlert ? 'y' : '';
+        return this.post('/api/game/join', { version: data_1.version, ponyId, serverId, alert, url: location.href })
+            .finally(() => this.pending = false);
+    }
+    post(url, data, authenticate = true) {
         if (authenticate) {
             if (!this.account) {
                 return Promise.reject(new Error(errors_1.NOT_AUTHENTICATED_ERROR));
             }
-            var accountId = this.account.id + this.suffix;
-            var accountName = this.account.name + this.suffix;
-            data = __assign({ accountId: accountId, accountName: accountName }, data);
+            const accountId = this.account.id + this.suffix;
+            const accountName = this.account.name + this.suffix;
+            data = Object.assign({ accountId, accountName }, data);
         }
-        var params = new http_1.HttpParams()
+        const params = new http_1.HttpParams()
             .set('t', (Date.now() % 0x10000).toString(16));
-        var headers = new http_1.HttpHeaders({ 'api-version': hash_1.HASH, 'api-bid': this.storage.getItem('bid') || '-' });
-        return utils_1.observableToPromise(this.http.post(url, data, { params: params, headers: headers }));
-    };
-    Model = __decorate([
-        core_1.Injectable({ providedIn: 'root' }),
-        __metadata("design:paramtypes", [http_1.HttpClient,
-            router_1.Router,
-            storageService_1.StorageService,
-            errorReporter_1.ErrorReporter])
-    ], Model);
-    return Model;
-}());
+        const headers = new http_1.HttpHeaders({ 'api-version': hash_1.HASH, 'api-bid': this.storage.getItem('bid') || '-' });
+        return utils_1.observableToPromise(this.http.post(url, data, { params, headers }));
+    }
+};
+Model = tslib_1.__decorate([
+    core_1.Injectable({ providedIn: 'root' }),
+    tslib_1.__metadata("design:paramtypes", [http_1.HttpClient,
+        router_1.Router,
+        storageService_1.StorageService,
+        errorReporter_1.ErrorReporter])
+], Model);
 exports.Model = Model;
+//# sourceMappingURL=model.js.map

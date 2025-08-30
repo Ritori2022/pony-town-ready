@@ -1,16 +1,32 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
-const canvas_1 = require("../../canvas-mock");
+// 🌍 跨平台Canvas支持 - 工具专用
+let canvasImpl;
+let ImageImpl;
+try {
+    // 尝试加载原生Canvas库
+    const nativeCanvas = require('canvas');
+    canvasImpl = nativeCanvas.createCanvas;
+    ImageImpl = nativeCanvas.Image;
+    console.log('🎨 [Tools] 使用原生Canvas库');
+}
+catch (error) {
+    // 使用模拟实现
+    console.log('🎭 [Tools] 使用Canvas模拟实现');
+    const mockCanvas = require('../../../canvas-mock');
+    canvasImpl = mockCanvas.createCanvas;
+    ImageImpl = mockCanvas.Image;
+}
 function loadImage(filePath) {
-    const image = new canvas_1.Image();
+    const image = new ImageImpl();
     image.src = fs.readFileSync(filePath);
     image.currentSrc = filePath;
     return image;
 }
 exports.loadImage = loadImage;
 function createExtCanvas(width, height, info) {
-    const canvas = canvas_1.createCanvas(width, height);
+    const canvas = canvasImpl(width, height);
     canvas.info = info;
     return canvas;
 }

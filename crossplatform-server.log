@@ -1,0 +1,5 @@
+🎭 原生Canvas不可用，使用模拟实现
+   原因: dlopen(/Users/ritori/Desktop/pt_server/ponyTown-master/node_modules/canvas/build/Release/canvas.node, 0x0001): tried: '/Users/ritori/Desktop/pt_server/ponyTown-master/node_modules/canvas/build/Release/canvas.node' (mach-o file, but is an incompatible architecture (have 'arm64', need 'x86_64')), '/System/Volumes/Preboot/Cryptexes/OS/Users/ritori/Desktop/pt_server/ponyTown-master/node_modules/canvas/build/Release/canvas.node' (no such file), '/Users/ritori/Desktop/pt_server/ponyTown-master/node_modules/canvas/build/Release/canvas.node' (mach-o file, but is an incompatible architecture (have 'arm64', need 'x86_64'))
+✅ Canvas模拟已激活 (兼容性模式)
+(node:25330) [MONGODB DRIVER] Warning: Current Server Discovery and Monitoring engine is deprecated, and will be removed in a future version. To use the new Server Discover and Monitoring engine, pass option { useUnifiedTopology: true } to the MongoClient constructor.
+[Aug 31 08:57:36] [info] Listening on port 8090 (production, login, game:test) (server.ts:418)

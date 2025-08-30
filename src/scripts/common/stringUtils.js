@@ -1,13 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var lowercaseCharacters = 'abcdefghijklmnopqrstuvwxyz0123456789_';
-var uppercaseCharacters = lowercaseCharacters + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-var CARRIAGERETURN = '\r'.charCodeAt(0);
-function randomString(length, useUpperCase) {
-    if (useUpperCase === void 0) { useUpperCase = false; }
-    var characters = useUpperCase ? uppercaseCharacters : lowercaseCharacters;
-    var result = '';
-    for (var i = 0; i < length; i++) {
+const lowercaseCharacters = 'abcdefghijklmnopqrstuvwxyz0123456789_';
+const uppercaseCharacters = lowercaseCharacters + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const CARRIAGERETURN = '\r'.charCodeAt(0);
+function randomString(length, useUpperCase = false) {
+    const characters = useUpperCase ? uppercaseCharacters : lowercaseCharacters;
+    let result = '';
+    for (let i = 0; i < length; i++) {
         result += characters[(Math.random() * characters.length) | 0];
     }
     return result;
@@ -26,11 +25,11 @@ function fromSurrogate(high, low) {
 }
 exports.fromSurrogate = fromSurrogate;
 function charsToCodes(text) {
-    var chars = [];
-    for (var i = 0; i < text.length; i++) {
-        var code = text.charCodeAt(i);
+    const chars = [];
+    for (let i = 0; i < text.length; i++) {
+        let code = text.charCodeAt(i);
         if (isSurrogate(code) && (i + 1) < text.length) {
-            var extra = text.charCodeAt(i + 1);
+            const extra = text.charCodeAt(i + 1);
             if (isLowSurrogate(extra)) {
                 code = fromSurrogate(code, extra);
                 i++;
@@ -42,12 +41,12 @@ function charsToCodes(text) {
 }
 exports.charsToCodes = charsToCodes;
 function stringToCodes(buffer, text) {
-    var textLength = text.length | 0;
-    var length = 0 | 0;
-    for (var i = 0; i < textLength; i = (i + 1) | 0) {
-        var code = text.charCodeAt(i) | 0;
+    const textLength = text.length | 0;
+    let length = 0 | 0;
+    for (let i = 0; i < textLength; i = (i + 1) | 0) {
+        let code = text.charCodeAt(i) | 0;
         if (isSurrogate(code) && ((i + 1) | 0) < textLength) {
-            var extra = text.charCodeAt(i + 1) | 0;
+            const extra = text.charCodeAt(i + 1) | 0;
             if (isLowSurrogate(extra)) {
                 code = fromSurrogate(code, extra) | 0;
                 i = (i + 1) | 0;
@@ -70,10 +69,11 @@ function stringToCodesTemp(text) {
 }
 exports.stringToCodesTemp = stringToCodesTemp;
 function matcher(regex) {
-    return function (text) { return !!text && regex.test(text); };
+    return (text) => !!text && regex.test(text);
 }
 exports.matcher = matcher;
 function isVisibleChar(code) {
     return code !== CARRIAGERETURN && !(code >= 0xfe00 && code <= 0xfe0f);
 }
 exports.isVisibleChar = isVisibleChar;
+//# sourceMappingURL=stringUtils.js.map

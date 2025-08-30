@@ -1,66 +1,46 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var _a, _b, _c, _d, _e, _f, _g, _h, _j;
 Object.defineProperty(exports, "__esModule", { value: true });
-var lodash_1 = require("lodash");
-var sprites = require("../generated/sprites");
-var interfaces_1 = require("./interfaces");
-var constants_1 = require("./constants");
-var colors_1 = require("./colors");
-var mixins_1 = require("./mixins");
-var utils_1 = require("./utils");
-var color_1 = require("./color");
-var rect_1 = require("./rect");
-var ponyInfo_1 = require("./ponyInfo");
-var entities = [];
+const lodash_1 = require("lodash");
+const sprites = require("../generated/sprites");
+const interfaces_1 = require("./interfaces");
+const constants_1 = require("./constants");
+const colors_1 = require("./colors");
+const mixins_1 = require("./mixins");
+const utils_1 = require("./utils");
+const color_1 = require("./color");
+const rect_1 = require("./rect");
+const ponyInfo_1 = require("./ponyInfo");
+const entities = [];
 function createBaseEntity(type, id, x, y) {
-    return { id: id, type: type, x: x, y: y, z: 0, vx: 0, vy: 0, order: 0, state: 0, playerState: 0, flags: 0, timestamp: 0 };
+    return { id, type, x, y, z: 0, vx: 0, vy: 0, order: 0, state: 0, playerState: 0, flags: 0, timestamp: 0 };
 }
 exports.createBaseEntity = createBaseEntity;
 function createEntity(type, id, x, y, options, worldState) {
-    var descriptor = entities[type];
+    const descriptor = entities[type];
     if (!descriptor) {
-        throw new Error("Invalid entity type " + type);
+        throw new Error(`Invalid entity type ${type}`);
     }
     return descriptor.create(createBaseEntity(type, id, x, y), options, worldState);
 }
 function register(typeName, create) {
     if (DEVELOPMENT && entities.length >= constants_1.ENTITY_TYPE_LIMIT) {
-        throw new Error("Exceeded entity limit of " + constants_1.ENTITY_TYPE_LIMIT + " with (" + typeName + ")");
+        throw new Error(`Exceeded entity limit of ${constants_1.ENTITY_TYPE_LIMIT} with (${typeName})`);
     }
-    if (DEVELOPMENT && entities.some(function (e) { return e.typeName === typeName; })) {
-        throw new Error("Entity name already registered (" + typeName + ")");
+    if (DEVELOPMENT && entities.some(e => e.typeName === typeName)) {
+        throw new Error(`Entity name already registered (${typeName})`);
     }
-    var type = entities.length;
-    entities.push({ type: type, typeName: typeName, create: create });
-    var method = function (x, y, options, worldState) {
-        if (options === void 0) { options = {}; }
-        if (worldState === void 0) { worldState = interfaces_1.defaultWorldState; }
-        return createEntity(type, 0, x, y, options, worldState);
-    };
+    const type = entities.length;
+    entities.push({ type, typeName, create });
+    const method = (x, y, options = {}, worldState = interfaces_1.defaultWorldState) => createEntity(type, 0, x, y, options, worldState);
     method.type = type;
     method.typeName = typeName;
     return method;
 }
-function registerMix(typeName) {
-    var mixins = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        mixins[_i - 1] = arguments[_i];
-    }
-    var mixinsCompacted = lodash_1.compact(mixins);
-    return register(typeName, function (base, options, worldState) {
-        for (var _i = 0, mixinsCompacted_1 = mixinsCompacted; _i < mixinsCompacted_1.length; _i++) {
-            var mixin = mixinsCompacted_1[_i];
+function registerMix(typeName, ...mixins) {
+    const mixinsCompacted = lodash_1.compact(mixins);
+    return register(typeName, (base, options, worldState) => {
+        for (const mixin of mixinsCompacted) {
             mixin(base, options, worldState);
         }
         return base;
@@ -71,7 +51,7 @@ function getEntityTypeName(type) {
 }
 exports.getEntityTypeName = getEntityTypeName;
 function getEntityType(typeName) {
-    for (var i = 1; i < entities.length; i++) {
+    for (let i = 1; i < entities.length; i++) {
         if (entities[i].typeName === typeName) {
             return i;
         }
@@ -80,10 +60,7 @@ function getEntityType(typeName) {
 }
 exports.getEntityType = getEntityType;
 function getEntityTypesAndNames() {
-    return entities.map(function (_a) {
-        var type = _a.type, typeName = _a.typeName;
-        return ({ type: type, name: typeName });
-    });
+    return entities.map(({ type, typeName }) => ({ type, name: typeName }));
 }
 exports.getEntityTypesAndNames = getEntityTypesAndNames;
 function checkEntity(entity) {
@@ -99,7 +76,7 @@ function checkEntity(entity) {
 }
 function createAnEntity(type, id, x, y, options, paletteManager, worldState) {
     mixins_1.setPaletteManager(paletteManager);
-    var entity = createEntity(type, id, x, y, options, worldState);
+    const entity = createEntity(type, id, x, y, options, worldState);
     if (DEVELOPMENT) {
         checkEntity(entity);
     }
@@ -112,79 +89,50 @@ function n(value) {
     return (DEVELOPMENT || SERVER) ? value : '';
 }
 function mixCover(x, y, w, h) {
-    var bounds = rect_1.rect(x, y, w, h);
-    return function (base) { return base.coverBounds = bounds; };
+    const bounds = rect_1.rect(x, y, w, h);
+    return base => base.coverBounds = bounds;
 }
 function mixFlags(flags) {
-    return function (base) { return base.flags |= flags; };
+    return base => base.flags |= flags;
 }
 function mixInteractAction(action) {
-    return function (base) { return base.interactAction = action; };
+    return base => base.interactAction = action;
 }
 function mixBounds(x, y, w, h) {
-    var bounds = rect_1.rect(x, y, w, h);
-    return function (base) { return base.bounds = bounds; };
+    const bounds = rect_1.rect(x, y, w, h);
+    return base => base.bounds = bounds;
 }
 function mixServerFlags(flags) {
     if (SERVER) {
-        return function (base) { return base.serverFlags |= flags; };
+        return base => base.serverFlags |= flags;
     }
     else {
-        return function () { };
+        return () => { };
     }
 }
 function mixOrder(order) {
-    return function (base) { return base.order = order; };
+    return base => base.order = order;
 }
-var collectableInteractive = mixins_1.mixInteract(-8, -12, 16, 16, 1.5);
-function collectable(name, sprite, paletteIndex) {
-    if (paletteIndex === void 0) { paletteIndex = 0; }
-    var other = [];
-    for (var _i = 3; _i < arguments.length; _i++) {
-        other[_i - 3] = arguments[_i];
-    }
-    return doodad.apply(void 0, [name, sprite, Math.floor(sprite.color.w / 2), sprite.color.h - 1, paletteIndex,
-        collectableInteractive].concat(other));
+const collectableInteractive = mixins_1.mixInteract(-8, -12, 16, 16, 1.5);
+function collectable(name, sprite, paletteIndex = 0, ...other) {
+    return doodad(name, sprite, Math.floor(sprite.color.w / 2), sprite.color.h - 1, paletteIndex, collectableInteractive, ...other);
 }
-function decal(name, sprite, palette) {
-    if (palette === void 0) { palette = 0; }
-    var other = [];
-    for (var _i = 3; _i < arguments.length; _i++) {
-        other[_i - 3] = arguments[_i];
-    }
-    return registerMix.apply(void 0, [name,
-        mixins_1.mixDraw(sprite, Math.floor((sprite.color.w + sprite.color.ox) / 2), sprite.color.oy, palette),
-        mixFlags(2 /* Decal */)].concat(other));
+function decal(name, sprite, palette = 0, ...other) {
+    return registerMix(name, mixins_1.mixDraw(sprite, Math.floor((sprite.color.w + sprite.color.ox) / 2), sprite.color.oy, palette), mixFlags(2 /* Decal */), ...other);
 }
-function decalOffset(name, sprite, dx, dy, palette) {
-    if (palette === void 0) { palette = 0; }
-    var other = [];
-    for (var _i = 5; _i < arguments.length; _i++) {
-        other[_i - 5] = arguments[_i];
-    }
-    return registerMix.apply(void 0, [name,
-        mixins_1.mixDraw(sprite, dx, dy, palette),
-        mixFlags(2 /* Decal */)].concat(other));
+function decalOffset(name, sprite, dx, dy, palette = 0, ...other) {
+    return registerMix(name, mixins_1.mixDraw(sprite, dx, dy, palette), mixFlags(2 /* Decal */), ...other);
 }
-function doodad(name, sprite, ox, oy, palatte) {
-    if (palatte === void 0) { palatte = 0; }
-    var other = [];
-    for (var _i = 5; _i < arguments.length; _i++) {
-        other[_i - 5] = arguments[_i];
-    }
-    return registerMix.apply(void 0, [name, mixins_1.mixDraw(sprite, ox, oy, palatte)].concat(lodash_1.compact(other)));
+function doodad(name, sprite, ox, oy, palatte = 0, ...other) {
+    return registerMix(name, mixins_1.mixDraw(sprite, ox, oy, palatte), ...lodash_1.compact(other));
 }
-function doodadSet(name, sprite, ox, oy) {
-    var other = [];
-    for (var _i = 4; _i < arguments.length; _i++) {
-        other[_i - 4] = arguments[_i];
-    }
-    return utils_1.times(sprite.palettes.length, function (i) { return registerMix.apply(void 0, [name + "-" + i, mixins_1.mixDraw(sprite, ox, oy, i)].concat(other)); });
+function doodadSet(name, sprite, ox, oy, ...other) {
+    return utils_1.times(sprite.palettes.length, i => registerMix(`${name}-${i}`, mixins_1.mixDraw(sprite, ox, oy, i), ...other));
 }
 // placeholder entity
-registerMix(n('null'), function () { throw new Error('Invalid type (0)'); });
+registerMix(n('null'), () => { throw new Error('Invalid type (0)'); });
 // entities
-exports.pony = registerMix(n('pony'), function (base) {
+exports.pony = registerMix(n('pony'), base => {
     base.flags = 1 /* Movable */ | 64 /* CanCollide */;
     base.colliders = mixins_1.ponyColliders;
     base.collidersBounds = mixins_1.ponyCollidersBounds;
@@ -199,15 +147,15 @@ exports.house = doodad(n('house'), sprites.house, 79, 186, 0, mixins_1.mixCollid
 exports.window1 = registerMix(n('window-1'), mixins_1.mixDrawWindow(sprites.window_1, 21, 53, 0, 3, 0, 3, 1), mixOrder(1));
 exports.picture1 = doodad(n('picture-1'), sprites.picture_1, 15, 54, 0);
 exports.picture2 = doodad(n('picture-2'), sprites.picture_1, 15, 54, 1);
-var cushionPickable = mixins_1.mixPickable(32, 39);
+const cushionPickable = mixins_1.mixPickable(32, 39);
 exports.cushion1 = decal(n('cushion-1'), sprites.cushion_1, 0, cushionPickable);
 exports.cushion2 = decal(n('cushion-2'), sprites.cushion_1, 1, cushionPickable);
 exports.cushion3 = decal(n('cushion-3'), sprites.cushion_1, 2, cushionPickable);
 exports.bookshelf = doodad(n('bookshelf'), sprites.bookshelf, 28, 81, 0, mixins_1.mixColliderRect(-32, -14, 66, 15));
 // boat
-var boatMinimap = mixins_1.mixMinimap(0x725d3fff, rect_1.rect(-3, -1, 6, 2));
-var boatSailCollider = mixins_1.mixColliderRect(-5, -3, 11, 6);
-var waterBobbing = mixins_1.mixBobbing(constants_1.WATER_FPS, constants_1.WATER_HEIGHT);
+const boatMinimap = mixins_1.mixMinimap(0x725d3fff, rect_1.rect(-3, -1, 6, 2));
+const boatSailCollider = mixins_1.mixColliderRect(-5, -3, 11, 6);
+const waterBobbing = mixins_1.mixBobbing(constants_1.WATER_FPS, constants_1.WATER_HEIGHT);
 exports.boat = doodad(n('boat'), sprites.boat, 95, 4, 0, boatMinimap, mixOrder(-1));
 exports.boatBob = doodad(n('boat-bob'), sprites.boat, 95, 18, 0, boatMinimap, waterBobbing, mixOrder(-1), mixFlags(32 /* StaticY */));
 exports.boatFrontBob = doodad(n('boat-front-bob'), sprites.boat_front, 71, 16, 0, boatMinimap, waterBobbing, mixFlags(32 /* StaticY */));
@@ -216,27 +164,26 @@ exports.rope = doodad(n('rope'), sprites.boat_rope, 5, 19, 0, mixins_1.mixPickab
 exports.ropeRack = doodad(n('rope-rack'), sprites.rope_rack, 11, 34, 0, mixins_1.mixInteract(-10, -31, 23, 31, 5), mixFlags(32 /* StaticY */));
 exports.boatRopeBob = doodad(n('boat-rope-bob'), sprites.boat_rope, 5, 19, 0, waterBobbing, mixFlags(32 /* StaticY */));
 exports.boatWake = registerMix(n('boat-wake'), mixins_1.mixAnimation(sprites.boat_wake, constants_1.WATER_FPS, 93, 0, { useGameTime: true }), mixFlags(32 /* StaticY */));
-function fullBoat(x, y, sail) {
-    if (sail === void 0) { sail = true; }
-    var sailEntities = sail ? [
+function fullBoat(x, y, sail = true) {
+    const sailEntities = sail ? [
         exports.boatSail(x - (12 / constants_1.tileWidth), y + (16 / constants_1.tileHeight)),
         exports.boatRopeBob(x - (91 / constants_1.tileWidth), y + (8 / constants_1.tileHeight)),
     ] : [];
     return [
         exports.boatBob(x, y),
-        exports.boatFrontBob(x, y + (29 / constants_1.tileHeight))
-    ].concat(sailEntities, [
+        exports.boatFrontBob(x, y + (29 / constants_1.tileHeight)),
+        ...sailEntities,
         exports.boatWake(x, y + (5 / constants_1.tileHeight)),
-    ]);
+    ];
 }
 exports.fullBoat = fullBoat;
 // pier
 exports.pierLeg = registerMix(n('pier-leg'), mixins_1.mixAnimation(sprites.pier_leg, constants_1.WATER_FPS, 10, -14), mixOrder(-2), mixFlags(32 /* StaticY */));
 // planks
-var plankMinimap = mixins_1.mixMinimap(0x9c6141ff, rect_1.rect(-1, 0, 2, 1));
-var plankFlags = mixFlags(32 /* StaticY */);
-var plankShortMinimap = mixins_1.mixMinimap(0x9c6141ff, rect_1.rect(0, 0, 1, 1));
-var plankPal = 1;
+const plankMinimap = mixins_1.mixMinimap(0x9c6141ff, rect_1.rect(-1, 0, 2, 1));
+const plankFlags = mixFlags(32 /* StaticY */);
+const plankShortMinimap = mixins_1.mixMinimap(0x9c6141ff, rect_1.rect(0, 0, 1, 1));
+const plankPal = 1;
 exports.plank1 = decalOffset(n('plank-1'), sprites.plank_1, 39, -2, plankPal, plankMinimap, plankFlags);
 exports.plank2 = decalOffset(n('plank-2'), sprites.plank_2, 39, -2, plankPal, plankMinimap, plankFlags);
 exports.plank3 = decalOffset(n('plank-3'), sprites.plank_3, 39, -2, plankPal, plankMinimap, plankFlags);
@@ -250,20 +197,20 @@ exports.plankShadow = registerMix(n('plank-shadow'), mixins_1.mixDrawShadow(spri
 exports.plankShadow2 = registerMix(n('plank-shadow-2'), mixins_1.mixDrawShadow(sprites.plank_shadow2, 39, -12), mixFlags(2 /* Decal */ | 32 /* StaticY */), mixOrder(-1));
 exports.plankShadowShort = registerMix(n('plank-shadow-short'), mixins_1.mixDrawShadow(sprites.plank_shadow_short, 21, -12), mixFlags(2 /* Decal */ | 32 /* StaticY */), mixOrder(-1));
 // pickables
-var applePickable = mixins_1.mixPickable(29, 47);
+const applePickable = mixins_1.mixPickable(29, 47);
 exports.apple = collectable(n('apple'), sprites.apple_1, 0, applePickable);
 exports.apple2 = collectable(n('apple-2'), sprites.apple_2, 0, applePickable);
 exports.appleGreen = collectable(n('apple-green'), sprites.apple_1, 1, applePickable);
 exports.appleGreen2 = collectable(n('apple-green-2'), sprites.apple_2, 1, applePickable);
-var orangePickable = mixins_1.mixPickable(29, 46);
+const orangePickable = mixins_1.mixPickable(29, 46);
 exports.orange = collectable(n('orange'), sprites.orange_1, 0, orangePickable);
 exports.orange2 = collectable(n('orange-2'), sprites.orange_2, 0, orangePickable);
 exports.pear = collectable(n('pear'), sprites.pear, 0, mixins_1.mixPickable(30, 48));
 exports.banana = collectable(n('banana'), sprites.banana, 0, mixins_1.mixPickable(30, 44));
-var lemonPickable = mixins_1.mixPickable(31, 45);
+const lemonPickable = mixins_1.mixPickable(31, 45);
 exports.lemon = collectable(n('lemon'), sprites.lemon_1, 0, lemonPickable);
 exports.lime = collectable(n('lime'), sprites.lemon_1, 1, lemonPickable);
-var carrotPalette = 1;
+const carrotPalette = 1;
 exports.carrot1 = doodad(n('carrot-1'), sprites.carrot_1, 4, 9, carrotPalette, collectableInteractive);
 exports.carrot1b = doodad(n('carrot-1b'), sprites.carrot_1b, 4, 9, carrotPalette, collectableInteractive);
 exports.carrot2 = doodad(n('carrot-2'), sprites.carrot_2, 4, 9, carrotPalette);
@@ -271,7 +218,7 @@ exports.carrot2b = doodad(n('carrot-2b'), sprites.carrot_2b, 4, 9, carrotPalette
 exports.carrot3 = doodad(n('carrot-3'), sprites.carrot_3, 4, 9, carrotPalette);
 exports.carrot4 = doodad(n('carrot-4'), sprites.carrot_4, 4, 9, carrotPalette);
 exports.carrotHeld = doodad(n('carrot-held'), sprites.carrot_hold, 8, 4, carrotPalette, mixins_1.mixPickable(32, 44));
-var grapesPickable = mixins_1.mixPickable(32, 54);
+const grapesPickable = mixins_1.mixPickable(32, 54);
 exports.grapePurple = collectable(n('grape-purple'), sprites.grapes_one, 0, mixins_1.mixPickable(29, 43));
 exports.grapeGreen = collectable(n('grape-green'), sprites.grapes_one, 1, mixins_1.mixPickable(29, 43));
 function grapes(name, sprite, palette) {
@@ -300,8 +247,8 @@ exports.candyCane1 = collectable(n('candy-cane-1'), sprites.candy_cane_1, 0, mix
 exports.candyCane2 = collectable(n('candy-cane-2'), sprites.candy_cane_2, 0, mixins_1.mixPickable(31, 49)); // vertical
 exports.cookie = collectable(n('cookie'), sprites.cookie, 0, mixins_1.mixPickable(31, 46));
 exports.cookiePony = collectable(n('cookie-pony'), sprites.cookie_pony, 0, mixins_1.mixPickable(30, 45));
-exports.cookieTable = doodad(n('cookie-table'), sprites.cookie_table_1, 13, 28, 0, mixFlags(256 /* Interactive */), function (base) { return base.interactRange = 5; }, mixInteractAction(4 /* GiveCookie1 */), mixins_1.mixColliderRect(-13, -12, 26, 14));
-exports.cookieTable2 = doodad(n('cookie-table-2'), sprites.cookie_table_2, 13, 28, 0, mixFlags(256 /* Interactive */), function (base) { return base.interactRange = 5; }, mixInteractAction(5 /* GiveCookie2 */), mixins_1.mixColliderRect(-13, -12, 26, 14));
+exports.cookieTable = doodad(n('cookie-table'), sprites.cookie_table_1, 13, 28, 0, mixFlags(256 /* Interactive */), base => base.interactRange = 5, mixInteractAction(4 /* GiveCookie1 */), mixins_1.mixColliderRect(-13, -12, 26, 14));
+exports.cookieTable2 = doodad(n('cookie-table-2'), sprites.cookie_table_2, 13, 28, 0, mixFlags(256 /* Interactive */), base => base.interactRange = 5, mixInteractAction(5 /* GiveCookie2 */), mixins_1.mixColliderRect(-13, -12, 26, 14));
 exports.letter = doodad(n('letter'), sprites.letter, 4, 10, 0, mixins_1.mixPickable(30, 50));
 exports.rose = doodad(n('rose'), sprites.rose, 8, 1, 0, mixins_1.mixPickable(30, 41));
 // tools
@@ -312,23 +259,23 @@ exports.pickaxe = doodad(n('pickaxe'), sprites.pickaxe, 10, 8, 0, mixins_1.mixPi
 exports.broom = doodad(n('broom'), sprites.broom, 16, 6, 0, mixins_1.mixPickable(27, 42));
 exports.saw = doodad(n('saw'), sprites.saw, 10, 7, 0, mixins_1.mixPickable(26, 47));
 // jacko lanterns
-var jackoLightColor = 0x80281eff;
-var jackoLanternPickable = mixins_1.mixPickable(31, 52);
-var jackLanternCollider = mixins_1.mixColliderRect(-5, -5, 10, 10, false);
+const jackoLightColor = 0x80281eff;
+const jackoLanternPickable = mixins_1.mixPickable(31, 52);
+const jackLanternCollider = mixins_1.mixColliderRect(-5, -5, 10, 10, false);
 exports.jackoLanternOff = collectable(n('jacko-lantern-off'), sprites.jacko_lantern_off, 0, jackoLanternPickable, jackLanternCollider);
 exports.jackoLanternOn = collectable(n('jacko-lantern-on'), sprites.jacko_lantern_on, 0, jackoLanternPickable, jackLanternCollider, mixins_1.mixLight(jackoLightColor, 0, 0, 192, 144), mixins_1.mixLightSprite(sprites.jacko_lantern_light, colors_1.WHITE, 6, 9));
 exports.jackoLantern = collectable(n('jacko-lantern'), sprites.jacko_lantern_on, 0, jackoLanternPickable, jackLanternCollider, mixins_1.mixLight(jackoLightColor, 0, 0, 192, 144), mixins_1.mixLightSprite(sprites.jacko_lantern_light, colors_1.WHITE, 6, 9), mixFlags(1024 /* OnOff */));
 // lanterns
-var lanternLightSprite = {
+const lanternLightSprite = {
     frames: sprites.lantern_light.frames,
 };
-var lanternPickable = mixins_1.mixPickable(31, 53);
-var lanternCollider = mixins_1.mixColliderRounded(-5, -5, 10, 10, 2, false);
+const lanternPickable = mixins_1.mixPickable(31, 53);
+const lanternCollider = mixins_1.mixColliderRounded(-5, -5, 10, 10, 2, false);
 exports.lanternOn = registerMix(n('lantern-on'), mixins_1.mixAnimation(sprites.lantern, 12, 4, 13, { lightSprite: lanternLightSprite }), mixins_1.mixLight(0x916a32ff, 0, 0, 384, 288), lanternPickable, lanternCollider);
 exports.lanternOnWall = registerMix(n('lantern-on-wall'), mixins_1.mixAnimation(sprites.lantern, 12, 4, 13 + 24, { lightSprite: lanternLightSprite }), mixins_1.mixLight(0x916a32ff, 0, 0, 384, 288));
 exports.lanternOnTable = registerMix(n('lantern-on-table'), mixins_1.mixAnimation(sprites.lantern, 12, 4, 13 + 14, { lightSprite: lanternLightSprite }), mixins_1.mixLight(0x916a32ff, 0, 0, 384, 288));
 exports.candy = doodad(n('candy'), sprites.candy, 4, 2, 0, mixins_1.mixInteract(-6, -6, 13, 13, 1.5));
-var eggInteractive = mixins_1.mixInteract(-6, -6, 13, 13, 1.5);
+const eggInteractive = mixins_1.mixInteract(-6, -6, 13, 13, 1.5);
 exports.eggs = [
     // upright
     collectable(n('egg-1-0'), sprites.egg_1, 0, eggInteractive),
@@ -371,58 +318,73 @@ exports.eggs = [
     collectable(n('egg-22-0'), sprites.egg_22, 0, eggInteractive),
     collectable(n('egg-23-0'), sprites.egg_23, 0, eggInteractive),
 ];
-var eggBasketPickable = mixins_1.mixPickable(31, 53);
-var eggBasketCollider = mixins_1.mixColliderRect(-5, -5, 11, 6);
-var eggBasketParts = [eggBasketPickable, eggBasketCollider];
-exports.basket = doodad.apply(void 0, [n('egg-basket-1'), sprites.egg_basket_1, 6, 13, 0].concat(eggBasketParts));
-exports.eggBasket2 = doodad.apply(void 0, [n('egg-basket-2'), sprites.egg_basket_2, 6, 13, 0].concat(eggBasketParts));
-exports.eggBasket3 = doodad.apply(void 0, [n('egg-basket-3'), sprites.egg_basket_3, 6, 13, 0].concat(eggBasketParts));
-exports.eggBasket4 = doodad.apply(void 0, [n('egg-basket-4'), sprites.egg_basket_4, 6, 13, 0].concat(eggBasketParts));
+const eggBasketPickable = mixins_1.mixPickable(31, 53);
+const eggBasketCollider = mixins_1.mixColliderRect(-5, -5, 11, 6);
+const eggBasketParts = [eggBasketPickable, eggBasketCollider];
+exports.basket = doodad(n('egg-basket-1'), sprites.egg_basket_1, 6, 13, 0, ...eggBasketParts);
+exports.eggBasket2 = doodad(n('egg-basket-2'), sprites.egg_basket_2, 6, 13, 0, ...eggBasketParts);
+exports.eggBasket3 = doodad(n('egg-basket-3'), sprites.egg_basket_3, 6, 13, 0, ...eggBasketParts);
+exports.eggBasket4 = doodad(n('egg-basket-4'), sprites.egg_basket_4, 6, 13, 0, ...eggBasketParts);
 exports.eggBaskets = [exports.basket, exports.eggBasket2, exports.eggBasket3, exports.eggBasket4];
-exports.basketBin = doodad(n('basket-bin'), sprites.basket_bin, 21, 31, 0, mixins_1.mixColliderRect(-20, -8, 46, 26), mixFlags(256 /* Interactive */), function (base) { return base.interactRange = 3; });
-var signCollider = mixins_1.mixColliderRect(-6, -1, 16, 2);
-var signInteractive = mixFlags(256 /* Interactive */);
-var signInteractRange = function (base) { return base.interactRange = 5; };
-var signPickable = mixins_1.mixPickable(32, 62);
-var signParts = [signCollider, signInteractive, signInteractRange, signPickable];
-exports.sign = registerMix.apply(void 0, [n('sign'),
-    mixins_1.mixDrawSeasonal({
-        summer: { sprite: sprites.sign_1, dx: 12, dy: 24, palette: 0 },
-        winter: { sprite: sprites.sign_winter, dx: 12, dy: 24, palette: 0 },
-    })].concat(signParts));
-exports.signQuest = doodad.apply(void 0, [n('sign-quest'), sprites.sign_2, 12, 24, 0].concat(signParts));
-exports.signQuestion = doodad.apply(void 0, [n('sign-question'), sprites.sign_4, 12, 24, 0].concat(signParts));
-exports.signDonate = doodad.apply(void 0, [n('sign-donate'), sprites.sign_3, 12, 24, 0].concat(signParts));
-exports.signDebug = doodad.apply(void 0, [n('sign-debug'), sprites.sign_4, 12, 24, 0].concat(signParts, [mixFlags(16 /* Debug */)]));
+exports.basketBin = doodad(n('basket-bin'), sprites.basket_bin, 21, 31, 0, mixins_1.mixColliderRect(-20, -8, 46, 26), mixFlags(256 /* Interactive */), base => base.interactRange = 3);
+const signCollider = mixins_1.mixColliderRect(-6, -1, 16, 2);
+const signInteractive = mixFlags(256 /* Interactive */);
+const signInteractRange = base => base.interactRange = 5;
+const signPickable = mixins_1.mixPickable(32, 62);
+const signParts = [signCollider, signInteractive, signInteractRange, signPickable];
+exports.sign = registerMix(n('sign'), mixins_1.mixDrawSeasonal({
+    summer: { sprite: sprites.sign_1, dx: 12, dy: 24, palette: 0 },
+    winter: { sprite: sprites.sign_winter, dx: 12, dy: 24, palette: 0 },
+}), ...signParts);
+exports.signQuest = doodad(n('sign-quest'), sprites.sign_2, 12, 24, 0, ...signParts);
+exports.signQuestion = doodad(n('sign-question'), sprites.sign_4, 12, 24, 0, ...signParts);
+exports.signDonate = doodad(n('sign-donate'), sprites.sign_3, 12, 24, 0, ...signParts);
+exports.signDebug = doodad(n('sign-debug'), sprites.sign_4, 12, 24, 0, ...signParts, mixFlags(16 /* Debug */));
 exports.tile = decal(n('tile'), sprites.tile);
-exports.directionSign = registerMix(n('direction-sign'), mixins_1.mixDrawDirectionSign(), mixins_1.mixColliderRect(-10, -8, 20, 16), mixFlags(256 /* Interactive */), function (base) { return base.interactRange = 10; });
-exports.directionSignLefts = utils_1.times(5, function (i) { return registerMix(n("direction-sign-left-" + i), mixBounds(-10, -59 + i * 11, 14, 10)); });
-exports.directionSignRights = utils_1.times(5, function (i) { return registerMix(n("direction-sign-right-" + i), mixBounds(-4, -59 + i * 11, 14, 10)); });
-exports.directionSignUpsLeft = utils_1.times(5, function (i) { return registerMix(n("direction-sign-up-left-" + i), mixBounds(-6, -70 + i * 12, 6, 11)); });
-exports.directionSignUpsRight = utils_1.times(5, function (i) { return registerMix(n("direction-sign-up-right-" + i), mixBounds(1, -70 + i * 12, 5, 11)); });
-exports.directionSignDownsLeft = utils_1.times(5, function (i) { return registerMix(n("direction-sign-down-left-" + i), mixBounds(-6, -57 + i * 13, 7, 12)); });
-exports.directionSignDownsRight = utils_1.times(5, function (i) { return registerMix(n("direction-sign-down-right-" + i), mixBounds(0, -57 + i * 13, 5, 12)); });
+// direction signs
+var SignIcon;
+(function (SignIcon) {
+    SignIcon[SignIcon["Spawn"] = 0] = "Spawn";
+    SignIcon[SignIcon["Pumpkins"] = 1] = "Pumpkins";
+    SignIcon[SignIcon["TownCenter"] = 2] = "TownCenter";
+    SignIcon[SignIcon["PineForest"] = 3] = "PineForest";
+    SignIcon[SignIcon["Boat"] = 4] = "Boat";
+    SignIcon[SignIcon["Mountains"] = 5] = "Mountains";
+    SignIcon[SignIcon["GiftPile"] = 6] = "GiftPile";
+    SignIcon[SignIcon["Forest"] = 7] = "Forest";
+    SignIcon[SignIcon["Lake"] = 8] = "Lake";
+    SignIcon[SignIcon["Bridge"] = 9] = "Bridge";
+    SignIcon[SignIcon["Mines"] = 10] = "Mines";
+    SignIcon[SignIcon["Barrels"] = 11] = "Barrels";
+    SignIcon[SignIcon["Fields"] = 12] = "Fields";
+    SignIcon[SignIcon["Carrots"] = 13] = "Carrots";
+})(SignIcon = exports.SignIcon || (exports.SignIcon = {}));
+exports.directionSign = registerMix(n('direction-sign'), mixins_1.mixDrawDirectionSign(), mixins_1.mixColliderRect(-10, -8, 20, 16), mixFlags(256 /* Interactive */), base => base.interactRange = 10);
+exports.directionSignLefts = utils_1.times(5, i => registerMix(n(`direction-sign-left-${i}`), mixBounds(-10, -59 + i * 11, 14, 10)));
+exports.directionSignRights = utils_1.times(5, i => registerMix(n(`direction-sign-right-${i}`), mixBounds(-4, -59 + i * 11, 14, 10)));
+exports.directionSignUpsLeft = utils_1.times(5, i => registerMix(n(`direction-sign-up-left-${i}`), mixBounds(-6, -70 + i * 12, 6, 11)));
+exports.directionSignUpsRight = utils_1.times(5, i => registerMix(n(`direction-sign-up-right-${i}`), mixBounds(1, -70 + i * 12, 5, 11)));
+exports.directionSignDownsLeft = utils_1.times(5, i => registerMix(n(`direction-sign-down-left-${i}`), mixBounds(-6, -57 + i * 13, 7, 12)));
+exports.directionSignDownsRight = utils_1.times(5, i => registerMix(n(`direction-sign-down-right-${i}`), mixBounds(0, -57 + i * 13, 5, 12)));
 // box
-var boxCollider = mixins_1.mixColliderRect(-17, -22, 35, 22);
-var boxInteractive = mixins_1.mixInteract(-16, -32, 32, 36, 4);
-var boxInteractiveClose = mixins_1.mixInteract(-16, -32, 32, 36, 3);
-var boxPickable = mixins_1.mixPickable(32, 72);
-var boxParts = [boxCollider, boxInteractive, boxPickable];
-exports.box = doodad.apply(void 0, [n('box'), sprites.box_empty, 16, 32, 0].concat(boxParts));
-exports.boxLanterns = doodad.apply(void 0, [n('box-lanterns'), sprites.box_lanterns, 16, 32, 0].concat(boxParts, [mixInteractAction(2 /* GiveLantern */)]));
-exports.boxBaskets = doodad.apply(void 0, [n('box-baskets'), sprites.box_baskets, 16, 32, 0].concat(boxParts));
-exports.boxFruits = doodad.apply(void 0, [n('box-fruits'), sprites.box_fruits, 16, 32, 0].concat(boxParts, [mixInteractAction(3 /* GiveFruits */)]));
+const boxCollider = mixins_1.mixColliderRect(-17, -22, 35, 22);
+const boxInteractive = mixins_1.mixInteract(-16, -32, 32, 36, 4);
+const boxInteractiveClose = mixins_1.mixInteract(-16, -32, 32, 36, 3);
+const boxPickable = mixins_1.mixPickable(32, 72);
+const boxParts = [boxCollider, boxInteractive, boxPickable];
+exports.box = doodad(n('box'), sprites.box_empty, 16, 32, 0, ...boxParts);
+exports.boxLanterns = doodad(n('box-lanterns'), sprites.box_lanterns, 16, 32, 0, ...boxParts, mixInteractAction(2 /* GiveLantern */));
+exports.boxBaskets = doodad(n('box-baskets'), sprites.box_baskets, 16, 32, 0, ...boxParts);
+exports.boxFruits = doodad(n('box-fruits'), sprites.box_fruits, 16, 32, 0, ...boxParts, mixInteractAction(3 /* GiveFruits */));
 exports.boxGifts = doodad(n('box-gifts'), sprites.box_gifts, 16, 32, 0, boxCollider, boxInteractiveClose, boxPickable);
-var toolboxParts = [
+const toolboxParts = [
     mixins_1.mixColliderRect(-15, -10, 30, 10),
     mixins_1.mixInteractAt(5),
     mixins_1.mixPickable(31, 60),
 ];
-exports.toolboxEmpty = doodad.apply(void 0, [n('toolbox-empty'), sprites.toolbox_empty, 16, 22, 0].concat(toolboxParts));
-exports.toolboxFull = doodad.apply(void 0, [n('toolbox-full'), sprites.toolbox_full, 16, 22, 0].concat(toolboxParts, [function (base) { return base.interactRange = 20; },
-    mixInteractAction(1 /* Toolbox */),
-    mixFlags(4096 /* IgnoreTool */)]));
-exports.barrel = doodad(n('barrel'), sprites.barrel, 13, 27, 0, mixins_1.mixColliderRounded(-12, -8, 24, 13, 5), mixFlags(256 /* Interactive */), function (base) { return base.interactRange = 3; });
+exports.toolboxEmpty = doodad(n('toolbox-empty'), sprites.toolbox_empty, 16, 22, 0, ...toolboxParts);
+exports.toolboxFull = doodad(n('toolbox-full'), sprites.toolbox_full, 16, 22, 0, ...toolboxParts, base => base.interactRange = 20, mixInteractAction(1 /* Toolbox */), mixFlags(4096 /* IgnoreTool */));
+exports.barrel = doodad(n('barrel'), sprites.barrel, 13, 27, 0, mixins_1.mixColliderRounded(-12, -8, 24, 13, 5), mixFlags(256 /* Interactive */), base => base.interactRange = 3);
 exports.bench1 = doodad(n('bench-1'), sprites.bench_1, 37, 20, 0, mixins_1.mixColliderRect(-37, -3, 75, 8));
 exports.benchSeat = doodad(n('bench-seat'), sprites.bench_seat, 37, 0);
 exports.benchBack = doodad(n('bench-back'), sprites.bench_back, 37, 22, 0, mixins_1.mixColliderRect(-37, -3, 75, 8));
@@ -442,82 +404,67 @@ exports.crate2B = doodad(n('crate-2b'), sprites.crate_2, 15, 23, 1, mixins_1.mix
 exports.crate3A = doodad(n('crate-3a'), sprites.crate_3, 15, 23, 0, mixins_1.mixColliderRect(-14, -14, 29, 14));
 exports.crate3B = doodad(n('crate-3b'), sprites.crate_3, 15, 23, 1, mixins_1.mixColliderRect(-14, -14, 29, 14));
 function createWalls(baseName, spriteFull, spritesHalf) {
-    function wall(name, index, ox, oy, oy2) {
-        var other = [];
-        for (var _i = 5; _i < arguments.length; _i++) {
-            other[_i - 5] = arguments[_i];
-        }
-        return registerMix.apply(void 0, [name,
-            mixins_1.mixDrawWall(spriteFull[index], spritesHalf[index], ox, oy, oy2),
-            mixins_1.mixMinimap(0x503d45ff, rect_1.rect(0, 0, 1, 1)),
-            mixFlags(32 /* StaticY */),
-            mixServerFlags(2 /* DoNotSave */)].concat(other));
+    function wall(name, index, ox, oy, oy2, ...other) {
+        return registerMix(name, mixins_1.mixDrawWall(spriteFull[index], spritesHalf[index], ox, oy, oy2), mixins_1.mixMinimap(0x503d45ff, rect_1.rect(0, 0, 1, 1)), mixFlags(32 /* StaticY */), mixServerFlags(2 /* DoNotSave */), ...other);
     }
-    function wallShort(name, index, ox, _oy, oy2) {
-        var other = [];
-        for (var _i = 5; _i < arguments.length; _i++) {
-            other[_i - 5] = arguments[_i];
-        }
-        return doodad.apply(void 0, [name, spritesHalf[index], ox, oy2, 0,
-            mixins_1.mixMinimap(0x503d45ff, rect_1.rect(0, 0, 1, 1)),
-            mixFlags(32 /* StaticY */),
-            mixServerFlags(2 /* DoNotSave */)].concat(other));
+    function wallShort(name, index, ox, _oy, oy2, ...other) {
+        return doodad(name, spritesHalf[index], ox, oy2, 0, mixins_1.mixMinimap(0x503d45ff, rect_1.rect(0, 0, 1, 1)), mixFlags(32 /* StaticY */), mixServerFlags(2 /* DoNotSave */), ...other);
     }
-    var wallThickness = 8;
-    var wallOffsetX = wallThickness / 2;
-    var wallOffsetY = 18;
-    var wallOffsetFullY = 81;
-    var wallHCollider = mixins_1.mixColliderRect(-16, -6, 32, 6);
-    var wallVCollider = mixins_1.mixColliderRect(-10, -15, 20, 30);
-    var wallH = wall(n(baseName + "-h"), 16, (32 - wallThickness) / 2, wallOffsetFullY, wallOffsetY, wallHCollider);
-    var wallHShort = wallShort(n(baseName + "-h-short"), 16, (32 - wallThickness) / 2, wallOffsetFullY, wallOffsetY, wallHCollider);
-    var wallV = wall(n(baseName + "-v"), 17, wallOffsetX, wallOffsetFullY + 3, wallOffsetY + 3, wallVCollider);
-    var wallVShort = wallShort(n(baseName + "-v-short"), 17, wallOffsetX, wallOffsetFullY + 3, wallOffsetY + 3, wallVCollider);
-    var wallCutL = doodad(n(baseName + "-cut-l"), spriteFull[18], (32 - wallThickness) / 2, wallOffsetFullY, 0, wallHCollider, mixFlags(32 /* StaticY */), mixServerFlags(2 /* DoNotSave */));
-    var wallCutR = doodad(n(baseName + "-cut-r"), spriteFull[19], (32 - wallThickness) / 2, wallOffsetFullY, 0, wallHCollider, mixFlags(32 /* StaticY */), mixServerFlags(2 /* DoNotSave */));
-    var wallCorners = [
+    const wallThickness = 8;
+    const wallOffsetX = wallThickness / 2;
+    const wallOffsetY = 18;
+    const wallOffsetFullY = 81;
+    const wallHCollider = mixins_1.mixColliderRect(-16, -6, 32, 6);
+    const wallVCollider = mixins_1.mixColliderRect(-10, -15, 20, 30);
+    const wallH = wall(n(`${baseName}-h`), 16, (32 - wallThickness) / 2, wallOffsetFullY, wallOffsetY, wallHCollider);
+    const wallHShort = wallShort(n(`${baseName}-h-short`), 16, (32 - wallThickness) / 2, wallOffsetFullY, wallOffsetY, wallHCollider);
+    const wallV = wall(n(`${baseName}-v`), 17, wallOffsetX, wallOffsetFullY + 3, wallOffsetY + 3, wallVCollider);
+    const wallVShort = wallShort(n(`${baseName}-v-short`), 17, wallOffsetX, wallOffsetFullY + 3, wallOffsetY + 3, wallVCollider);
+    const wallCutL = doodad(n(`${baseName}-cut-l`), spriteFull[18], (32 - wallThickness) / 2, wallOffsetFullY, 0, wallHCollider, mixFlags(32 /* StaticY */), mixServerFlags(2 /* DoNotSave */));
+    const wallCutR = doodad(n(`${baseName}-cut-r`), spriteFull[19], (32 - wallThickness) / 2, wallOffsetFullY, 0, wallHCollider, mixFlags(32 /* StaticY */), mixServerFlags(2 /* DoNotSave */));
+    const wallCorners = [
         // top right bottom left
-        wall(n(baseName + "-00"), 0, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wall(n(baseName + "-01"), 1, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wall(n(baseName + "-02"), 2, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wall(n(baseName + "-03"), 3, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wall(n(baseName + "-04"), 4, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wall(n(baseName + "-05"), 5, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wall(n(baseName + "-06"), 6, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wall(n(baseName + "-07"), 7, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wall(n(baseName + "-08"), 8, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wall(n(baseName + "-09"), 9, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wall(n(baseName + "-10"), 10, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wall(n(baseName + "-11"), 11, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wall(n(baseName + "-12"), 12, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wall(n(baseName + "-13"), 13, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wall(n(baseName + "-14"), 14, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wall(n(baseName + "-15"), 15, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wall(n(`${baseName}-00`), 0, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wall(n(`${baseName}-01`), 1, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wall(n(`${baseName}-02`), 2, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wall(n(`${baseName}-03`), 3, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wall(n(`${baseName}-04`), 4, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wall(n(`${baseName}-05`), 5, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wall(n(`${baseName}-06`), 6, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wall(n(`${baseName}-07`), 7, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wall(n(`${baseName}-08`), 8, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wall(n(`${baseName}-09`), 9, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wall(n(`${baseName}-10`), 10, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wall(n(`${baseName}-11`), 11, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wall(n(`${baseName}-12`), 12, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wall(n(`${baseName}-13`), 13, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wall(n(`${baseName}-14`), 14, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wall(n(`${baseName}-15`), 15, wallOffsetX, wallOffsetFullY, wallOffsetY),
     ];
-    var wallCornersShort = [
+    const wallCornersShort = [
         // top right bottom left
-        wallShort(n(baseName + "-00-short"), 0, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wallShort(n(baseName + "-01-short"), 1, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wallShort(n(baseName + "-02-short"), 2, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wallShort(n(baseName + "-03-short"), 3, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wallShort(n(baseName + "-04-short"), 4, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wallShort(n(baseName + "-05-short"), 5, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wallShort(n(baseName + "-06-short"), 6, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wallShort(n(baseName + "-07-short"), 7, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wallShort(n(baseName + "-08-short"), 8, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wallShort(n(baseName + "-09-short"), 9, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wallShort(n(baseName + "-10-short"), 10, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wallShort(n(baseName + "-11-short"), 11, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wallShort(n(baseName + "-12-short"), 12, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wallShort(n(baseName + "-13-short"), 13, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wallShort(n(baseName + "-14-short"), 14, wallOffsetX, wallOffsetFullY, wallOffsetY),
-        wallShort(n(baseName + "-15-short"), 15, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wallShort(n(`${baseName}-00-short`), 0, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wallShort(n(`${baseName}-01-short`), 1, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wallShort(n(`${baseName}-02-short`), 2, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wallShort(n(`${baseName}-03-short`), 3, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wallShort(n(`${baseName}-04-short`), 4, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wallShort(n(`${baseName}-05-short`), 5, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wallShort(n(`${baseName}-06-short`), 6, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wallShort(n(`${baseName}-07-short`), 7, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wallShort(n(`${baseName}-08-short`), 8, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wallShort(n(`${baseName}-09-short`), 9, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wallShort(n(`${baseName}-10-short`), 10, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wallShort(n(`${baseName}-11-short`), 11, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wallShort(n(`${baseName}-12-short`), 12, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wallShort(n(`${baseName}-13-short`), 13, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wallShort(n(`${baseName}-14-short`), 14, wallOffsetX, wallOffsetFullY, wallOffsetY),
+        wallShort(n(`${baseName}-15-short`), 15, wallOffsetX, wallOffsetFullY, wallOffsetY),
     ];
-    return { wallH: wallH, wallHShort: wallHShort, wallV: wallV, wallVShort: wallVShort, wallCutL: wallCutL, wallCutR: wallCutR, wallCorners: wallCorners, wallCornersShort: wallCornersShort };
+    return { wallH, wallHShort, wallV, wallVShort, wallCutL, wallCutR, wallCorners, wallCornersShort };
 }
 exports.woodenWalls = createWalls('wall', sprites.wall_wood_full, sprites.wall_wood_half);
 exports.stoneWalls = createWalls('wall-stone', sprites.wall_stone_full, sprites.wall_stone_half);
-var rockMinimap = mixins_1.mixMinimap(0x78716aff, rect_1.rect(0, 0, 1, 1));
+const rockMinimap = mixins_1.mixMinimap(0x78716aff, rect_1.rect(0, 0, 1, 1));
 exports.rock = doodad(n('rock'), sprites.rock_1, 15, 20, 0, mixins_1.mixColliderRounded(-16, -12, 32, 12, 3, false), rockMinimap);
 exports.rock2 = doodad(n('rock-2'), sprites.rock_2, 11, 11, 0, mixins_1.mixColliderRounded(-10, -4, 17, 5, 2, false), rockMinimap);
 exports.rock3 = doodad(n('rock-3'), sprites.rock_3, 10, 11, 0, mixins_1.mixColliderRounded(-10, -4, 18, 5, 2, false), rockMinimap);
@@ -527,7 +474,7 @@ exports.rock3B = doodad(n('rock-3b'), sprites.rock_3, 10, 11, 1, mixins_1.mixCol
 // other
 exports.well = doodad(n('well'), sprites.well, 30, 67, 0, mixins_1.mixColliderRect(-26, -20, 54, 30));
 // water rocks
-var waterRockFPS = constants_1.WATER_FPS;
+const waterRockFPS = constants_1.WATER_FPS;
 exports.waterRock1 = registerMix(n('water-rock-1'), mixins_1.mixAnimation(sprites.water_rock_1, waterRockFPS, 10, 12), mixins_1.mixColliderRounded(-12, -6, 25, 7, 2, false), mixFlags(32 /* StaticY */));
 exports.waterRock2 = registerMix(n('water-rock-2'), mixins_1.mixAnimation(sprites.water_rock_2, waterRockFPS, 11, 8), mixins_1.mixColliderRounded(-12, -5, 22, 8, 2, false), mixFlags(32 /* StaticY */));
 exports.waterRock3 = registerMix(n('water-rock-3'), mixins_1.mixAnimation(sprites.water_rock_3, waterRockFPS, 12, 9), mixins_1.mixColliderRounded(-12, -4, 22, 7, 2, false), mixFlags(32 /* StaticY */));
@@ -542,7 +489,7 @@ exports.waterRock11 = registerMix(n('water-rock-11'), mixins_1.mixAnimation(spri
 // stone wall (old)
 exports.stoneWallFull = doodad(n('stone-wall-full'), sprites.stone_wall_full, 38, 22, 0, mixins_1.mixColliderRect(-38, -4, 76, 6));
 // stone wall
-var stoneWallMinimapColor = 0x9b9977ff;
+const stoneWallMinimapColor = 0x9b9977ff;
 exports.stoneWallPole1 = registerMix(n('stone-wall-pole-1'), mixins_1.mixDrawSeasonal({
     summer: { sprite: sprites.stone_wall_pole1, dx: 7, dy: 20, palette: 0 },
     winter: { sprite: sprites.stone_wall_winter_pole1, dx: 8, dy: 21, palette: 0 },
@@ -556,9 +503,9 @@ exports.stoneWallBeamV1 = registerMix(n('stone-wall-beam-v-1'), mixins_1.mixDraw
     winter: { sprite: sprites.stone_wall_winter_vertical1, dx: 5, dy: 8, palette: 0 },
 }), mixins_1.mixColliderRect(-7, 0, 14, 48, false), mixins_1.mixMinimap(stoneWallMinimapColor, rect_1.rect(0, 0, 1, 2)), mixOrder(2));
 // wooden fence (modular)
-var woodenFenceTall = false;
-var woodenFenceMinimapColor = 0xac7146ff;
-var woodenFenceMinimap = mixins_1.mixMinimap(woodenFenceMinimapColor, rect_1.rect(0, 0, 1, 1));
+const woodenFenceTall = false;
+const woodenFenceMinimapColor = 0xac7146ff;
+const woodenFenceMinimap = mixins_1.mixMinimap(woodenFenceMinimapColor, rect_1.rect(0, 0, 1, 1));
 function woodenFencePole(name, sprite, spriteWinter) {
     return registerMix(name, mixins_1.mixDrawSeasonal({
         summer: { sprite: sprite, dx: 4, dy: 25, palette: 0 },
@@ -607,7 +554,7 @@ exports.fence3 = registerMix(n('fence-3'), mixins_1.mixDrawSeasonal({
     winter: { sprite: sprites.fence_winter_3, dx: 104, dy: 25, palette: 0 },
 }), mixins_1.mixColliderRect(-102, -2, 204, 4, false), mixins_1.mixMinimap(woodenFenceMinimapColor, rect_1.rect(0, 0, 3, 1)));
 // rain
-var rainColor = 0xffffff77; // 48
+const rainColor = 0xffffff77; // 48
 exports.rain = registerMix(n('rain'), mixins_1.mixAnimation(sprites.rain, 12, 16, 512, { color: rainColor }));
 exports.raindrop = registerMix(n('raindrop'), mixins_1.mixAnimation(sprites.raindrop, 12, 4, 0, { color: rainColor }));
 exports.weatherRain = registerMix(n('weather-rain'), mixins_1.mixDrawRain());
@@ -643,20 +590,20 @@ exports.leaves2 = decal(n('leaves-2'), sprites.leaves_2);
 exports.leaves3 = decal(n('leaves-3'), sprites.leaves_3);
 exports.leaves4 = decal(n('leaves-4'), sprites.leaves_4);
 exports.leaves5 = decal(n('leaves-5'), sprites.leaves_5);
-var smallLeafPileCollider = mixins_1.mixColliderRect(-12, -7, 25, 12);
-var mediumLeafPileCollider = mixins_1.mixColliderRect(-16, -8, 34, 15);
-var bigLeafPileCollider = mixins_1.mixColliderRect(-30, -13, 60, 24);
-exports.leafpileSmallYellow = (_a = doodadSet(n('leafpile-small'), sprites.leafpile_small, 18, 16, smallLeafPileCollider), _a[0]), exports.leafpileSmallOrange = _a[1], exports.leafpileSmallRed = _a[2];
-exports.leafpileStickYellow = (_b = doodadSet(n('leafpile-stick'), sprites.leafpile_stick, 18, 16, smallLeafPileCollider), _b[0]), exports.leafpileStickOrange = _b[1], exports.leafpileStickRed = _b[2];
-exports.leafpileMediumYellow = (_c = doodadSet(n('leafpile-medium'), sprites.leafpile_medium, 35, 23, mediumLeafPileCollider), _c[0]), exports.leafpileMediumOrange = _c[1], exports.leafpileMediumRed = _c[2];
-exports.leafpileMediumAltYellow = (_d = doodadSet(n('leafpile-mediumalt'), sprites.leafpile_mediumalt, 35, 23, mediumLeafPileCollider), _d[0]), exports.leafpileMediumAltOrange = _d[1], exports.leafpileMediumAltRed = _d[2];
-exports.leafpileBigYellow = (_e = doodadSet(n('leafpile-big'), sprites.leafpile_big, 43, 34, bigLeafPileCollider), _e[0]), exports.leafpileBigOrange = _e[1], exports.leafpileBigRed = _e[2];
-exports.leafpileBigstickYellow = (_f = doodadSet(n('leafpile-bigstick'), sprites.leafpile_bigstick, 43, 34, bigLeafPileCollider), _f[0]), exports.leafpileBigstickOrange = _f[1], exports.leafpileBigstickRed = _f[2];
+const smallLeafPileCollider = mixins_1.mixColliderRect(-12, -7, 25, 12);
+const mediumLeafPileCollider = mixins_1.mixColliderRect(-16, -8, 34, 15);
+const bigLeafPileCollider = mixins_1.mixColliderRect(-30, -13, 60, 24);
+_a = doodadSet(n('leafpile-small'), sprites.leafpile_small, 18, 16, smallLeafPileCollider), exports.leafpileSmallYellow = _a[0], exports.leafpileSmallOrange = _a[1], exports.leafpileSmallRed = _a[2];
+_b = doodadSet(n('leafpile-stick'), sprites.leafpile_stick, 18, 16, smallLeafPileCollider), exports.leafpileStickYellow = _b[0], exports.leafpileStickOrange = _b[1], exports.leafpileStickRed = _b[2];
+_c = doodadSet(n('leafpile-medium'), sprites.leafpile_medium, 35, 23, mediumLeafPileCollider), exports.leafpileMediumYellow = _c[0], exports.leafpileMediumOrange = _c[1], exports.leafpileMediumRed = _c[2];
+_d = doodadSet(n('leafpile-mediumalt'), sprites.leafpile_mediumalt, 35, 23, mediumLeafPileCollider), exports.leafpileMediumAltYellow = _d[0], exports.leafpileMediumAltOrange = _d[1], exports.leafpileMediumAltRed = _d[2];
+_e = doodadSet(n('leafpile-big'), sprites.leafpile_big, 43, 34, bigLeafPileCollider), exports.leafpileBigYellow = _e[0], exports.leafpileBigOrange = _e[1], exports.leafpileBigRed = _e[2];
+_f = doodadSet(n('leafpile-bigstick'), sprites.leafpile_bigstick, 43, 34, bigLeafPileCollider), exports.leafpileBigstickYellow = _f[0], exports.leafpileBigstickOrange = _f[1], exports.leafpileBigstickRed = _f[2];
 // gifts
-var giftInteractive = mixins_1.mixInteract(-9, -15, 18, 20, 1.5);
-var giftPickable = mixins_1.mixPickable(32, 52);
-var giftOffsetX = 7;
-var giftOffsetY = 15;
+const giftInteractive = mixins_1.mixInteract(-9, -15, 18, 20, 1.5);
+const giftPickable = mixins_1.mixPickable(32, 52);
+const giftOffsetX = 7;
+const giftOffsetY = 15;
 exports.gift1 = doodad(n('gift-1'), sprites.gift_1, giftOffsetX, giftOffsetY, 0, giftInteractive, giftPickable, mixFlags(8 /* Usable */));
 exports.gift2 = doodad(n('gift-2'), sprites.gift_2, giftOffsetX, giftOffsetY, 0, giftInteractive, giftPickable, mixFlags(8 /* Usable */));
 exports.gift3 = doodad(n('gift-3'), sprites.gift_2, giftOffsetX, giftOffsetY, 1, giftInteractive, giftPickable);
@@ -670,9 +617,9 @@ exports.giftPile3 = doodad(n('giftpile-3'), sprites.giftpile_3, 29, 23, 0, mixin
 exports.giftPile4 = doodad(n('giftpile-4'), sprites.giftpile_4, 26, 16, 0, mixins_1.mixColliderRect(-25, -12, 51, 24));
 exports.giftPile5 = doodad(n('giftpile-5'), sprites.giftpile_5, 20, 20, 0, mixins_1.mixColliderRect(-19, -7, 42, 19));
 exports.giftPile6 = doodad(n('giftpile-6'), sprites.giftpile_6, 19, 23, 0, mixins_1.mixColliderRect(-19, -12, 38, 28));
-exports.giftPileInteractive = doodad(n('giftpile-5-interactive'), sprites.giftpile_5, 20, 20, 0, mixins_1.mixColliderRect(-19, -7, 42, 19), mixFlags(256 /* Interactive */), function (base) { return base.interactRange = 5; });
+exports.giftPileInteractive = doodad(n('giftpile-5-interactive'), sprites.giftpile_5, 20, 20, 0, mixins_1.mixColliderRect(-19, -7, 42, 19), mixFlags(256 /* Interactive */), base => base.interactRange = 5);
 // winter
-var snowponyCollider = mixins_1.mixColliderRounded(-12, -4, 25, 7, 2);
+const snowponyCollider = mixins_1.mixColliderRounded(-12, -4, 25, 7, 2);
 exports.snowpony1 = doodad(n('snowpony-1'), sprites.snowpony_1, 13, 36, 0, snowponyCollider);
 exports.snowpony2 = doodad(n('snowpony-2'), sprites.snowpony_2, 16, 46, 0, snowponyCollider);
 exports.snowpony3 = doodad(n('snowpony-3'), sprites.snowpony_3, 20, 45, 0, snowponyCollider);
@@ -706,39 +653,36 @@ exports.sandPileSmall = doodad(n('sandpile-small'), sprites.snowpile_small, 22, 
 exports.sandPileMedium = doodad(n('sandpile-medium'), sprites.snowpile_medium, 33, 20, 1, mixins_1.mixColliderRounded(-23, -4, 46, 12, 4, false));
 exports.sandPileBig = doodad(n('sandpile-big'), sprites.snowpile_big, 43, 28, 1, mixins_1.mixColliderRounded(-39, -2, 78, 16, 6, false));
 // pumpkins
-var pumpkinCollider = mixins_1.mixColliderRounded(-11, -6, 22, 12, 5, false);
-var pumpkinPickable = mixins_1.mixPickable(26, 50);
-var pumpkinParts = [pumpkinCollider, pumpkinPickable];
-var pumpkinDX = 11;
-var pumpkinDY = 15;
-exports.pumpkin = doodad.apply(void 0, [n('pumpkin'), sprites.pumpkin_default, pumpkinDX, pumpkinDY, 0].concat(pumpkinParts));
-exports.jackoOff = doodad.apply(void 0, [n('jacko-off'), sprites.pumpkin_off, pumpkinDX, pumpkinDY, 0].concat(pumpkinParts));
-exports.jackoOn = doodad.apply(void 0, [n('jacko-on'), sprites.pumpkin_on, pumpkinDX, pumpkinDY, 0].concat(pumpkinParts, [mixins_1.mixLight(jackoLightColor, 0, 0, 256, 192),
-    mixins_1.mixLightSprite(sprites.pumpkin_light, colors_1.WHITE, pumpkinDX, pumpkinDY)]));
-exports.jacko = doodad.apply(void 0, [n('jacko'), sprites.pumpkin_on, pumpkinDX, pumpkinDY, 0].concat(pumpkinParts, [mixins_1.mixLight(jackoLightColor, 0, 0, 256, 192),
-    mixins_1.mixLightSprite(sprites.pumpkin_light, colors_1.WHITE, pumpkinDX, pumpkinDY),
-    mixFlags(1024 /* OnOff */)]));
+const pumpkinCollider = mixins_1.mixColliderRounded(-11, -6, 22, 12, 5, false);
+const pumpkinPickable = mixins_1.mixPickable(26, 50);
+const pumpkinParts = [pumpkinCollider, pumpkinPickable];
+const pumpkinDX = 11;
+const pumpkinDY = 15;
+exports.pumpkin = doodad(n('pumpkin'), sprites.pumpkin_default, pumpkinDX, pumpkinDY, 0, ...pumpkinParts);
+exports.jackoOff = doodad(n('jacko-off'), sprites.pumpkin_off, pumpkinDX, pumpkinDY, 0, ...pumpkinParts);
+exports.jackoOn = doodad(n('jacko-on'), sprites.pumpkin_on, pumpkinDX, pumpkinDY, 0, ...pumpkinParts, mixins_1.mixLight(jackoLightColor, 0, 0, 256, 192), mixins_1.mixLightSprite(sprites.pumpkin_light, colors_1.WHITE, pumpkinDX, pumpkinDY));
+exports.jacko = doodad(n('jacko'), sprites.pumpkin_on, pumpkinDX, pumpkinDY, 0, ...pumpkinParts, mixins_1.mixLight(jackoLightColor, 0, 0, 256, 192), mixins_1.mixLightSprite(sprites.pumpkin_light, colors_1.WHITE, pumpkinDX, pumpkinDY), mixFlags(1024 /* OnOff */));
 // tombstones
 exports.tombstone1 = doodad(n('tombstone-1'), sprites.tombstone_1, 14, 18, 0, mixins_1.mixColliderRect(-14, -4, 29, 9));
 exports.tombstone2 = doodad(n('tombstone-2'), sprites.tombstone_2, 11, 27, 0, mixins_1.mixColliderRect(-12, -3, 26, 6));
 // torch
-var torchCollider = mixins_1.mixColliderRounded(-2, -2, 4, 4, 1, false);
-var torchDX = 4;
-var torchDY = 34;
-var torchSprites = sprites.torch2;
-var torchAnimOff = [0];
-var torchAnimOn = torchSprites.frames.map(function (_, i) { return i; }).slice(1);
-var torchUnlitSprite = {
+const torchCollider = mixins_1.mixColliderRounded(-2, -2, 4, 4, 1, false);
+const torchDX = 4;
+const torchDY = 34;
+const torchSprites = sprites.torch2;
+const torchAnimOff = [0];
+const torchAnimOn = torchSprites.frames.map((_, i) => i).slice(1);
+const torchUnlitSprite = {
     color: torchSprites.frames[0],
     shadow: torchSprites.shadow,
     palettes: [torchSprites.palette],
 };
-var torchSpriteOn = {
+const torchSpriteOn = {
     frames: torchSprites.frames.slice(1),
     shadow: torchSprites.shadow,
     palette: torchSprites.palette,
 };
-var torchLightSpriteOn = {
+const torchLightSpriteOn = {
     frames: sprites.torch2_light.frames.slice(1),
 };
 exports.torchOff = doodad(n('torch-off'), torchUnlitSprite, torchDX, torchDY, 0, torchCollider);
@@ -748,23 +692,25 @@ exports.torch = registerMix(n('torch'), mixins_1.mixAnimation(torchSprites, 8, t
     animations: [torchAnimOff, torchAnimOn],
 }), torchCollider, mixins_1.mixLight(0x926923ff, 0, 0, 440, 332), mixFlags(1024 /* OnOff */));
 exports.poof = registerMix(n('poof'), mixins_1.mixAnimation({
-    frames: sprites.poof.frames.concat([sprites.emptySprite2]),
+    frames: [...sprites.poof.frames, sprites.emptySprite2],
     palette: sprites.poof.palette
 }, 12, 13, 30, { repeat: false }), mixOrder(100));
 exports.poof2 = registerMix(n('poof-2'), mixins_1.mixAnimation({
-    frames: sprites.poof2.frames.concat([sprites.emptySprite2]),
+    frames: [...sprites.poof2.frames, sprites.emptySprite2],
     palette: sprites.poof2.palette
 }, 12, 50, 120, { repeat: false }), mixOrder(100));
 exports.splash = registerMix(n('splash'), mixins_1.mixAnimation({
-    frames: sprites.splash.frames.concat([sprites.emptySprite2]),
+    frames: [...sprites.splash.frames, sprites.emptySprite2],
     palette: sprites.splash.palette
 }, 20, 25, 22, { repeat: false }), mixOrder(50));
-var boopSplashFrames = utils_1.repeat(3, sprites.emptySprite2).concat(sprites.splash_boop.frames, [
+const boopSplashFrames = [
+    ...utils_1.repeat(3, sprites.emptySprite2),
+    ...sprites.splash_boop.frames,
     sprites.emptySprite2,
-]);
-var boopSlashFps = 20;
-var boopSlashDX = 11;
-var boopSlashDY = 55;
+];
+const boopSlashFps = 20;
+const boopSlashDX = 11;
+const boopSlashDY = 55;
 exports.boopSplashRight = registerMix(n('boop-splash-right'), mixins_1.mixAnimation({
     frames: boopSplashFrames,
     palette: sprites.splash_boop.palette
@@ -778,30 +724,47 @@ exports.butterfly = registerMix(n('butterfly'), mixins_1.mixAnimation(sprites.bu
 exports.firefly = registerMix(n('firefly'), mixins_1.mixAnimation(sprites.firefly, 24, 4, 44), mixins_1.mixLight(0x446a27ff, 0, 37, 128, 128), // 386a27, 83842a
 mixins_1.mixLightSprite(sprites.firefly_light, colors_1.WHITE, 2, 40), mixFlags(4 /* Critter */ | 1 /* Movable */ | 32 /* StaticY */));
 exports.bat = registerMix(n('bat'), mixins_1.mixAnimation(sprites.bat, 8, 10, 65), mixFlags(4 /* Critter */ | 1 /* Movable */ | 32 /* StaticY */));
-exports.spider = registerMix(n('spider'), function (base, options) { return base.options = __assign({ height: 20, time: 0 }, options); }, mixins_1.mixDrawSpider(sprites.spider, 2, 2), mixFlags(4 /* Critter */));
+exports.spider = registerMix(n('spider'), (base, options) => base.options = Object.assign({ height: 20, time: 0 }, options), mixins_1.mixDrawSpider(sprites.spider, 2, 2), mixFlags(4 /* Critter */));
 // cat
 sprites.cat.frames.push(sprites.emptySprite2);
 sprites.cat_light.frames.push(sprites.emptySprite);
-var catSit = [9];
-var catEnter = [0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 9];
-var catExit = [9, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 8, 17];
-var catBlink = [9, 10, 10, 9];
-var catWag = [9, 11, 11, 12, 12, 13, 13, 14, 14, 14, 15, 15, 16, 16, 9];
+var CatAnimation;
+(function (CatAnimation) {
+    CatAnimation[CatAnimation["Sit"] = 0] = "Sit";
+    CatAnimation[CatAnimation["Enter"] = 1] = "Enter";
+    CatAnimation[CatAnimation["Exit"] = 2] = "Exit";
+    CatAnimation[CatAnimation["Blink"] = 3] = "Blink";
+    CatAnimation[CatAnimation["Wag"] = 4] = "Wag";
+})(CatAnimation = exports.CatAnimation || (exports.CatAnimation = {}));
+const catSit = [9];
+const catEnter = [0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 9];
+const catExit = [9, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 8, 17];
+const catBlink = [9, 10, 10, 9];
+const catWag = [9, 11, 11, 12, 12, 13, 13, 14, 14, 14, 15, 15, 16, 16, 9];
 exports.cat = registerMix(n('cat'), mixins_1.mixAnimation(sprites.cat, 24, 17, 39, {
     repeat: false,
     animations: [catSit, catEnter, catExit, catBlink, catWag],
     lightSprite: sprites.cat_light,
-}), function (base) { return base.chatY = -5; });
-var bunnySit = [7];
-var bunnyWalk = [0, 1, 2, 3, 4, 5, 6];
-var bunnyBlink = [7, 8].concat(utils_1.repeat(35, 7));
-var bunnyClean = [7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24].concat(utils_1.repeat(30, 7));
-var bunnyLook = [7, 9, 25, 26, 27, 28, 29, 30, 31, 32, 33, 9].concat(utils_1.repeat(30, 7));
+}), base => base.chatY = -5);
+// bunny
+var BunnyAnimation;
+(function (BunnyAnimation) {
+    BunnyAnimation[BunnyAnimation["Sit"] = 0] = "Sit";
+    BunnyAnimation[BunnyAnimation["Walk"] = 1] = "Walk";
+    BunnyAnimation[BunnyAnimation["Blink"] = 2] = "Blink";
+    BunnyAnimation[BunnyAnimation["Clean"] = 3] = "Clean";
+    BunnyAnimation[BunnyAnimation["Look"] = 4] = "Look";
+})(BunnyAnimation = exports.BunnyAnimation || (exports.BunnyAnimation = {}));
+const bunnySit = [7];
+const bunnyWalk = [0, 1, 2, 3, 4, 5, 6];
+const bunnyBlink = [7, 8, ...utils_1.repeat(35, 7)];
+const bunnyClean = [7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, ...utils_1.repeat(30, 7)];
+const bunnyLook = [7, 9, 25, 26, 27, 28, 29, 30, 31, 32, 33, 9, ...utils_1.repeat(30, 7)];
 exports.bunny = registerMix(n('bunny'), mixins_1.mixAnimation(sprites.bunny, 14, 12, 23, {
     animations: [bunnySit, bunnyWalk, bunnyBlink, bunnyClean, bunnyLook],
 }), mixFlags(1 /* Movable */));
 // eyes
-var spritesEyes = {
+const spritesEyes = {
     frames: [sprites.emptySprite2],
     palette: sprites.defaultPalette,
 };
@@ -811,36 +774,41 @@ exports.eyes = registerMix(n('eyes'), mixins_1.mixAnimation(spritesEyes, 24, 16,
     lightSprite: sprites.cat_light,
 }));
 // ghosts
-var ghostSprite = {
+const ghostSprite = {
     frames: [
-        sprites.emptySprite2
-    ].concat(sprites.ghost1.frames),
+        sprites.emptySprite2,
+        ...sprites.ghost1.frames,
+    ],
     palette: sprites.ghost1.palette,
 };
-var ghostHoovesSprite = {
+const ghostHoovesSprite = {
     frames: [
-        sprites.emptySprite2
-    ].concat(sprites.ghost1_hooves.frames, utils_1.repeat(17, sprites.emptySprite2)),
+        sprites.emptySprite2,
+        ...sprites.ghost1_hooves.frames,
+        ...utils_1.repeat(17, sprites.emptySprite2),
+    ],
     palette: sprites.ghost1_hooves.palette,
 };
-var ghostLightSprite = {
+const ghostLightSprite = {
     frames: [
-        sprites.emptySprite
-    ].concat(sprites.ghost1_light.frames),
+        sprites.emptySprite,
+        ...sprites.ghost1_light.frames,
+    ],
 };
-var ghostHoovesLightSprite = {
+const ghostHoovesLightSprite = {
     frames: [
-        sprites.emptySprite
-    ].concat(sprites.ghost1_hooves_light.frames),
+        sprites.emptySprite,
+        ...sprites.ghost1_hooves_light.frames,
+    ],
 };
-var ghostFPS = 20;
-var ghostDX = 28;
-var ghostDYBase = 40;
-var ghostDY = [ghostDYBase, ghostDYBase + 7]; // by tombstone
-var ghostColor = color_1.withAlphaFloat(colors_1.WHITE, 0.7);
-var ghostLightColor = 0x777777ff;
-var ghostNone = [0];
-var ghostAnim1 = [
+const ghostFPS = 20;
+const ghostDX = 28;
+const ghostDYBase = 40;
+const ghostDY = [ghostDYBase, ghostDYBase + 7]; // by tombstone
+const ghostColor = color_1.withAlphaFloat(colors_1.WHITE, 0.7);
+const ghostLightColor = 0x777777ff;
+const ghostNone = [0];
+const ghostAnim1 = [
     0,
     1, 1,
     2, 2,
@@ -849,43 +817,43 @@ var ghostAnim1 = [
     5, 5,
     6, 6,
     7, 7,
-    8, 8
-].concat(utils_1.repeat(10, 9), [
-    10
-], utils_1.repeat(3, 11), [
-    12
-], utils_1.repeat(14, 13), [
-    14, 14
-], utils_1.repeat(10, 15), [
+    8, 8,
+    ...utils_1.repeat(10, 9),
+    10,
+    ...utils_1.repeat(3, 11),
+    12,
+    ...utils_1.repeat(14, 13),
+    14, 14,
+    ...utils_1.repeat(10, 15),
     16,
     17,
     18,
     19,
     20,
     0,
-]);
-var ghostAnim2 = [
+];
+const ghostAnim2 = [
     0,
     21, 21,
     22, 22,
     23, 23,
     24, 24,
-    25, 25
-].concat(utils_1.repeat(10, 26), [
+    25, 25,
+    ...utils_1.repeat(10, 26),
     27,
-    28
-], utils_1.repeat(4, 29), [
+    28,
+    ...utils_1.repeat(4, 29),
     30,
     31,
-    32
-], utils_1.repeat(10, 33), [
+    32,
+    ...utils_1.repeat(10, 33),
     34,
     35,
     36,
     37,
     0,
-]);
-var ghostAnim3 = [
+];
+const ghostAnim3 = [
     0,
     38, 38,
     39, 39,
@@ -897,8 +865,8 @@ var ghostAnim3 = [
     45, 45,
     46, 46,
     47, 47,
-    48, 48
-].concat(utils_1.repeat(10, 49), [
+    48, 48,
+    ...utils_1.repeat(10, 49),
     50,
     51, 51,
     52, 52,
@@ -918,27 +886,34 @@ var ghostAnim3 = [
     66,
     67,
     0,
-]);
-var createGhost = function (tomb) {
-    var anim = mixins_1.mixAnimation(ghostSprite, ghostFPS, ghostDX, ghostDY[tomb], {
+];
+var GhostAnimation;
+(function (GhostAnimation) {
+    GhostAnimation[GhostAnimation["None"] = 0] = "None";
+    GhostAnimation[GhostAnimation["Anim1"] = 1] = "Anim1";
+    GhostAnimation[GhostAnimation["Anim2"] = 2] = "Anim2";
+    GhostAnimation[GhostAnimation["Anim3"] = 3] = "Anim3";
+})(GhostAnimation = exports.GhostAnimation || (exports.GhostAnimation = {}));
+const createGhost = (tomb) => {
+    const anim = mixins_1.mixAnimation(ghostSprite, ghostFPS, ghostDX, ghostDY[tomb], {
         color: ghostColor,
         repeat: false,
         animations: [ghostNone, ghostAnim1, ghostAnim2, ghostAnim3],
         lightSprite: ghostLightSprite,
     });
-    return registerMix(n("ghost-" + (tomb + 1)), anim, function (base) {
+    return registerMix(n(`ghost-${tomb + 1}`), anim, base => {
         base.order = -1;
         base.lightSpriteColor = ghostLightColor;
     });
 };
-var createGhostHooves = function (tomb) {
-    var anim = mixins_1.mixAnimation(ghostHoovesSprite, ghostFPS, ghostDX, ghostDY[tomb], {
+const createGhostHooves = (tomb) => {
+    const anim = mixins_1.mixAnimation(ghostHoovesSprite, ghostFPS, ghostDX, ghostDY[tomb], {
         color: ghostColor,
         repeat: false,
         animations: [ghostNone, ghostAnim1, ghostAnim2, ghostAnim3],
         lightSprite: ghostHoovesLightSprite,
     });
-    return registerMix(n("ghost-hooves-" + (tomb + 1)), anim, function (base) {
+    return registerMix(n(`ghost-hooves-${tomb + 1}`), anim, base => {
         base.order = -1;
         base.lightSpriteColor = ghostLightColor;
     });
@@ -948,11 +923,11 @@ exports.ghost2 = createGhost(1);
 exports.ghostHooves1 = createGhostHooves(0);
 exports.ghostHooves2 = createGhostHooves(1);
 // clouds
-var cloudSprite = sprites.cloud.shadow;
+const cloudSprite = sprites.cloud.shadow;
 exports.cloud = registerMix(n('cloud'), mixins_1.mixDrawShadow(sprites.cloud, Math.floor(cloudSprite.w / 2), cloudSprite.h, colors_1.CLOUD_SHADOW_COLOR), mixFlags(2 /* Decal */ | 1 /* Movable */));
 // vegetation
-var largeLeafedBushLarge = mixins_1.mixColliderRounded(-14, -6, 28, 12, 2, false);
-var largeLeafedBushSmall = mixins_1.mixColliderRounded(-8, -4, 16, 8, 2, false);
+const largeLeafedBushLarge = mixins_1.mixColliderRounded(-14, -6, 28, 12, 2, false);
+const largeLeafedBushSmall = mixins_1.mixColliderRounded(-8, -4, 16, 8, 2, false);
 exports.largeLeafedBush1 = registerMix(n('large-leafed-bush-1'), mixins_1.mixDrawSeasonal({
     summer: { sprite: sprites.large_leafed_bush_1, dx: 17, dy: 23, palette: 0 },
     winter: { palette: 1 },
@@ -970,55 +945,40 @@ exports.largeLeafedBush4 = registerMix(n('large-leafed-bush-4'), mixins_1.mixDra
     winter: { palette: 1 },
 }), largeLeafedBushSmall);
 // cliffs
-var cliffTall = false;
-var cliffCollider = mixins_1.mixColliderRect(-16, 0, 32, 24, cliffTall);
-var cliffColliderTop = mixins_1.mixColliderRect(-16, 0, 32, 8, cliffTall);
-var cliffColliderLeft = mixins_1.mixColliderRect(-18, 0, 6, 24, cliffTall);
-var cliffColliderRight = mixins_1.mixColliderRect(12, 0, 6, 24, cliffTall);
-var cliffColliderTrimLeft = mixins_1.mixColliderRect(-16, 0, 16, 24, cliffTall);
-var cliffColliderTrimRight = mixins_1.mixColliderRect(0, 0, 16, 24, cliffTall);
-var cliffColor = 0x908d7cff;
-var cliffExtra = mixins_1.mixMinimap(cliffColor, rect_1.rect(-1, 0, 1, 1));
-function cliffOffset(name, sprite, dx, dy) {
-    var other = [];
-    for (var _i = 4; _i < arguments.length; _i++) {
-        other[_i - 4] = arguments[_i];
-    }
-    return registerMix.apply(void 0, [name,
-        mixins_1.mixDrawSeasonal({
-            summer: { sprite: sprite, dx: dx, dy: dy, palette: 0 },
-            autumn: { palette: 1 },
-            winter: { palette: 2 },
-        }),
-        mixFlags(32 /* StaticY */)].concat(other));
+const cliffTall = false;
+const cliffCollider = mixins_1.mixColliderRect(-16, 0, 32, 24, cliffTall);
+const cliffColliderTop = mixins_1.mixColliderRect(-16, 0, 32, 8, cliffTall);
+const cliffColliderLeft = mixins_1.mixColliderRect(-18, 0, 6, 24, cliffTall);
+const cliffColliderRight = mixins_1.mixColliderRect(12, 0, 6, 24, cliffTall);
+const cliffColliderTrimLeft = mixins_1.mixColliderRect(-16, 0, 16, 24, cliffTall);
+const cliffColliderTrimRight = mixins_1.mixColliderRect(0, 0, 16, 24, cliffTall);
+const cliffColor = 0x908d7cff;
+const cliffExtra = mixins_1.mixMinimap(cliffColor, rect_1.rect(-1, 0, 1, 1));
+function cliffOffset(name, sprite, dx, dy, ...other) {
+    return registerMix(name, mixins_1.mixDrawSeasonal({
+        summer: { sprite, dx, dy, palette: 0 },
+        autumn: { palette: 1 },
+        winter: { palette: 2 },
+    }), mixFlags(32 /* StaticY */), ...other);
 }
-function cliff(name, sprite) {
-    var other = [];
-    for (var _i = 2; _i < arguments.length; _i++) {
-        other[_i - 2] = arguments[_i];
-    }
-    return cliffOffset.apply(void 0, [name, sprite, Math.floor((sprite.color.w + sprite.color.ox) / 2), sprite.color.oy,
-        mixFlags(32 /* StaticY */)].concat(other));
+function cliff(name, sprite, ...other) {
+    return cliffOffset(name, sprite, Math.floor((sprite.color.w + sprite.color.ox) / 2), sprite.color.oy, mixFlags(32 /* StaticY */), ...other);
 }
-function cliffDecal(name, sprite, dx, dy) {
-    var other = [];
-    for (var _i = 4; _i < arguments.length; _i++) {
-        other[_i - 4] = arguments[_i];
-    }
-    return cliffOffset.apply(void 0, [name, sprite, dx, dy, mixFlags(2 /* Decal */)].concat(other));
+function cliffDecal(name, sprite, dx, dy, ...other) {
+    return cliffOffset(name, sprite, dx, dy, mixFlags(2 /* Decal */), ...other);
 }
-exports.cliffSW = cliff(n('cliff-sw'), sprites.cliffs_grass_sw, mixins_1.mixColliders.apply(void 0, mixins_1.taperColliderSW(-16, -3, 32, 25, cliffTall).concat([mixins_1.collider(-16, 22, 35, 24 * 2 + 7, cliffTall)], mixins_1.taperColliderNE(-16, 22 + 24 * 2 + 7, 32, 24, cliffTall))), mixins_1.mixMinimap(cliffColor, rect_1.rect(-1, 0, 1, 4)));
-exports.cliffSE = cliff(n('cliff-se'), sprites.cliffs_grass_se, mixins_1.mixColliders.apply(void 0, mixins_1.taperColliderSE(-16, -3, 32, 25, cliffTall).concat([mixins_1.collider(-19, 22, 35, 24 * 2 + 7, cliffTall)], mixins_1.taperColliderNW(-16, 22 + 24 * 2 + 7, 32, 24, cliffTall))), mixins_1.mixMinimap(cliffColor, rect_1.rect(-1, 0, 1, 4)));
-var cliffSCollider = mixins_1.mixColliderRect(-16, -3, 32, 24 * 3 + 8, cliffTall);
+exports.cliffSW = cliff(n('cliff-sw'), sprites.cliffs_grass_sw, mixins_1.mixColliders(...mixins_1.taperColliderSW(-16, -3, 32, 25, cliffTall), mixins_1.collider(-16, 22, 35, 24 * 2 + 7, cliffTall), ...mixins_1.taperColliderNE(-16, 22 + 24 * 2 + 7, 32, 24, cliffTall)), mixins_1.mixMinimap(cliffColor, rect_1.rect(-1, 0, 1, 4)));
+exports.cliffSE = cliff(n('cliff-se'), sprites.cliffs_grass_se, mixins_1.mixColliders(...mixins_1.taperColliderSE(-16, -3, 32, 25, cliffTall), mixins_1.collider(-19, 22, 35, 24 * 2 + 7, cliffTall), ...mixins_1.taperColliderNW(-16, 22 + 24 * 2 + 7, 32, 24, cliffTall)), mixins_1.mixMinimap(cliffColor, rect_1.rect(-1, 0, 1, 4)));
+const cliffSCollider = mixins_1.mixColliderRect(-16, -3, 32, 24 * 3 + 8, cliffTall);
 exports.cliffS1 = cliff(n('cliff-s1'), sprites.cliffs_grass_s1, cliffSCollider, mixins_1.mixMinimap(cliffColor, rect_1.rect(-1, 0, 1, 3)));
 exports.cliffS2 = cliff(n('cliff-s2'), sprites.cliffs_grass_s2, cliffSCollider, mixins_1.mixMinimap(cliffColor, rect_1.rect(-1, 0, 1, 3)));
 exports.cliffS3 = cliff(n('cliff-s3'), sprites.cliffs_grass_s3, cliffSCollider, mixins_1.mixMinimap(cliffColor, rect_1.rect(-1, 0, 1, 3)));
 exports.cliffSb = cliff(n('cliff-sb'), sprites.cliffs_grass_sb, cliffSCollider, mixins_1.mixMinimap(cliffColor, rect_1.rect(-1, 0, 1, 3)));
 exports.cliffSbEntrance = cliff(n('cliff-sb-entrance'), sprites.cliffs_grass_sb, mixins_1.mixColliderRect(-16, -3, 32, 24 * 3, cliffTall), mixins_1.mixMinimap(cliffColor, rect_1.rect(-1, 0, 1, 3)));
-var cliffNWColliders = mixins_1.mixColliders.apply(void 0, mixins_1.skewColliderNW(0, 0, 21, 24, cliffTall));
-var cliffNEColliders = mixins_1.mixColliders.apply(void 0, mixins_1.skewColliderNE(-22, 0, 21, 24, cliffTall));
-var cliffColliderTrimLeftBot = mixins_1.mixColliders.apply(void 0, [mixins_1.collider(-16, 0, 16, 17, cliffTall)].concat(mixins_1.taperColliderNW(-16, 17, 16, 11, cliffTall)));
-var cliffColliderTrimRightBot = mixins_1.mixColliders.apply(void 0, [mixins_1.collider(0, 0, 16, 17, cliffTall)].concat(mixins_1.taperColliderNE(0, 17, 16, 11, cliffTall)));
+const cliffNWColliders = mixins_1.mixColliders(...mixins_1.skewColliderNW(0, 0, 21, 24, cliffTall));
+const cliffNEColliders = mixins_1.mixColliders(...mixins_1.skewColliderNE(-22, 0, 21, 24, cliffTall));
+const cliffColliderTrimLeftBot = mixins_1.mixColliders(mixins_1.collider(-16, 0, 16, 17, cliffTall), ...mixins_1.taperColliderNW(-16, 17, 16, 11, cliffTall));
+const cliffColliderTrimRightBot = mixins_1.mixColliders(mixins_1.collider(0, 0, 16, 17, cliffTall), ...mixins_1.taperColliderNE(0, 17, 16, 11, cliffTall));
 exports.cliffTopNW = cliff(n('cliff-top-nw'), sprites.cliffs_grass_top_nw, cliffNWColliders, cliffExtra);
 exports.cliffTopN = cliff(n('cliff-top-n'), sprites.cliffs_grass_top_n, cliffColliderTop, cliffExtra);
 exports.cliffTopNE = cliff(n('cliff-top-ne'), sprites.cliffs_grass_top_ne, cliffNEColliders, cliffExtra);
@@ -1056,53 +1016,39 @@ exports.cliffDecal3 = cliffDecal(n('cliff-decal-3'), sprites.cliffs_grass_decal_
 exports.cliffDecalL = cliffDecal(n('cliff-decal-l'), sprites.cliffs_grass_decal_l, 15, 1, mixOrder(2));
 exports.cliffDecalR = cliffDecal(n('cliff-decal-r'), sprites.cliffs_grass_decal_r, 16, 1, mixOrder(2));
 // cave
-var caveTall = true;
-var caveCollider = mixins_1.mixColliderRect(-16, 0, 32, 24, caveTall);
-var caveColliderTop = mixins_1.mixColliderRect(-16, 0, 32, 24, caveTall);
-var caveColliderLeft = mixins_1.mixColliderRect(-18, 0, 24, 24, caveTall);
-var caveColliderRight = mixins_1.mixColliderRect(-16, 0, 34, 24, caveTall);
-var caveColliderTrimLeft = mixins_1.mixColliderRect(-16, 0, 16, 24, caveTall);
-var caveColliderTrimRight = mixins_1.mixColliderRect(0, 0, 16, 24, caveTall);
-var caveColor = 0x6a6f73ff;
-var caveExtra = mixins_1.mixMinimap(caveColor, rect_1.rect(-1, 0, 1, 1));
-function caveOffset(name, sprite, dx, dy) {
-    var other = [];
-    for (var _i = 4; _i < arguments.length; _i++) {
-        other[_i - 4] = arguments[_i];
-    }
-    return registerMix.apply(void 0, [name,
-        mixins_1.mixDrawSeasonal({
-            summer: { sprite: sprite, dx: dx, dy: dy, palette: 0 },
-            autumn: { palette: 1 },
-            winter: { palette: 2 },
-        }),
-        mixFlags(32 /* StaticY */)].concat(other));
+const caveTall = true;
+const caveCollider = mixins_1.mixColliderRect(-16, 0, 32, 24, caveTall);
+const caveColliderTop = mixins_1.mixColliderRect(-16, 0, 32, 24, caveTall);
+const caveColliderLeft = mixins_1.mixColliderRect(-18, 0, 24, 24, caveTall);
+const caveColliderRight = mixins_1.mixColliderRect(-16, 0, 34, 24, caveTall);
+const caveColliderTrimLeft = mixins_1.mixColliderRect(-16, 0, 16, 24, caveTall);
+const caveColliderTrimRight = mixins_1.mixColliderRect(0, 0, 16, 24, caveTall);
+const caveColor = 0x6a6f73ff;
+const caveExtra = mixins_1.mixMinimap(caveColor, rect_1.rect(-1, 0, 1, 1));
+function caveOffset(name, sprite, dx, dy, ...other) {
+    return registerMix(name, mixins_1.mixDrawSeasonal({
+        summer: { sprite, dx, dy, palette: 0 },
+        autumn: { palette: 1 },
+        winter: { palette: 2 },
+    }), mixFlags(32 /* StaticY */), ...other);
 }
-function cave(name, sprite) {
-    var other = [];
-    for (var _i = 2; _i < arguments.length; _i++) {
-        other[_i - 2] = arguments[_i];
-    }
-    return caveOffset.apply(void 0, [name, sprite, Math.floor((sprite.color.w + sprite.color.ox) / 2), sprite.color.oy].concat(other));
+function cave(name, sprite, ...other) {
+    return caveOffset(name, sprite, Math.floor((sprite.color.w + sprite.color.ox) / 2), sprite.color.oy, ...other);
 }
-function caveDecal(name, sprite, dx, dy) {
-    var other = [];
-    for (var _i = 4; _i < arguments.length; _i++) {
-        other[_i - 4] = arguments[_i];
-    }
-    return caveOffset.apply(void 0, [name, sprite, dx, dy, mixFlags(2 /* Decal */)].concat(other));
+function caveDecal(name, sprite, dx, dy, ...other) {
+    return caveOffset(name, sprite, dx, dy, mixFlags(2 /* Decal */), ...other);
 }
-exports.caveSW = cave(n('cave-sw'), sprites.cave_walls_sw, mixins_1.mixColliders.apply(void 0, [mixins_1.collider(-16, -3, 35, 24 * 2 + 7 + 25, caveTall)].concat(mixins_1.taperColliderNE(-16, 22 + 24 * 2 + 7, 32, 24, caveTall))), mixins_1.mixMinimap(caveColor, rect_1.rect(-1, 0, 1, 4)));
-exports.caveSE = cave(n('cave-se'), sprites.cave_walls_se, mixins_1.mixColliders.apply(void 0, [mixins_1.collider(-19, -3, 35, 24 * 2 + 7 + 25, caveTall)].concat(mixins_1.taperColliderNW(-16, 22 + 24 * 2 + 7, 32, 24, caveTall))), mixins_1.mixMinimap(caveColor, rect_1.rect(-1, 0, 1, 4)));
-var caveSCollider = mixins_1.mixColliderRect(-16, -3, 32, 24 * 3 + 8, caveTall);
+exports.caveSW = cave(n('cave-sw'), sprites.cave_walls_sw, mixins_1.mixColliders(mixins_1.collider(-16, -3, 35, 24 * 2 + 7 + 25, caveTall), ...mixins_1.taperColliderNE(-16, 22 + 24 * 2 + 7, 32, 24, caveTall)), mixins_1.mixMinimap(caveColor, rect_1.rect(-1, 0, 1, 4)));
+exports.caveSE = cave(n('cave-se'), sprites.cave_walls_se, mixins_1.mixColliders(mixins_1.collider(-19, -3, 35, 24 * 2 + 7 + 25, caveTall), ...mixins_1.taperColliderNW(-16, 22 + 24 * 2 + 7, 32, 24, caveTall)), mixins_1.mixMinimap(caveColor, rect_1.rect(-1, 0, 1, 4)));
+const caveSCollider = mixins_1.mixColliderRect(-16, -3, 32, 24 * 3 + 8, caveTall);
 exports.caveS1 = cave(n('cave-s1'), sprites.cave_walls_s1, caveSCollider, mixins_1.mixMinimap(caveColor, rect_1.rect(-1, 0, 1, 3)));
 exports.caveS2 = cave(n('cave-s2'), sprites.cave_walls_s2, caveSCollider, mixins_1.mixMinimap(caveColor, rect_1.rect(-1, 0, 1, 3)));
 exports.caveS3 = cave(n('cave-s3'), sprites.cave_walls_s3, caveSCollider, mixins_1.mixMinimap(caveColor, rect_1.rect(-1, 0, 1, 3)));
 exports.caveSb = cave(n('cave-sb'), sprites.cave_walls_sb, caveSCollider, mixins_1.mixMinimap(caveColor, rect_1.rect(-1, 0, 1, 3)));
-var caveNWColliders = mixins_1.mixColliders.apply(void 0, mixins_1.triangleColliderNW(0, 0, 21, 24, caveTall));
-var caveNEColliders = mixins_1.mixColliders.apply(void 0, mixins_1.triangleColliderNE(-22, 0, 21, 24, caveTall));
-var caveColliderTrimLeftBot = mixins_1.mixColliders.apply(void 0, [mixins_1.collider(-16, 0, 16, 17, caveTall)].concat(mixins_1.taperColliderNW(-16, 17, 16, 11, caveTall)));
-var caveColliderTrimRightBot = mixins_1.mixColliders.apply(void 0, [mixins_1.collider(0, 0, 16, 17, caveTall)].concat(mixins_1.taperColliderNE(0, 17, 16, 11, caveTall)));
+const caveNWColliders = mixins_1.mixColliders(...mixins_1.triangleColliderNW(0, 0, 21, 24, caveTall));
+const caveNEColliders = mixins_1.mixColliders(...mixins_1.triangleColliderNE(-22, 0, 21, 24, caveTall));
+const caveColliderTrimLeftBot = mixins_1.mixColliders(mixins_1.collider(-16, 0, 16, 17, caveTall), ...mixins_1.taperColliderNW(-16, 17, 16, 11, caveTall));
+const caveColliderTrimRightBot = mixins_1.mixColliders(mixins_1.collider(0, 0, 16, 17, caveTall), ...mixins_1.taperColliderNE(0, 17, 16, 11, caveTall));
 exports.caveTopNW = cave(n('cave-top-nw'), sprites.cave_walls_top_nw, caveNWColliders, caveExtra);
 exports.caveTopN = cave(n('cave-top-n'), sprites.cave_walls_top_n, caveColliderTop, caveExtra);
 exports.caveTopNE = cave(n('cave-top-ne'), sprites.cave_walls_top_ne, caveNEColliders, caveExtra);
@@ -1146,9 +1092,9 @@ exports.stalactite1 = doodad(n('stalactite-1'), sprites.stalactite_1, 4, 15, 0, 
 exports.stalactite2 = doodad(n('stalactite-2'), sprites.stalactite_2, 5, 31, 0, mixins_1.mixColliderRounded(-5, -4, 10, 5, 2), mixFlags(32 /* StaticY */));
 exports.stalactite3 = doodad(n('stalactite-3'), sprites.stalactite_3, 6, 51, 0, mixins_1.mixColliderRounded(-6, -6, 12, 7, 3), mixFlags(32 /* StaticY */));
 // crystals
-var crystalLight = 0x299ad5ff;
-var mixCrystalLight = mixins_1.mixLight(crystalLight, 0, 0, 200, 200);
-var waterCrystalFPS = constants_1.WATER_FPS;
+const crystalLight = 0x299ad5ff;
+const mixCrystalLight = mixins_1.mixLight(crystalLight, 0, 0, 200, 200);
+const waterCrystalFPS = constants_1.WATER_FPS;
 exports.crystals1 = registerMix(n('crystals-1'), mixins_1.mixDraw(sprites.crystals_1, 8, 16), mixins_1.mixLightSprite(sprites.light_crystals_1, colors_1.WHITE, 8, 16), mixCrystalLight, mixins_1.mixColliderRounded(-7, -4, 16, 4, 1));
 exports.crystals2 = registerMix(n('crystals-2'), mixins_1.mixDraw(sprites.crystals_2, 11, 19), mixins_1.mixLightSprite(sprites.light_crystals_2, colors_1.WHITE, 11, 19), mixCrystalLight, mixins_1.mixColliderRounded(-9, -4, 18, 4, 1));
 exports.crystals3 = registerMix(n('crystals-3'), mixins_1.mixDraw(sprites.crystals_3, 13, 18), mixins_1.mixLightSprite(sprites.light_crystals_3, colors_1.WHITE, 13, 18), mixCrystalLight, mixins_1.mixColliderRounded(-9, -4, 18, 4, 1));
@@ -1177,7 +1123,7 @@ exports.mineClosed = registerMix(n('mine-closed'), mixins_1.mixDraw(sprites.mine
 exports.mineCart = doodad(n('mine-cart'), sprites.mine_cart, 26, 32, 0, mixins_1.mixColliderRect(-27, 0, 54, 21), mixFlags(32 /* StaticY */), mixOrder(1));
 exports.mineCartFront = doodad(n('mine-cart-front'), sprites.mine_cart_front, 26, 52, 0, mixins_1.mixColliders(mixins_1.collider(-30, -25, 55, 4), mixins_1.collider(-30, -19, 15, 20), mixins_1.collider(-30, 2, 55, 4)), mixFlags(32 /* StaticY */));
 exports.mineCartBack = doodad(n('mine-cart-back'), sprites.mine_cart_back, 26, 30, 0, mixFlags(32 /* StaticY */));
-var railsExtra = mixFlags(32 /* StaticY */);
+const railsExtra = mixFlags(32 /* StaticY */);
 exports.mineRailsH = decal(n('mine-rails-h'), sprites.mine_rails_h, 0, railsExtra);
 exports.mineRailsV = decal(n('mine-rails-v'), sprites.mine_rails_v, 0, railsExtra);
 exports.mineRailsSE = decalOffset(n('mine-rails-se'), sprites.mine_rails_se, 16, 0, 0, railsExtra);
@@ -1199,29 +1145,29 @@ exports.collider3x1 = registerMix(n('collider-3x1'), mixins_1.mixColliderRect(0,
 exports.collider1x2 = registerMix(n('collider-1x2'), mixins_1.mixColliderRect(0, 0, 1 * constants_1.tileWidth, 2 * constants_1.tileHeight, false, true));
 exports.collider1x3 = registerMix(n('collider-1x3'), mixins_1.mixColliderRect(0, 0, 1 * constants_1.tileWidth, 3 * constants_1.tileHeight, false, true));
 // trees
-var stumpsTall = false;
-var treeAutumnPals = [2, 3, 4];
+const stumpsTall = false;
+const treeAutumnPals = [2, 3, 4];
 exports.web = doodad(n('web'), sprites.web, -6, 39, 0, mixCover(-50, -135, 110, 120));
 exports.xmasLights = registerMix(n('xmas-lights'), mixins_1.mixLightSprite(sprites.light6, colors_1.WHITE, 75, 180));
 exports.xmasLight = registerMix(n('xmas-light'), mixins_1.mixLight(0x926923ff, 0, 0, 50, 50));
-var tree1Options = { sprite: sprites.tree_1, dx: 5, dy: 9 };
-var tree2Options = { sprite: sprites.tree_2, dx: 10, dy: 32 };
-var tree3Options = { sprite: sprites.tree_3, dx: 21, dy: 59 };
-exports.trees1 = utils_1.times(3, function (i) { return registerMix(n("tree1-" + i), mixins_1.mixDrawSeasonal({
-    summer: __assign({}, tree1Options, { palette: 0 }),
-    autumn: __assign({}, tree1Options, { palette: treeAutumnPals[i] }),
-    winter: __assign({}, tree1Options, { palette: 1 }),
-})); });
-exports.trees2 = utils_1.times(3, function (i) { return registerMix(n("tree2-" + i), mixins_1.mixDrawSeasonal({
-    summer: __assign({}, tree2Options, { palette: 0 }),
-    autumn: __assign({}, tree2Options, { palette: treeAutumnPals[i] }),
-    winter: __assign({}, tree2Options, { palette: 1 }),
-})); });
-exports.trees3 = utils_1.times(3, function (i) { return registerMix(n("tree3-" + i), mixins_1.mixDrawSeasonal({
-    summer: __assign({}, tree3Options, { palette: 0 }),
-    autumn: __assign({}, tree3Options, { palette: treeAutumnPals[i] }),
-    winter: __assign({}, tree3Options, { palette: 1 }),
-}), mixins_1.mixColliderRounded(-3, -2, 6, 4, 1)); });
+const tree1Options = { sprite: sprites.tree_1, dx: 5, dy: 9 };
+const tree2Options = { sprite: sprites.tree_2, dx: 10, dy: 32 };
+const tree3Options = { sprite: sprites.tree_3, dx: 21, dy: 59 };
+exports.trees1 = utils_1.times(3, i => registerMix(n(`tree1-${i}`), mixins_1.mixDrawSeasonal({
+    summer: Object.assign({}, tree1Options, { palette: 0 }),
+    autumn: Object.assign({}, tree1Options, { palette: treeAutumnPals[i] }),
+    winter: Object.assign({}, tree1Options, { palette: 1 }),
+})));
+exports.trees2 = utils_1.times(3, i => registerMix(n(`tree2-${i}`), mixins_1.mixDrawSeasonal({
+    summer: Object.assign({}, tree2Options, { palette: 0 }),
+    autumn: Object.assign({}, tree2Options, { palette: treeAutumnPals[i] }),
+    winter: Object.assign({}, tree2Options, { palette: 1 }),
+})));
+exports.trees3 = utils_1.times(3, i => registerMix(n(`tree3-${i}`), mixins_1.mixDrawSeasonal({
+    summer: Object.assign({}, tree3Options, { palette: 0 }),
+    autumn: Object.assign({}, tree3Options, { palette: treeAutumnPals[i] }),
+    winter: Object.assign({}, tree3Options, { palette: 1 }),
+}), mixins_1.mixColliderRounded(-3, -2, 6, 4, 1)));
 exports.tree1 = exports.trees1[0];
 exports.tree2 = exports.trees2[0];
 exports.tree3 = exports.trees3[0];
@@ -1229,37 +1175,33 @@ exports.tree4 = createTree(n('tree4'), 31, 92, 12, {
     stumpCollider: mixins_1.mixColliderRounded(-5, -1, 12, 6, 1, stumpsTall),
     trunkCollider: mixins_1.mixColliderRounded(-5, -1, 12, 6, 1),
     cover: rect_1.rect(-20, -77, 42, 60),
-    variants: utils_1.times(3, function (i) {
-        return ({
-            stump: sprites.tree_4Stump0,
-            trunk: sprites.tree_4Trunk0,
-            crown: sprites.tree_4Crown0_0,
-            palette: 0,
-            paletteAutumn: treeAutumnPals[i],
-            paletteWinter: 1,
-        });
-    }),
+    variants: utils_1.times(3, i => ({
+        stump: sprites.tree_4Stump0,
+        trunk: sprites.tree_4Trunk0,
+        crown: sprites.tree_4Crown0_0,
+        palette: 0,
+        paletteAutumn: treeAutumnPals[i],
+        paletteWinter: 1,
+    })),
 })[0];
-exports.tree5 = (_g = createTree(n('tree5'), 43, 128, 24, {
+_g = createTree(n('tree5'), 43, 128, 24, {
     stumpCollider: mixins_1.mixColliderRounded(-8, -2, 16, 8, 2, stumpsTall),
     trunkCollider: mixins_1.mixColliderRounded(-8, -2, 16, 8, 2),
     cover: rect_1.rect(-30, -106, 64, 80),
-    variants: utils_1.times(3, function (i) {
-        return ({
-            stump: sprites.tree_5Stump0,
-            trunk: sprites.tree_5Trunk0,
-            crown: sprites.tree_5Crown0_0,
-            palette: 0,
-            paletteAutumn: treeAutumnPals[i],
-            paletteWinter: 1,
-        });
-    }),
-}), _g[0]), exports.tree5Stump = _g[1][0];
-exports.tree = (_h = createTree(n('tree'), 80, 162, 30, {
+    variants: utils_1.times(3, i => ({
+        stump: sprites.tree_5Stump0,
+        trunk: sprites.tree_5Trunk0,
+        crown: sprites.tree_5Crown0_0,
+        palette: 0,
+        paletteAutumn: treeAutumnPals[i],
+        paletteWinter: 1,
+    })),
+}), exports.tree5 = _g[0], exports.tree5Stump = _g[1][0];
+_h = createTree(n('tree'), 80, 162, 30, {
     stumpCollider: mixins_1.mixColliderRounded(-16, -1, 32, 12, 4, stumpsTall),
     trunkCollider: mixins_1.mixColliderRounded(-16, -1, 32, 12, 4),
     cover: rect_1.rect(-50, -135, 110, 120),
-    variants: utils_1.flatten(utils_1.times(3, function (i) { return [
+    variants: utils_1.flatten(utils_1.times(3, i => [
         {
             stump: sprites.tree_6Stump0,
             stumpWinter: sprites.tree_6StumpWinter0,
@@ -1292,19 +1234,19 @@ exports.tree = (_h = createTree(n('tree'), 80, 162, 30, {
             webX: -2, webY: -4, spiderHeight: 27,
             palette: 0, paletteWinter: 1, paletteAutumn: treeAutumnPals[i],
         },
-    ]; }))
-}), _h[0]), exports.treeStump1 = (_j = _h[1], _j[0]), exports.treeStump2 = _j[1];
-var pine1Options = { sprite: sprites.pine_1, dx: 7, dy: 18 };
-var pine2Options = { sprite: sprites.pine_2, dx: 10, dy: 35 };
+    ]))
+}), exports.tree = _h[0], _j = _h[1], exports.treeStump1 = _j[0], exports.treeStump2 = _j[1];
+const pine1Options = { sprite: sprites.pine_1, dx: 7, dy: 18 };
+const pine2Options = { sprite: sprites.pine_2, dx: 10, dy: 35 };
 exports.pine1 = registerMix(n('pine1'), mixins_1.mixDrawSeasonal({
-    summer: __assign({}, pine1Options, { palette: 0 }),
-    autumn: __assign({}, pine1Options, { palette: 1 }),
-    winter: __assign({}, pine1Options, { palette: 2 }),
+    summer: Object.assign({}, pine1Options, { palette: 0 }),
+    autumn: Object.assign({}, pine1Options, { palette: 1 }),
+    winter: Object.assign({}, pine1Options, { palette: 2 }),
 }));
 exports.pine2 = registerMix(n('pine2'), mixins_1.mixDrawSeasonal({
-    summer: __assign({}, pine2Options, { palette: 0 }),
-    autumn: __assign({}, pine2Options, { palette: 1 }),
-    winter: __assign({}, pine2Options, { palette: 2 }),
+    summer: Object.assign({}, pine2Options, { palette: 0 }),
+    autumn: Object.assign({}, pine2Options, { palette: 1 }),
+    winter: Object.assign({}, pine2Options, { palette: 2 }),
 }), mixins_1.mixColliderRounded(-3, -2, 6, 4, 1));
 exports.pine3 = createTree(n('pine3'), 25, 68, 2, {
     stumpCollider: mixins_1.mixColliderRounded(-5, -1, 12, 6, 1, stumpsTall),
@@ -1333,7 +1275,7 @@ exports.pine5 = createTree(n('pine5'), 53, 136, 5, {
         { stump: sprites.pine_5Stump0, crown: sprites.pine_5Crown0_0, palette: 0, paletteAutumn: 1, paletteWinter: 2 },
     ]
 })[0];
-var xmasCrown = {
+const xmasCrown = {
     color: sprites.christmastree.color,
     shadow: sprites.pine_6Crown0_0.shadow,
     palettes: sprites.christmastree.palettes,
@@ -1348,33 +1290,32 @@ exports.pine = createTree(n('pine'), 75, 180, 17, {
         { stump: sprites.pine_6Stump0, crown: xmasCrown, palette: 0 },
     ]
 })[0];
-function createTree(name, offsetX, offsetY, crownOffset, _a) {
-    var cover = _a.cover, stumpCollider = _a.stumpCollider, trunkCollider = _a.trunkCollider, crownCollider = _a.crownCollider, variants = _a.variants;
-    var trunkCover = function (base) { return base.coverBounds = cover; };
-    var crownCover = mixCover(cover.x, cover.y - crownOffset, cover.w, cover.h);
-    var crownFlags = mixServerFlags(1 /* TreeCrown */);
-    var crownMinimap = mixins_1.mixMinimap(0x386c4fff, rect_1.rect(-1, -1, 3, 3), 2);
-    var stumps = variants.map(function (v, i) { return v.stump && registerMix(n(name + "-stump-" + i), mixins_1.mixDrawSeasonal({
+function createTree(name, offsetX, offsetY, crownOffset, { cover, stumpCollider, trunkCollider, crownCollider, variants }) {
+    const trunkCover = base => base.coverBounds = cover;
+    const crownCover = mixCover(cover.x, cover.y - crownOffset, cover.w, cover.h);
+    const crownFlags = mixServerFlags(1 /* TreeCrown */);
+    const crownMinimap = mixins_1.mixMinimap(0x386c4fff, rect_1.rect(-1, -1, 3, 3), 2);
+    const stumps = variants.map((v, i) => v.stump && registerMix(n(`${name}-stump-${i}`), mixins_1.mixDrawSeasonal({
         summer: { sprite: v.stump, dx: offsetX, dy: offsetY, palette: v.palette || 0 },
         autumn: { sprite: v.stump, dx: offsetX, dy: offsetY, palette: v.paletteAutumn || v.palette || 0 },
         winter: { sprite: v.stumpWinter || v.stump, dx: offsetX, dy: offsetY, palette: v.paletteWinter || v.palette || 0 },
-    }), stumpCollider, mixOrder(1)); });
-    var stumpsTall = variants.map(function (v, i) { return v.stump && registerMix(n(name + "-stump-tall-" + i), mixins_1.mixDrawSeasonal({
+    }), stumpCollider, mixOrder(1)));
+    const stumpsTall = variants.map((v, i) => v.stump && registerMix(n(`${name}-stump-tall-${i}`), mixins_1.mixDrawSeasonal({
         summer: { sprite: v.stump, dx: offsetX, dy: offsetY, palette: v.palette || 0 },
         autumn: { sprite: v.stump, dx: offsetX, dy: offsetY, palette: v.paletteAutumn || v.palette || 0 },
         winter: { sprite: v.stumpWinter || v.stump, dx: offsetX, dy: offsetY, palette: v.paletteWinter || v.palette || 0 },
-    }), trunkCollider, mixOrder(1)); });
-    var trunks = variants.map(function (v, i) { return v.trunk && registerMix(n(name + "-trunk-" + i), mixins_1.mixDrawSeasonal({
+    }), trunkCollider, mixOrder(1)));
+    const trunks = variants.map((v, i) => v.trunk && registerMix(n(`${name}-trunk-${i}`), mixins_1.mixDrawSeasonal({
         summer: { sprite: v.trunk, dx: offsetX, dy: offsetY, palette: v.palette || 0 },
         autumn: { sprite: v.trunk, dx: offsetX, dy: offsetY, palette: v.paletteAutumn || v.palette || 0 },
         winter: { sprite: v.trunk, dx: offsetX, dy: offsetY, palette: v.paletteWinter || v.palette || 0 },
-    }), trunkCover, mixOrder(2)); });
-    var crowns = variants.map(function (v, i) { return v.crown && registerMix(n(name + "-crown-" + i), mixins_1.mixDrawSeasonal({
+    }), trunkCover, mixOrder(2)));
+    const crowns = variants.map((v, i) => v.crown && registerMix(n(`${name}-crown-${i}`), mixins_1.mixDrawSeasonal({
         summer: { sprite: v.crown, dx: offsetX, dy: offsetY + crownOffset, palette: v.palette || 0 },
         autumn: { sprite: v.crown, dx: offsetX, dy: offsetY + crownOffset, palette: v.paletteAutumn || v.palette || 0 },
         winter: { sprite: v.crown, dx: offsetX, dy: offsetY + crownOffset, palette: v.paletteWinter || v.palette || 0 },
-    }), crownCollider, crownCover, crownFlags, crownMinimap); });
-    var trees = variants.map(function (v, i) { return ({
+    }), crownCollider, crownCover, crownFlags, crownMinimap));
+    const trees = variants.map((v, i) => ({
         stump: stumps[i],
         stumpTall: stumpsTall[i],
         trunk: trunks[i],
@@ -1382,9 +1323,9 @@ function createTree(name, offsetX, offsetY, crownOffset, _a) {
         webX: v.webX,
         webY: v.webY,
         spiderHeight: v.spiderHeight,
-    }); });
+    }));
     function tree(x, y, v, hasWeb, hasSpider) {
-        var _a = trees[v || 0], stumpTall = _a.stumpTall, trunk = _a.trunk, crown = _a.crown, webX = _a.webX, webY = _a.webY, spiderHeight = _a.spiderHeight;
+        const { stumpTall, trunk, crown, webX, webY, spiderHeight } = trees[v || 0];
         return lodash_1.compact([
             stumpTall && stumpTall(x, y),
             trunk && trunk(x, y),
@@ -1412,8 +1353,8 @@ exports.placeableEntities = [
     { type: exports.table3.type, name: 'Long table' },
     { type: exports.lanternOn.type, name: 'Lantern' },
     { type: exports.pumpkin.type, name: 'Pumpkin' },
-    { type: exports.jackoOn.type, name: "Jack-o'-lantern (lit)" },
-    { type: exports.jackoOff.type, name: "Jack-o'-lantern (unlit)" },
+    { type: exports.jackoOn.type, name: `Jack-o'-lantern (lit)` },
+    { type: exports.jackoOff.type, name: `Jack-o'-lantern (unlit)` },
     { type: exports.crate1A.type, name: 'Large crate' },
     { type: exports.crate3A.type, name: 'Small crate' },
     { type: exports.crate2A.type, name: 'Lockbox' },
@@ -1435,27 +1376,26 @@ exports.tools = [
     { type: exports.hammer.type, text: 'Hammer: place furniture\nuse [mouse wheel] to switch item' },
     { type: exports.shovel.type, text: 'Shovel: change floor\nuse [mouse wheel] to switch floor type' },
 ];
-exports.candies1Types = [exports.candyCane1, exports.candyCane2, exports.cookie, exports.cookiePony].map(function (e) { return e.type; });
-exports.candies2Types = [exports.cookie, exports.cookiePony].map(function (e) { return e.type; });
+exports.candies1Types = [exports.candyCane1, exports.candyCane2, exports.cookie, exports.cookiePony].map(e => e.type);
+exports.candies2Types = [exports.cookie, exports.cookiePony].map(e => e.type);
 if (DEVELOPMENT) {
     if (exports.pony.type !== constants_1.PONY_TYPE) {
-        throw new Error("Invalid pony type " + exports.pony.type + " !== " + constants_1.PONY_TYPE);
+        throw new Error(`Invalid pony type ${exports.pony.type} !== ${constants_1.PONY_TYPE}`);
     }
-    for (var _i = 0, entities_1 = entities; _i < entities_1.length; _i++) {
-        var type = entities_1[_i].type;
+    for (const { type } of entities) {
         if (type === 0)
             continue;
-        var entity = createAnEntity(type, 0, 0, 0, {}, ponyInfo_1.mockPaletteManager, interfaces_1.defaultWorldState);
-        var name_1 = getEntityTypeName(type);
+        const entity = createAnEntity(type, 0, 0, 0, {}, ponyInfo_1.mockPaletteManager, interfaces_1.defaultWorldState);
+        const name = getEntityTypeName(type);
         if (entity.colliders) {
-            var maxWidth = (utils_1.hasFlag(entity.flags, 1 /* Movable */) ? 1 : 4) * constants_1.tileWidth;
-            var maxHeight = (utils_1.hasFlag(entity.flags, 1 /* Movable */) ? 1 : 5) * constants_1.tileHeight;
-            for (var _k = 0, _l = entity.colliders; _k < _l.length; _k++) {
-                var _m = _l[_k], x = _m.x, y = _m.y, w = _m.w, h = _m.h;
+            const maxWidth = (utils_1.hasFlag(entity.flags, 1 /* Movable */) ? 1 : 4) * constants_1.tileWidth;
+            const maxHeight = (utils_1.hasFlag(entity.flags, 1 /* Movable */) ? 1 : 5) * constants_1.tileHeight;
+            for (const { x, y, w, h } of entity.colliders) {
                 if ((x < -maxWidth || (x + w) > maxWidth || y < -maxHeight || (y + h) > maxHeight)) {
-                    throw new Error("Invalid entity \"" + name_1 + "\": Collider too large " + JSON.stringify({ x: x, y: y, w: w, h: h }));
+                    throw new Error(`Invalid entity "${name}": Collider too large ${JSON.stringify({ x, y, w, h })}`);
                 }
             }
         }
     }
 }
+//# sourceMappingURL=entities.js.map

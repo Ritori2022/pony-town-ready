@@ -1,25 +1,14 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var base64_js_1 = require("base64-js");
-var browser_1 = require("ag-sockets/dist/browser");
+const base64_js_1 = require("base64-js");
+const browser_1 = require("ag-sockets/dist/browser");
 /* istanbul ignore next */
 function attr(name) {
     return typeof document !== 'undefined' ? (document.body.getAttribute(name) || undefined) : undefined;
 }
 /* istanbul ignore next */
 function data(id) {
-    var element = typeof document !== 'undefined' ? document.getElementById(id) : undefined;
+    const element = typeof document !== 'undefined' ? document.getElementById(id) : undefined;
     return element ? element.innerHTML : undefined;
 }
 function json(id, def) {
@@ -38,17 +27,17 @@ exports.contactEmail = attr('data-email');
 exports.copyrightName = attr('data-copyright');
 /* istanbul ignore next */
 exports.oauthProviders = json('oauth-providers', '[]')
-    .map(function (a) { return (__assign({}, a, { url: "/auth/" + a.id })); });
+    .map(a => (Object.assign({}, a, { url: `/auth/${a.id}` })));
 /* istanbul ignore next */
-exports.signUpProviders = exports.oauthProviders.filter(function (i) { return !i.connectOnly; });
+exports.signUpProviders = exports.oauthProviders.filter(i => !i.connectOnly);
 /* istanbul ignore next */
-exports.signInProviders = exports.oauthProviders.filter(function (i) { return i.connectOnly; });
+exports.signInProviders = exports.oauthProviders.filter(i => i.connectOnly);
 /* istanbul ignore next */
 function socketOptions() {
-    var options = data('socket-options');
+    const options = data('socket-options');
     if (options) {
-        var buffer = base64_js_1.toByteArray(options);
-        var reader = browser_1.createBinaryReader(buffer);
+        const buffer = base64_js_1.toByteArray(options);
+        const reader = browser_1.createBinaryReader(buffer);
         return browser_1.readObject(reader);
     }
     else {
@@ -74,3 +63,4 @@ if (typeof window !== 'undefined') {
         document.body.classList.add('is-yandex');
     }
 }
+//# sourceMappingURL=data.js.map

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function createMat2D() {
-    var out = new Float32Array(6);
+    const out = new Float32Array(6);
     out[0] = 1;
     out[3] = 1;
     return out;
@@ -33,8 +33,8 @@ function setMat2D(out, a, b, c, d, tx, ty) {
 }
 exports.setMat2D = setMat2D;
 function mulMat2D(out, a, b) {
-    var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
-    var b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3], b4 = b[4], b5 = b[5];
+    const a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
+    const b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3], b4 = b[4], b5 = b[5];
     out[0] = a0 * b0 + a2 * b1;
     out[1] = a1 * b0 + a3 * b1;
     out[2] = a0 * b2 + a2 * b3;
@@ -45,7 +45,7 @@ function mulMat2D(out, a, b) {
 }
 exports.mulMat2D = mulMat2D;
 function translateMat2D(out, a, x, y) {
-    var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
+    const a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
     out[0] = a0;
     out[1] = a1;
     out[2] = a2;
@@ -56,9 +56,9 @@ function translateMat2D(out, a, x, y) {
 }
 exports.translateMat2D = translateMat2D;
 function rotateMat2D(out, a, rad) {
-    var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
-    var s = Math.sin(rad);
-    var c = Math.cos(rad);
+    const a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
+    const s = Math.sin(rad);
+    const c = Math.cos(rad);
     out[0] = a0 * c + a2 * s;
     out[1] = a1 * c + a3 * s;
     out[2] = a0 * -s + a2 * c;
@@ -69,7 +69,7 @@ function rotateMat2D(out, a, rad) {
 }
 exports.rotateMat2D = rotateMat2D;
 function scaleMat2D(out, a, x, y) {
-    var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
+    const a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
     out[0] = a0 * x;
     out[1] = a1 * x;
     out[2] = a2 * y;
@@ -79,7 +79,7 @@ function scaleMat2D(out, a, x, y) {
     return out;
 }
 exports.scaleMat2D = scaleMat2D;
-var temp = createMat2D();
+const temp = createMat2D();
 function skewX(out, a, angle) {
     setMat2D(temp, 1, 0, Math.tan(angle), 1, 0, 0);
     mulMat2D(out, a, temp);
@@ -92,7 +92,7 @@ function skewY(out, a, angle) {
     return out;
 }
 exports.skewY = skewY;
-var tempMatrix = createMat2D();
+const tempMatrix = createMat2D();
 function skewTransform(base, skew, ox, oy, x, y) {
     identityMat2D(tempMatrix);
     if (skew) {
@@ -117,3 +117,4 @@ function isTranslation(m) {
     return m[0] === 1 && m[1] === 0 && m[2] === 0 && m[3] === 1;
 }
 exports.isTranslation = isTranslation;
+//# sourceMappingURL=mat2d.js.map

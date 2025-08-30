@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var utils_1 = require("./utils");
-var positionUtils_1 = require("./positionUtils");
-var worldMap_1 = require("./worldMap");
-var constants_1 = require("./constants");
-var entityUtils_1 = require("./entityUtils");
-var isCollidingCount = 0;
-var isCollidingObjectCount = 0;
+const utils_1 = require("./utils");
+const positionUtils_1 = require("./positionUtils");
+const worldMap_1 = require("./worldMap");
+const constants_1 = require("./constants");
+const entityUtils_1 = require("./entityUtils");
+let isCollidingCount = 0;
+let isCollidingObjectCount = 0;
 function getCollisionStats() {
-    var stats = { isCollidingCount: isCollidingCount, isCollidingObjectCount: isCollidingObjectCount };
+    const stats = { isCollidingCount, isCollidingObjectCount };
     isCollidingCount = 0;
     isCollidingObjectCount = 0;
     return stats;
@@ -22,24 +22,23 @@ function canCollideWith(entity) {
     return (entity.flags & 128 /* CanCollideWith */) !== 0;
 }
 exports.canCollideWith = canCollideWith;
-function isStaticCollision(entity, map, forceOnGround) {
-    if (forceOnGround === void 0) { forceOnGround = false; }
+function isStaticCollision(entity, map, forceOnGround = false) {
     if (DEVELOPMENT && entity.type !== constants_1.PONY_TYPE) {
-        console.error("isStaticCollision: non-pony entity");
+        console.error(`isStaticCollision: non-pony entity`);
     }
-    var flying = !forceOnGround && entityUtils_1.isInTheAir(entity);
+    const flying = !forceOnGround && entityUtils_1.isInTheAir(entity);
     return isPonyColliding(entity.x, entity.y, map, flying);
 }
 exports.isStaticCollision = isStaticCollision;
 function fixCollision(entity, map) {
     if (DEVELOPMENT && entity.type !== constants_1.PONY_TYPE) {
-        console.error("fixCollision: non-pony entity");
+        console.error(`fixCollision: non-pony entity`);
     }
-    var flying = entityUtils_1.isInTheAir(entity);
-    for (var x = -1; x <= 1; x++) {
-        for (var y = -1; y <= 1; y++) {
-            var tx = entity.x + x;
-            var ty = entity.y + y;
+    const flying = entityUtils_1.isInTheAir(entity);
+    for (let x = -1; x <= 1; x++) {
+        for (let y = -1; y <= 1; y++) {
+            const tx = entity.x + x;
+            const ty = entity.y + y;
             if (!isPonyColliding(tx, ty, map, flying)) {
                 entity.x += x;
                 entity.y += y;
@@ -54,14 +53,14 @@ function isPonyColliding(x, y, map, flying) {
     if (isOutsideMap(x, y, map)) {
         return true;
     }
-    var region = worldMap_1.getRegionGlobal(map, x, y);
+    const region = worldMap_1.getRegionGlobal(map, x, y);
     if (region === undefined) {
         return true;
     }
-    var rx = utils_1.clamp(Math.floor((x - region.x * constants_1.REGION_SIZE) * constants_1.tileWidth), 0, constants_1.REGION_WIDTH);
-    var ry = utils_1.clamp(Math.floor((y - region.y * constants_1.REGION_SIZE) * constants_1.tileHeight), 0, constants_1.REGION_HEIGHT);
-    var pixel = region.collider[rx + ry * constants_1.REGION_WIDTH];
-    var mask = flying ? 2 : 1;
+    const rx = utils_1.clamp(Math.floor((x - region.x * constants_1.REGION_SIZE) * constants_1.tileWidth), 0, constants_1.REGION_WIDTH);
+    const ry = utils_1.clamp(Math.floor((y - region.y * constants_1.REGION_SIZE) * constants_1.tileHeight), 0, constants_1.REGION_HEIGHT);
+    const pixel = region.collider[rx + ry * constants_1.REGION_WIDTH];
+    const mask = flying ? 2 : 1;
     return (pixel & mask) !== 0;
 }
 function isColliding(x, y, mask, map) {
@@ -69,51 +68,51 @@ function isColliding(x, y, mask, map) {
         return true;
     }
     else {
-        var regionX = (x / constants_1.REGION_WIDTH) | 0;
-        var regionY = (y / constants_1.REGION_HEIGHT) | 0;
-        var region = map.regions[regionX + regionY * map.regionsX];
+        const regionX = (x / constants_1.REGION_WIDTH) | 0;
+        const regionY = (y / constants_1.REGION_HEIGHT) | 0;
+        const region = map.regions[regionX + regionY * map.regionsX];
         if (region === undefined) {
             return true;
         }
         else {
-            var insideX = (x % constants_1.REGION_WIDTH) | 0;
-            var insideY = (y % constants_1.REGION_HEIGHT) | 0;
+            const insideX = (x % constants_1.REGION_WIDTH) | 0;
+            const insideY = (y % constants_1.REGION_HEIGHT) | 0;
             return (region.collider[insideX + insideY * constants_1.REGION_WIDTH] & mask) !== 0;
         }
     }
 }
 function updatePosition(entity, delta, map) {
-    var ex = entity.x;
-    var ey = entity.y;
-    var speed = (!entityUtils_1.isFlying(entity) && worldMap_1.isInWaterAt(map, ex, ey)) ? 0.5 : 1.0;
-    var destX = ex + entity.vx * speed * delta;
-    var destY = ey + entity.vy * speed * delta;
+    const ex = entity.x;
+    const ey = entity.y;
+    const speed = (!entityUtils_1.isFlying(entity) && worldMap_1.isInWaterAt(map, ex, ey)) ? 0.5 : 1.0;
+    const destX = ex + entity.vx * speed * delta;
+    const destY = ey + entity.vy * speed * delta;
     if ((entity.flags & 64 /* CanCollide */) === 0) {
         entity.x = destX;
         entity.y = destY;
         return;
     }
     if (DEVELOPMENT && entity.type !== constants_1.PONY_TYPE) {
-        console.error("updatePosition: non-pony entity");
+        console.error(`updatePosition: non-pony entity`);
     }
-    var flying = entityUtils_1.isInTheAir(entity);
-    var mask = flying ? 2 : 1;
-    var srcX = ex * constants_1.tileWidth;
-    var srcY = ey * constants_1.tileHeight;
-    var dstX = destX * constants_1.tileWidth;
-    var dstY = destY * constants_1.tileHeight;
-    var x0 = Math.floor(srcX) | 0;
-    var y0 = Math.floor(srcY) | 0;
-    var x1 = Math.floor(dstX) | 0;
-    var y1 = Math.floor(dstY) | 0;
-    var minX = Math.min(x0, x1) | 0;
-    var maxX = Math.max(x0, x1) | 0;
-    var minY = Math.min(y0, y1) | 0;
-    var maxY = Math.max(y0, y1) | 0;
-    var x = x0 | 0;
-    var y = y0 | 0;
-    var actualX = x | 0;
-    var actualY = y | 0;
+    const flying = entityUtils_1.isInTheAir(entity);
+    const mask = flying ? 2 : 1;
+    const srcX = ex * constants_1.tileWidth;
+    const srcY = ey * constants_1.tileHeight;
+    let dstX = destX * constants_1.tileWidth;
+    let dstY = destY * constants_1.tileHeight;
+    const x0 = Math.floor(srcX) | 0;
+    const y0 = Math.floor(srcY) | 0;
+    const x1 = Math.floor(dstX) | 0;
+    const y1 = Math.floor(dstY) | 0;
+    const minX = Math.min(x0, x1) | 0;
+    const maxX = Math.max(x0, x1) | 0;
+    const minY = Math.min(y0, y1) | 0;
+    const maxY = Math.max(y0, y1) | 0;
+    let x = x0 | 0;
+    let y = y0 | 0;
+    let actualX = x | 0;
+    let actualY = y | 0;
     if (isColliding(actualX, actualY, mask, map)) {
         if (!isOutsideMap(destX, destY, map)) {
             entity.x = destX;
@@ -121,17 +120,17 @@ function updatePosition(entity, delta, map) {
         }
         return;
     }
-    var a = (dstY - srcY) / (dstX - srcX);
-    var b = srcY - a * srcX;
-    var useGt = srcY < dstY;
-    var stepXT = 0 | 0, stepYT = 0 | 0;
-    var stepXF = 0 | 0, stepYF = 0 | 0;
-    var ox = 0, oy = 0;
-    var shiftRight = srcX <= dstX;
-    var shiftLeft = srcX >= dstX;
-    var shiftUp = srcY >= dstY;
-    var shiftDown = srcY <= dstY;
-    var horizontalOrVertical = srcX === dstX || srcY === dstY;
+    const a = (dstY - srcY) / (dstX - srcX);
+    const b = srcY - a * srcX;
+    const useGt = srcY < dstY;
+    let stepXT = 0 | 0, stepYT = 0 | 0;
+    let stepXF = 0 | 0, stepYF = 0 | 0;
+    let ox = 0, oy = 0;
+    const shiftRight = srcX <= dstX;
+    const shiftLeft = srcX >= dstX;
+    const shiftUp = srcY >= dstY;
+    const shiftDown = srcY <= dstY;
+    const horizontalOrVertical = srcX === dstX || srcY === dstY;
     if (srcX < dstX) {
         if (srcY < dstY) {
             ox = 1;
@@ -164,12 +163,12 @@ function updatePosition(entity, delta, map) {
             stepYF = stepYT = -1 | 0;
         }
     }
-    var steps = 1000;
+    let steps = 1000;
     for (; steps; steps--) {
-        var fx = a * (x + ox) + b;
-        var fy = y + oy;
-        var tx = 0 | 0;
-        var ty = 0 | 0;
+        const fx = a * (x + ox) + b;
+        const fy = y + oy;
+        let tx = 0 | 0;
+        let ty = 0 | 0;
         if (useGt ? (fx > fy) : (fx < fy)) {
             tx = (tx + stepXT) | 0;
             ty = (ty + stepYT) | 0;
@@ -183,14 +182,14 @@ function updatePosition(entity, delta, map) {
         if (x < minX || x > maxX || y < minY || y > maxY) {
             break;
         }
-        var actualNX = (actualX + tx) | 0;
-        var actualNY = (actualY + ty) | 0;
-        var collides = isColliding(actualNX, actualNY, mask, map);
-        var canMove = false;
+        let actualNX = (actualX + tx) | 0;
+        let actualNY = (actualY + ty) | 0;
+        let collides = isColliding(actualNX, actualNY, mask, map);
+        let canMove = false;
         if (collides) {
             if (tx !== 0) {
-                var canShiftUp = false;
-                var canShiftDown = false;
+                let canShiftUp = false;
+                let canShiftDown = false;
                 if (shiftUp && (canShiftUp = !isColliding(actualX, actualY - 1, mask, map)) &&
                     !isColliding(actualNX, actualY - 1, mask, map)) {
                     actualNX = actualX;
@@ -220,8 +219,8 @@ function updatePosition(entity, delta, map) {
                 canMove = canShiftUp || canShiftDown;
             }
             else {
-                var canShiftLeft = false;
-                var canShiftRight = false;
+                let canShiftLeft = false;
+                let canShiftRight = false;
                 if (shiftLeft && (canShiftLeft = !isColliding(actualX - 1, actualY, mask, map)) &&
                     !isColliding(actualX - 1, actualNY, mask, map)) {
                     actualNX -= 1;
@@ -259,11 +258,11 @@ function updatePosition(entity, delta, map) {
             break;
         }
     }
-    var epsilon = 1 / 1024;
-    var left = Math.min(x0, actualX);
-    var right = Math.max(x0 + 1, actualX + 1) - epsilon;
-    var top = Math.min(y0, actualY);
-    var bottom = Math.max(y0 + 1, actualY + 1) - epsilon;
+    const epsilon = 1 / 1024;
+    const left = Math.min(x0, actualX);
+    const right = Math.max(x0 + 1, actualX + 1) - epsilon;
+    const top = Math.min(y0, actualY);
+    const bottom = Math.max(y0 + 1, actualY + 1) - epsilon;
     entity.x = positionUtils_1.toWorldX(utils_1.clamp(dstX, left, right));
     entity.y = positionUtils_1.toWorldY(utils_1.clamp(dstY, top, bottom));
     if (DEVELOPMENT && steps <= 0) {
@@ -271,3 +270,4 @@ function updatePosition(entity, delta, map) {
     }
 }
 exports.updatePosition = updatePosition;
+//# sourceMappingURL=collision.js.map

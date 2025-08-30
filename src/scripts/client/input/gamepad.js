@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var gamepad_mappings_1 = require("../../generated/gamepad-mappings");
-var clientUtils_1 = require("../clientUtils");
-var JOYSTICK_THRESHHOLD = 0.2;
+const gamepad_mappings_1 = require("../../generated/gamepad-mappings");
+const clientUtils_1 = require("../clientUtils");
+const JOYSTICK_THRESHHOLD = 0.2;
 function createGamepad(gamepad) {
-    var mapping = detectMapping(gamepad.id, navigator.userAgent);
-    return { gamepad: gamepad, mapping: mapping };
+    const mapping = detectMapping(gamepad.id, navigator.userAgent);
+    return { gamepad, mapping };
 }
 function isCompatible(mapping, id, browser) {
-    for (var i = 0; i < mapping.supported.length; i++) {
-        var supported = mapping.supported[i];
+    for (let i = 0; i < mapping.supported.length; i++) {
+        const supported = mapping.supported[i];
         if (id.indexOf(supported.id) !== -1 && browser.indexOf(supported.os) !== -1 && browser.indexOf(browser) !== -1) {
             return true;
         }
@@ -17,21 +17,19 @@ function isCompatible(mapping, id, browser) {
     return false;
 }
 function detectMapping(id, browser) {
-    for (var i = 0; i < gamepad_mappings_1.GAMEPAD_MAPPINGS.length; i++) {
+    for (let i = 0; i < gamepad_mappings_1.GAMEPAD_MAPPINGS.length; i++) {
         if (isCompatible(gamepad_mappings_1.GAMEPAD_MAPPINGS[i], id, browser)) {
             return gamepad_mappings_1.GAMEPAD_MAPPINGS[i];
         }
     }
     return gamepad_mappings_1.GAMEPAD_MAPPINGS[0];
 }
-function axis(_a, name) {
-    var mapping = _a.mapping, gamepad = _a.gamepad;
-    var axe = mapping.axes[name];
+function axis({ mapping, gamepad }, name) {
+    const axe = mapping.axes[name];
     return axe ? gamepad.axes[axe.index] : 0;
 }
-function button(_a, name) {
-    var mapping = _a.mapping, gamepad = _a.gamepad;
-    var button = mapping.buttons[name];
+function button({ mapping, gamepad }, name) {
+    const button = mapping.buttons[name];
     if (!button) {
         return false;
     }
@@ -48,46 +46,45 @@ function button(_a, name) {
     }
     return false;
 }
-var GamePadController = /** @class */ (function () {
-    function GamePadController(manager) {
-        var _this = this;
+class GamePadController {
+    constructor(manager) {
         this.manager = manager;
         this.initialized = false;
         this.gamepadIndex = -1;
         this.zeroed1 = false;
         this.zeroed2 = false;
-        this.gamepadconnected = function (e) {
-            _this.gamepadIndex = e.gamepad.index;
+        this.gamepadconnected = (e) => {
+            this.gamepadIndex = e.gamepad.index;
         };
-        this.gamepaddisconnected = function (e) {
-            if (_this.gamepadIndex === e.gamepad.index) {
-                _this.scanGamepads();
+        this.gamepaddisconnected = (e) => {
+            if (this.gamepadIndex === e.gamepad.index) {
+                this.scanGamepads();
             }
         };
     }
-    GamePadController.prototype.initialize = function () {
+    initialize() {
         if (!this.initialized) {
             this.initialized = true;
             window.addEventListener('gamepadconnected', this.gamepadconnected);
             window.addEventListener('gamepaddisconnected', this.gamepaddisconnected);
             this.scanGamepads();
         }
-    };
-    GamePadController.prototype.release = function () {
+    }
+    release() {
         this.initialized = false;
         window.removeEventListener('gamepadconnected', this.gamepadconnected);
         window.removeEventListener('gamepaddisconnected', this.gamepaddisconnected);
-    };
-    GamePadController.prototype.update = function () {
+    }
+    update() {
         if (this.manager.disabledGamepad || !clientUtils_1.isFocused() || this.gamepadIndex === -1)
             return;
-        var gamepads = navigator.getGamepads();
-        var gamepad = gamepads[this.gamepadIndex];
+        const gamepads = navigator.getGamepads();
+        const gamepad = gamepads[this.gamepadIndex];
         if (!gamepad) {
             this.scanGamepads();
             return;
         }
-        var pad = createGamepad(gamepad);
+        const pad = createGamepad(gamepad);
         this.zeroed1 = readAxis(this.manager, 307 /* GAMEPAD_AXIS1_X */, 308 /* GAMEPAD_AXIS1_Y */, axis(pad, 0 /* LeftStickX */), axis(pad, 1 /* LeftStickY */), this.zeroed1);
         this.zeroed2 = readAxis(this.manager, 309 /* GAMEPAD_AXIS2_X */, 310 /* GAMEPAD_AXIS2_Y */, axis(pad, 2 /* RightStickX */), axis(pad, 3 /* RightStickY */), this.zeroed2);
         this.manager.setValue(313 /* GAMEPAD_BUTTON_X */, button(pad, 2 /* X */) ? 1 : 0);
@@ -98,29 +95,28 @@ var GamePadController = /** @class */ (function () {
         this.manager.setValue(325 /* GAMEPAD_BUTTON_LEFT */, button(pad, 7 /* DpadLeft */) ? 1 : 0);
         this.manager.setValue(326 /* GAMEPAD_BUTTON_RIGHT */, button(pad, 8 /* DpadRight */) ? 1 : 0);
         this.manager.setValue(323 /* GAMEPAD_BUTTON_UP */, button(pad, 9 /* DpadUp */) ? 1 : 0);
-    };
-    GamePadController.prototype.clear = function () {
-    };
-    GamePadController.prototype.scanGamepads = function () {
-        var gamepads = navigator.getGamepads();
+    }
+    clear() {
+    }
+    scanGamepads() {
+        const gamepads = navigator.getGamepads();
         // Using regular loop because of issues with iterating over gamepads
-        for (var i = 0; i < gamepads.length; i++) {
-            var gamepad = gamepads[i];
+        for (let i = 0; i < gamepads.length; i++) {
+            const gamepad = gamepads[i];
             if (gamepad) {
                 this.gamepadIndex = gamepad.index;
                 return;
             }
         }
         this.gamepadIndex = -1;
-    };
-    return GamePadController;
-}());
+    }
+}
 exports.GamePadController = GamePadController;
 function readAxis(manager, keyX, keyY, axisX, axisY, zeroed) {
-    var dist = Math.sqrt(axisX * axisX + axisY * axisY);
+    const dist = Math.sqrt(axisX * axisX + axisY * axisY);
     if (dist > JOYSTICK_THRESHHOLD) {
-        var scaledDist = Math.min((dist - JOYSTICK_THRESHHOLD) / (1 - JOYSTICK_THRESHHOLD), 1);
-        var theta = Math.atan2(axisY, axisX);
+        const scaledDist = Math.min((dist - JOYSTICK_THRESHHOLD) / (1 - JOYSTICK_THRESHHOLD), 1);
+        const theta = Math.atan2(axisY, axisX);
         manager.setValue(keyX, Math.cos(theta) * scaledDist);
         manager.setValue(keyY, Math.sin(theta) * scaledDist);
         return false;
@@ -132,3 +128,4 @@ function readAxis(manager, keyX, keyY, axisX, axisY, zeroed) {
     }
     return zeroed;
 }
+//# sourceMappingURL=gamepad.js.map

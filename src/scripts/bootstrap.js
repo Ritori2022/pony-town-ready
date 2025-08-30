@@ -4,11 +4,11 @@ require("./bootstrap-common");
 const platform_browser_dynamic_1 = require("@angular/platform-browser-dynamic");
 const app_module_1 = require("./components/app/app.module");
 const data_1 = require("./client/data");
-// Simplified bootstrap - force application start
-console.log('Starting PonyTown application...');
-try {
+if (DEVELOPMENT || data_1.local || data_1.host === `${location.protocol}//${location.host}/`) {
+    if (window.opener && window.opener.postMessage && window.URL) {
+        const path = location.href.replace(data_1.host, '');
+        window.opener.postMessage({ type: 'loaded-page', path }, '*');
+    }
     platform_browser_dynamic_1.platformBrowserDynamic().bootstrapModule(app_module_1.AppModule, { preserveWhitespaces: true });
-} catch (error) {
-    console.error('Bootstrap error:', error);
 }
 //# sourceMappingURL=bootstrap.js.map

@@ -1,25 +1,17 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = require("@angular/core");
-var lodash_1 = require("lodash");
-var icons_1 = require("../../../client/icons");
-var game_1 = require("../../../client/game");
-var storageService_1 = require("../../services/storageService");
-var model_1 = require("../../services/model");
-var color_1 = require("../../../common/color");
-var colors_1 = require("../../../common/colors");
-var interfaces_1 = require("../../../common/interfaces");
-var EditorBox = /** @class */ (function () {
-    function EditorBox(model, game, storage, zone) {
+const tslib_1 = require("tslib");
+const core_1 = require("@angular/core");
+const lodash_1 = require("lodash");
+const icons_1 = require("../../../client/icons");
+const game_1 = require("../../../client/game");
+const storageService_1 = require("../../services/storageService");
+const model_1 = require("../../services/model");
+const color_1 = require("../../../common/color");
+const colors_1 = require("../../../common/colors");
+const interfaces_1 = require("../../../common/interfaces");
+let EditorBox = class EditorBox {
+    constructor(model, game, storage, zone) {
         this.model = model;
         this.game = game;
         this.storage = storage;
@@ -31,7 +23,7 @@ var EditorBox = /** @class */ (function () {
         this.deleteIcon = icons_1.faTrash;
         this.checkIcon = icons_1.faCheck;
         this.emptyIcon = icons_1.emptyIcon;
-        this.tiles = ['---'].concat(interfaces_1.tileTypeNames);
+        this.tiles = ['---', ...interfaces_1.tileTypeNames];
         this.engines = game_1.engines;
         this.showFields = ['id', 'bounds', 'collider', 'cover', 'interact', 'trigger'];
         this.showEditor = false;
@@ -39,272 +31,182 @@ var EditorBox = /** @class */ (function () {
         this.showEditor = this.storage.getBoolean('show-editor');
         this.editorEntities = model_1.getEntityNames().slice().sort();
     }
-    Object.defineProperty(EditorBox.prototype, "editor", {
-        get: function () {
-            return this.game.editor;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "hasElevation", {
-        get: function () {
-            return this.game.engine === interfaces_1.Engine.LayeredTiles;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "editorElevation", {
-        get: function () {
-            return this.game.editor.elevation;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "editorSpecial", {
-        get: function () {
-            return this.game.editor.special;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "editorEntity", {
-        get: function () {
-            return this.game.editor.type;
-        },
-        set: function (value) {
-            this.game.editor.type = value;
-            this.storage.setItem('editor-entity', value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "editorTile", {
-        get: function () {
-            return this.game.editor.tile;
-        },
-        set: function (value) {
-            this.game.editor.tile = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "hasEditor", {
-        get: function () {
-            return this.model.isMod && this.showEditor;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "oneEntity", {
-        get: function () {
-            return this.editor.selectedEntities[0];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "singleEntity", {
-        get: function () {
-            return this.editor.selectedEntities.length === 1;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "hasSelectedEntities", {
-        get: function () {
-            return this.editor.selectedEntities.length > 0;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "isLightEntity", {
-        get: function () {
-            return this.editor.selectedEntities.some(function (e) { return !!e.drawLight; });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "isLightSpriteEntity", {
-        get: function () {
-            return this.editor.selectedEntities.some(function (e) { return !!e.drawLightSprite; });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "selectingEntities", {
-        get: function () {
-            return this.game.editor.selectingEntities;
-        },
-        set: function (value) {
-            this.game.editor.selectingEntities = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "shadowOpacity", {
-        get: function () {
-            return color_1.getAlpha(this.game.shadowColor);
-        },
-        set: function (value) {
-            this.game.shadowColor = color_1.withAlpha(this.game.shadowColor, value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    EditorBox.prototype.getEntityName = function (type) {
+    get editor() {
+        return this.game.editor;
+    }
+    get hasElevation() {
+        return this.game.engine === interfaces_1.Engine.LayeredTiles;
+    }
+    get editorElevation() {
+        return this.game.editor.elevation;
+    }
+    get editorSpecial() {
+        return this.game.editor.special;
+    }
+    get editorEntity() {
+        return this.game.editor.type;
+    }
+    set editorEntity(value) {
+        this.game.editor.type = value;
+        this.storage.setItem('editor-entity', value);
+    }
+    get editorTile() {
+        return this.game.editor.tile;
+    }
+    set editorTile(value) {
+        this.game.editor.tile = value;
+    }
+    get hasEditor() {
+        return this.model.isMod && this.showEditor;
+    }
+    get oneEntity() {
+        return this.editor.selectedEntities[0];
+    }
+    get singleEntity() {
+        return this.editor.selectedEntities.length === 1;
+    }
+    get hasSelectedEntities() {
+        return this.editor.selectedEntities.length > 0;
+    }
+    get isLightEntity() {
+        return this.editor.selectedEntities.some(e => !!e.drawLight);
+    }
+    get isLightSpriteEntity() {
+        return this.editor.selectedEntities.some(e => !!e.drawLightSprite);
+    }
+    get selectingEntities() {
+        return this.game.editor.selectingEntities;
+    }
+    set selectingEntities(value) {
+        this.game.editor.selectingEntities = value;
+    }
+    get shadowOpacity() {
+        return color_1.getAlpha(this.game.shadowColor);
+    }
+    set shadowOpacity(value) {
+        this.game.shadowColor = color_1.withAlpha(this.game.shadowColor, value);
+    }
+    getEntityName(type) {
         return model_1.getEntityNameFromType(type);
-    };
-    EditorBox.prototype.getEntityValue = function (map) {
-        var entity = this.editor.selectedEntities[0];
+    }
+    getEntityValue(map) {
+        const entity = this.editor.selectedEntities[0];
         return map(entity);
-    };
-    Object.defineProperty(EditorBox.prototype, "entityName", {
-        get: function () {
-            var _this = this;
-            var entities = this.editor.selectedEntities;
-            var types = entities.map(function (e) { return e.type; });
-            var names = lodash_1.uniq(types).map(function (type) { return _this.getEntityName(type); }).join(', ');
-            return types.length === 1 ? names + " [" + entities[0].id + "]" : names;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "entityLightColor", {
-        get: function () {
-            return color_1.colorToHexRGB(this.getEntityValue(function (e) { return e && e.lightColor || colors_1.BLACK; }));
-        },
-        set: function (value) {
-            this.editor.selectedEntities.forEach(function (e) { return e.lightColor = color_1.parseColor(value); });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "entityLightSpriteColor", {
-        get: function () {
-            var entity = this.editor.selectedEntities[0];
-            return color_1.colorToHexRGB(entity && entity.lightSpriteColor || colors_1.BLACK);
-        },
-        set: function (value) {
-            this.editor.selectedEntities.forEach(function (e) { return e.lightSpriteColor = color_1.parseColor(value); });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "entityLightSpriteX", {
-        get: function () {
-            var entity = this.editor.selectedEntities[0];
-            return entity && entity.lightSpriteX || 0;
-        },
-        set: function (value) {
-            console.log('set x', value, this.editor.selectedEntities);
-            this.editor.selectedEntities.forEach(function (e) { return e.lightSpriteX = value; });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "entityLightSpriteY", {
-        get: function () {
-            var entity = this.editor.selectedEntities[0];
-            return entity && entity.lightSpriteY || 0;
-        },
-        set: function (value) {
-            this.editor.selectedEntities.forEach(function (e) { return e.lightSpriteY = value; });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "entityLightScale", {
-        get: function () {
-            return this.editor.selectedEntities.length ? this.editor.selectedEntities[0].lightScaleAdjust : 1;
-        },
-        set: function (value) {
-            this.editor.selectedEntities.forEach(function (e) { return e.lightScaleAdjust = value; });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "entityX", {
-        get: function () {
-            return this.oneEntity.x;
-        },
-        set: function (value) {
-            this.oneEntity.x = value;
-            var _a = this.oneEntity, id = _a.id, x = _a.x, y = _a.y;
-            this.game.send(function (server) { return server.editorAction({
-                type: 'move',
-                entities: [{ id: id, x: x, y: y }],
-            }); });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EditorBox.prototype, "entityY", {
-        get: function () {
-            return this.oneEntity.y;
-        },
-        set: function (value) {
-            this.oneEntity.y = value;
-            var _a = this.oneEntity, id = _a.id, x = _a.x, y = _a.y;
-            this.game.send(function (server) { return server.editorAction({
-                type: 'move',
-                entities: [{ id: id, x: x, y: y }],
-            }); });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    EditorBox.prototype.editorClear = function () {
-        this.game.send(function (server) { return server.editorAction({ type: 'clear' }); });
-    };
-    EditorBox.prototype.clearLocalStorage = function () {
+    }
+    get entityName() {
+        const entities = this.editor.selectedEntities;
+        const types = entities.map(e => e.type);
+        const names = lodash_1.uniq(types).map(type => this.getEntityName(type)).join(', ');
+        return types.length === 1 ? `${names} [${entities[0].id}]` : names;
+    }
+    get entityLightColor() {
+        return color_1.colorToHexRGB(this.getEntityValue(e => e && e.lightColor || colors_1.BLACK));
+    }
+    set entityLightColor(value) {
+        this.editor.selectedEntities.forEach(e => e.lightColor = color_1.parseColor(value));
+    }
+    get entityLightSpriteColor() {
+        const entity = this.editor.selectedEntities[0];
+        return color_1.colorToHexRGB(entity && entity.lightSpriteColor || colors_1.BLACK);
+    }
+    set entityLightSpriteColor(value) {
+        this.editor.selectedEntities.forEach(e => e.lightSpriteColor = color_1.parseColor(value));
+    }
+    get entityLightSpriteX() {
+        const entity = this.editor.selectedEntities[0];
+        return entity && entity.lightSpriteX || 0;
+    }
+    set entityLightSpriteX(value) {
+        console.log('set x', value, this.editor.selectedEntities);
+        this.editor.selectedEntities.forEach(e => e.lightSpriteX = value);
+    }
+    get entityLightSpriteY() {
+        const entity = this.editor.selectedEntities[0];
+        return entity && entity.lightSpriteY || 0;
+    }
+    set entityLightSpriteY(value) {
+        this.editor.selectedEntities.forEach(e => e.lightSpriteY = value);
+    }
+    get entityLightScale() {
+        return this.editor.selectedEntities.length ? this.editor.selectedEntities[0].lightScaleAdjust : 1;
+    }
+    set entityLightScale(value) {
+        this.editor.selectedEntities.forEach(e => e.lightScaleAdjust = value);
+    }
+    get entityX() {
+        return this.oneEntity.x;
+    }
+    set entityX(value) {
+        this.oneEntity.x = value;
+        const { id, x, y } = this.oneEntity;
+        this.game.send(server => server.editorAction({
+            type: 'move',
+            entities: [{ id, x, y }],
+        }));
+    }
+    get entityY() {
+        return this.oneEntity.y;
+    }
+    set entityY(value) {
+        this.oneEntity.y = value;
+        const { id, x, y } = this.oneEntity;
+        this.game.send(server => server.editorAction({
+            type: 'move',
+            entities: [{ id, x, y }],
+        }));
+    }
+    editorClear() {
+        this.game.send(server => server.editorAction({ type: 'clear' }));
+    }
+    clearLocalStorage() {
         this.storage.clear();
-    };
-    EditorBox.prototype.setEngine = function (engine) {
+    }
+    setEngine(engine) {
         this.game.engine = engine.engine;
-    };
-    EditorBox.prototype.isActiveEngine = function (engine) {
+    }
+    isActiveEngine(engine) {
         return this.game.engine === engine.engine;
-    };
-    EditorBox.prototype.toggleEditor = function () {
-        var _this = this;
-        this.zone.run(function () {
-            _this.showEditor = !_this.showEditor;
-            _this.storage.setBoolean('show-editor', _this.showEditor);
+    }
+    toggleEditor() {
+        this.zone.run(() => {
+            this.showEditor = !this.showEditor;
+            this.storage.setBoolean('show-editor', this.showEditor);
         });
-    };
-    EditorBox.prototype.toggleSelecting = function () {
+    }
+    toggleSelecting() {
         this.selectingEntities = !this.selectingEntities;
         if (!this.selectingEntities) {
             this.editor.selectedEntities.length = 0;
         }
-    };
-    EditorBox.prototype.listEntities = function () {
-        this.game.send(function (server) { return server.editorAction({ type: 'list' }); });
-    };
-    EditorBox.prototype.deleteEntities = function () {
-        var entities = this.editor.selectedEntities.map(function (e) { return e.id; });
-        this.game.send(function (server) { return server.editorAction({ type: 'remove', entities: entities }); });
+    }
+    listEntities() {
+        this.game.send(server => server.editorAction({ type: 'list' }));
+    }
+    deleteEntities() {
+        const entities = this.editor.selectedEntities.map(e => e.id);
+        this.game.send(server => server.editorAction({ type: 'remove', entities }));
         this.editor.selectedEntities.length = 0;
-    };
-    EditorBox.prototype.showEntitiesInfo = function () {
+    }
+    showEntitiesInfo() {
         console.log(this.editor.selectedEntities);
-    };
-    EditorBox.prototype.toggleShow = function (field) {
+    }
+    toggleShow(field) {
         this.game.debug[field] = !this.isShow(field);
         this.game.saveDebug();
-    };
-    EditorBox.prototype.isShow = function (field) {
+    }
+    isShow(field) {
         return !!this.game.debug[field];
-    };
-    EditorBox = __decorate([
-        core_1.Component({
-            selector: 'editor-box',
-            templateUrl: 'editor-box.pug',
-        }),
-        __metadata("design:paramtypes", [model_1.Model,
-            game_1.PonyTownGame,
-            storageService_1.StorageService,
-            core_1.NgZone])
-    ], EditorBox);
-    return EditorBox;
-}());
+    }
+};
+EditorBox = tslib_1.__decorate([
+    core_1.Component({
+        selector: 'editor-box',
+        templateUrl: 'editor-box.pug',
+    }),
+    tslib_1.__metadata("design:paramtypes", [model_1.Model,
+        game_1.PonyTownGame,
+        storageService_1.StorageService,
+        core_1.NgZone])
+], EditorBox);
 exports.EditorBox = EditorBox;
+//# sourceMappingURL=editor-box.js.map

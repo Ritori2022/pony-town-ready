@@ -1,67 +1,47 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = require("@angular/core");
-var icons_1 = require("../../../client/icons");
-var LIMIT = 8;
-var NotificationList = /** @class */ (function () {
-    function NotificationList() {
+const tslib_1 = require("tslib");
+const core_1 = require("@angular/core");
+const icons_1 = require("../../../client/icons");
+const LIMIT = 8;
+let NotificationList = class NotificationList {
+    constructor() {
         this.ellipsisIcon = icons_1.faEllipsisV;
         this.start = 0;
     }
-    Object.defineProperty(NotificationList.prototype, "notificationsLength", {
-        set: function (value) {
-            while (this.start > value) {
-                this.prev();
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(NotificationList.prototype, "limit", {
-        get: function () {
-            return this.start + LIMIT;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(NotificationList.prototype, "hasMore", {
-        get: function () {
-            return this.notifications.length > (this.start + this.limit);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    NotificationList.prototype.next = function () {
+    set notificationsLength(value) {
+        while (this.start > value) {
+            this.prev();
+        }
+    }
+    get limit() {
+        return this.start + LIMIT;
+    }
+    get hasMore() {
+        return this.notifications.length > (this.start + this.limit);
+    }
+    next() {
         this.start += this.limit;
-    };
-    NotificationList.prototype.prev = function () {
+    }
+    prev() {
         this.start -= this.start <= LIMIT ? LIMIT : LIMIT - 1;
-    };
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Array)
-    ], NotificationList.prototype, "notifications", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Number),
-        __metadata("design:paramtypes", [Number])
-    ], NotificationList.prototype, "notificationsLength", null);
-    NotificationList = __decorate([
-        core_1.Component({
-            selector: 'notification-list',
-            templateUrl: 'notification-list.pug',
-            styleUrls: ['notification-list.scss'],
-        })
-    ], NotificationList);
-    return NotificationList;
-}());
+    }
+};
+tslib_1.__decorate([
+    core_1.Input(),
+    tslib_1.__metadata("design:type", Array)
+], NotificationList.prototype, "notifications", void 0);
+tslib_1.__decorate([
+    core_1.Input(),
+    tslib_1.__metadata("design:type", Number),
+    tslib_1.__metadata("design:paramtypes", [Number])
+], NotificationList.prototype, "notificationsLength", null);
+NotificationList = tslib_1.__decorate([
+    core_1.Component({
+        selector: 'notification-list',
+        templateUrl: 'notification-list.pug',
+        styleUrls: ['notification-list.scss'],
+    })
+], NotificationList);
 exports.NotificationList = NotificationList;
+//# sourceMappingURL=notification-list.js.map

@@ -1,27 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var utils_1 = require("../common/utils");
+const utils_1 = require("../common/utils");
 // body animations
-function createBodyFrame(_a) {
-    var _b = _a[0], body = _b === void 0 ? 0 : _b, _c = _a[1], head = _c === void 0 ? 0 : _c, _d = _a[2], wing = _d === void 0 ? 0 : _d, _e = _a[3], tail = _e === void 0 ? 0 : _e, _f = _a[4], frontLeg = _f === void 0 ? 0 : _f, _g = _a[5], frontFarLeg = _g === void 0 ? 0 : _g, _h = _a[6], backLeg = _h === void 0 ? 0 : _h, _j = _a[7], backFarLeg = _j === void 0 ? 0 : _j, _k = _a[8], bodyX = _k === void 0 ? 0 : _k, _l = _a[9], bodyY = _l === void 0 ? 0 : _l, _m = _a[10], headX = _m === void 0 ? 0 : _m, _o = _a[11], headY = _o === void 0 ? 0 : _o, _p = _a[12], frontLegX = _p === void 0 ? 0 : _p, _q = _a[13], frontLegY = _q === void 0 ? 0 : _q, _r = _a[14], frontFarLegX = _r === void 0 ? 0 : _r, _s = _a[15], frontFarLegY = _s === void 0 ? 0 : _s, _t = _a[16], backLegX = _t === void 0 ? 0 : _t, _u = _a[17], backLegY = _u === void 0 ? 0 : _u, _v = _a[18], backFarLegX = _v === void 0 ? 0 : _v, _w = _a[19], backFarLegY = _w === void 0 ? 0 : _w;
+function createBodyFrame([body = 0, head = 0, wing = 0, tail = 0, frontLeg = 0, frontFarLeg = 0, backLeg = 0, backFarLeg = 0, bodyX = 0, bodyY = 0, headX = 0, headY = 0, frontLegX = 0, frontLegY = 0, frontFarLegX = 0, frontFarLegY = 0, backLegX = 0, backLegY = 0, backFarLegX = 0, backFarLegY = 0]) {
     return {
-        body: body, head: head, wing: wing, tail: tail,
-        frontLeg: frontLeg, frontFarLeg: frontFarLeg, backLeg: backLeg, backFarLeg: backFarLeg,
-        bodyX: bodyX, bodyY: bodyY, headX: headX, headY: headY,
-        frontLegX: frontLegX, frontLegY: frontLegY, frontFarLegX: frontFarLegX, frontFarLegY: frontFarLegY,
-        backLegX: backLegX, backLegY: backLegY, backFarLegX: backFarLegX, backFarLegY: backFarLegY
+        body, head, wing, tail,
+        frontLeg, frontFarLeg, backLeg, backFarLeg,
+        bodyX, bodyY, headX, headY,
+        frontLegX, frontLegY, frontFarLegX, frontFarLegY,
+        backLegX, backLegY, backFarLegX, backFarLegY
     };
 }
 exports.createBodyFrame = createBodyFrame;
 function createBodyAnimation(name, fps, loop, frames, shadowOffsets) {
     if (shadowOffsets && shadowOffsets.length !== frames.length) {
-        throw new Error("Incorrect frame count for shadowOffsets for " + name);
+        throw new Error(`Incorrect frame count for shadowOffsets for ${name}`);
     }
-    var shadow = shadowOffsets && shadowOffsets.map(function (_a) {
-        var frame = _a[0], offset = _a[1];
-        return ({ frame: frame, offset: offset });
-    });
-    return { name: name, loop: loop, fps: fps, frames: frames.map(createBodyFrame), shadow: shadow };
+    const shadow = shadowOffsets && shadowOffsets.map(([frame, offset]) => ({ frame, offset }));
+    return { name, loop, fps, frames: frames.map(createBodyFrame), shadow };
 }
 exports.createBodyAnimation = createBodyAnimation;
 exports.stand = createBodyAnimation('stand', 24, true, [
@@ -117,15 +113,15 @@ exports.boop = createBodyAnimation('boop', 24, false, [
     [1, 1, 0, 0, 20, 1, 1, 1],
     [1, 1, 0, 0, 21, 1, 1, 1],
     [1, 1, 0, 0, 22, 28, 18, 18, -1],
-    [1, 1, 0, 0, 23, 26, 19, 19, -2, -1]
-].concat(utils_1.repeat(5, [1, 1, 0, 0, 23, 27, 20, 20, -3, -1]), [
+    [1, 1, 0, 0, 23, 26, 19, 19, -2, -1],
+    ...utils_1.repeat(5, [1, 1, 0, 0, 23, 27, 20, 20, -3, -1]),
     [1, 1, 0, 0, 23, 26, 19, 19, -2, -1],
     [1, 1, 0, 0, 22, 1, 1, 1],
     [1, 1, 0, 0, 24, 1, 1, 1],
     [1, 1, 0, 0, 25, 1, 1, 1],
     [1, 1, 0, 0, 18, 1, 1, 1],
     [1, 1, 0, 0, 1, 1, 1, 1],
-]));
+]);
 exports.boopSit = createBodyAnimation('boop-sit', 24, false, [
     [9, 1, 2, 2, 34, 34, 26, 26],
     [9, 1, 2, 2, 13, 34, 26, 26, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, -2],
@@ -133,27 +129,27 @@ exports.boopSit = createBodyAnimation('boop-sit', 24, false, [
     [9, 1, 2, 2, 20, 34, 26, 26, 0, 0, 0, 0, 0, -3, 0, 0, 0, 0, 0, -2],
     [9, 1, 2, 2, 21, 34, 26, 26, 0, 0, 0, 0, 0, -3, 0, 0, 0, 0, 0, -2],
     [9, 1, 2, 2, 22, 34, 26, 26, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, -2],
-    [9, 1, 2, 2, 23, 34, 26, 26, 0, -1, 0, 0, -1, -1, 0, 1, 0, 1, 0, -1]
-].concat(utils_1.repeat(5, [9, 1, 2, 2, 23, 34, 26, 26, -1, -2, 0, 0, -2, -2, 1, 2, 1, 2, 1]), [
+    [9, 1, 2, 2, 23, 34, 26, 26, 0, -1, 0, 0, -1, -1, 0, 1, 0, 1, 0, -1],
+    ...utils_1.repeat(5, [9, 1, 2, 2, 23, 34, 26, 26, -1, -2, 0, 0, -2, -2, 1, 2, 1, 2, 1]),
     [9, 1, 2, 2, 23, 34, 26, 26, 0, -1, 0, 0, -1, -1, 0, 1, 0, 1, 0, -1],
     [9, 1, 2, 2, 22, 34, 26, 26, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, -2],
     [9, 1, 2, 2, 24, 34, 26, 26, 0, 0, 0, 0, 0, -3, 0, 0, 0, 0, 0, -2],
     [9, 1, 2, 2, 25, 34, 26, 26, 0, 0, 0, 0, 0, -3, 0, 0, 0, 0, 0, -2],
     [9, 1, 2, 2, 12, 34, 26, 26, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, -2],
     [9, 1, 2, 2, 34, 34, 26, 26],
-]), utils_1.repeat(18, [0, 6]));
+], utils_1.repeat(18, [0, 6]));
 exports.boopLie = createBodyAnimation('boop-lie', 24, false, [
-    [15, 1, 0, 2, 38, 38, 26, 26]
-].concat(utils_1.repeat(2, [15, 1, 0, 2, 24, 38, 26, 26, 0, 0, 0, 0, 0, 1]), [
+    [15, 1, 0, 2, 38, 38, 26, 26],
+    ...utils_1.repeat(2, [15, 1, 0, 2, 24, 38, 26, 26, 0, 0, 0, 0, 0, 1]),
     [15, 1, 0, 2, 21, 38, 26, 26, 0, 0, 0, 0, 0, 1],
     [15, 1, 0, 2, 22, 38, 26, 26, 0, 0, 0, 0, 0, 1],
     [15, 1, 0, 2, 23, 38, 26, 26, 0, 0, -1, -1, 0, 1],
-    [12, 1, 0, 2, 23, 37, 26, 26, -1, 0, 0, 0, -1, 1, 0, 0, 1, 0, 1]
-], utils_1.repeat(4, [12, 1, 0, 2, 23, 37, 26, 26, -1, 0, 0, 0, -2, 1, 0, 0, 1, 0, 1]), [
+    [12, 1, 0, 2, 23, 37, 26, 26, -1, 0, 0, 0, -1, 1, 0, 0, 1, 0, 1],
+    ...utils_1.repeat(4, [12, 1, 0, 2, 23, 37, 26, 26, -1, 0, 0, 0, -2, 1, 0, 0, 1, 0, 1]),
     [15, 1, 0, 2, 23, 38, 26, 26, 0, 0, 0, 0, 0, 1],
     [15, 1, 0, 2, 22, 38, 26, 26, 0, 0, 0, 0, 0, 1],
     [15, 1, 0, 2, 21, 38, 26, 26, 0, 0, 0, 0, 0, 1],
-]), utils_1.repeat(14, [3, 3]));
+], utils_1.repeat(14, [3, 3]));
 exports.boopSwim = createBodyAnimation('boop-swim', 24, false, [
     [1, 1, 0, 0, 1, 10, 6, 5, 0, 13],
     [1, 1, 0, 0, 18, 10, 6, 5, 0, 13],
@@ -161,39 +157,40 @@ exports.boopSwim = createBodyAnimation('boop-swim', 24, false, [
     [1, 1, 0, 0, 20, 10, 6, 5, 0, 13],
     [1, 1, 0, 0, 21, 10, 6, 5, 0, 12],
     [1, 1, 0, 0, 22, 9, 6, 5, -1, 12],
-    [1, 1, 0, 0, 23, 8, 6, 5, -2, 11]
-].concat(utils_1.repeat(5, [1, 1, 0, 0, 23, 8, 6, 5, -3, 11]), [
+    [1, 1, 0, 0, 23, 8, 6, 5, -2, 11],
+    ...utils_1.repeat(5, [1, 1, 0, 0, 23, 8, 6, 5, -3, 11]),
     [1, 1, 0, 0, 23, 9, 6, 5, -2, 11],
     [1, 1, 0, 0, 22, 10, 6, 5, 0, 13],
     [1, 1, 0, 0, 24, 10, 6, 5, 0, 13],
     [1, 1, 0, 0, 25, 10, 6, 5, 0, 14],
     [1, 1, 0, 0, 18, 10, 6, 5, 0, 14],
     [1, 1, 0, 0, 1, 10, 6, 5, 0, 14]
-]));
+]);
 exports.sit = createBodyAnimation('sit', 24, true, [
     [9, 1, 2, 2, 34, 34, 26, 26],
 ], [[0, 6]]);
-var sitShadow = [0, 0, 0, 1, 1, 2, 3, 4, 5, 6, 6].map(function (offset) { return [0, offset]; });
+const sitShadow = [0, 0, 0, 1, 1, 2, 3, 4, 5, 6, 6].map(offset => [0, offset]);
 exports.sitDown = createBodyAnimation('sit-down', 24, false, [
-    [1, 1, 0, 0, 1, 1, 1, 1]
-].concat(utils_1.repeat(2, [2, 1, 0, 0, 29, 29, 1, 1]), utils_1.repeat(2, [3, 1, 0, 0, 30, 30, 21, 21]), [
+    [1, 1, 0, 0, 1, 1, 1, 1],
+    ...utils_1.repeat(2, [2, 1, 0, 0, 29, 29, 1, 1]),
+    ...utils_1.repeat(2, [3, 1, 0, 0, 30, 30, 21, 21]),
     [4, 1, 0, 0, 31, 31, 22, 22],
     [5, 1, 0, 1, 32, 32, 23, 23],
     [6, 1, 1, 2, 33, 33, 24, 24],
     [7, 1, 2, 2, 34, 34, 25, 25],
     [8, 1, 2, 2, 34, 34, 25, 25],
     [9, 1, 2, 2, 34, 34, 26, 26],
-]), sitShadow);
+], sitShadow);
 exports.standUp = createBodyAnimation('stand-up', 24, false, [
     [9, 1, 2, 2, 34, 34, 26, 26],
     [8, 1, 2, 2, 34, 34, 25, 25],
     [7, 1, 2, 2, 34, 34, 25, 25],
     [6, 1, 1, 2, 33, 33, 24, 24],
     [5, 1, 0, 1, 32, 32, 23, 23],
-    [4, 1, 0, 0, 31, 31, 22, 22]
-].concat(utils_1.repeat(2, [3, 1, 0, 0, 30, 30, 21, 21]), [
+    [4, 1, 0, 0, 31, 31, 22, 22],
+    ...utils_1.repeat(2, [3, 1, 0, 0, 30, 30, 21, 21]),
     [1, 1, 0, 0, 1, 1, 1, 1],
-]), sitShadow.slice(2).reverse());
+], sitShadow.slice(2).reverse());
 exports.sitToTrot = createBodyAnimation('sit-to-trot', 24, false, [
     [7, 1, 2, 2, 34, 35, 24, 25, 0, -1, 0, 0, 0, 2, 1, 1, 0, -1],
     [6, 1, 1, 2, 27, 36, 23, 24, 0, -2, 0, 0, 0, -2, 0, 0, 0, 1],
@@ -205,21 +202,23 @@ exports.sitToTrot = createBodyAnimation('sit-to-trot', 24, false, [
 exports.lie = createBodyAnimation('lie', 24, true, [
     [15, 1, 0, 2, 38, 38, 26, 26],
 ], [[3, 3]]);
-var lieShadow = [[0, 6], [0, 6], [1, 5], [2, 4], [3, 3], [3, 3], [3, 3]];
+const lieShadow = [[0, 6], [0, 6], [1, 5], [2, 4], [3, 3], [3, 3], [3, 3]];
 exports.lieDown = createBodyAnimation('lie-down', 24, false, [
     [9, 1, 2, 2, 34, 34, 26, 26],
     [10, 1, 2, 2, 35, 34, 26, 26, 0, 0, 0, 0, 0, 0, 0, -1],
     [11, 1, 1, 2, 36, 36, 26, 26, 0, 0, 0, 0, 0, 0, 1],
     [12, 1, 1, 2, 37, 37, 26, 26, 0, 0, 0, 0, 0, 0, 1],
-    [13, 1, 0, 2, 38, 38, 26, 26, 0, 0, 0, 0, 0, 0, 1]
-].concat(utils_1.repeat(2, [14, 1, 0, 2, 38, 38, 26, 26])), lieShadow);
-exports.sitUp = createBodyAnimation('sit-up', 24, false, utils_1.repeat(2, [14, 1, 0, 2, 38, 38, 26, 26]).concat([
+    [13, 1, 0, 2, 38, 38, 26, 26, 0, 0, 0, 0, 0, 0, 1],
+    ...utils_1.repeat(2, [14, 1, 0, 2, 38, 38, 26, 26]),
+], lieShadow);
+exports.sitUp = createBodyAnimation('sit-up', 24, false, [
+    ...utils_1.repeat(2, [14, 1, 0, 2, 38, 38, 26, 26]),
     [13, 1, 0, 2, 38, 38, 26, 26],
     [12, 1, 1, 2, 37, 37, 26, 26],
     [11, 1, 1, 2, 36, 36, 26, 26],
     [10, 1, 2, 2, 35, 34, 26, 26, 0, 0, 0, 0, 0, 0, 0, -1],
     [9, 1, 2, 2, 34, 34, 26, 26],
-]), lieShadow.slice().reverse());
+], lieShadow.slice().reverse());
 exports.lieToTrot = createBodyAnimation('lie-to-trot', 24, false, [
     [1, 1, 0, 1, 36, 37, 24, 25, 4, 8, 0, 1, 0, 0, 0, 0, 0, 1],
     [1, 1, 0, 0, 30, 12, 23, 24, 2, 5, 0, 0, 0, -3],
@@ -227,7 +226,7 @@ exports.lieToTrot = createBodyAnimation('lie-to-trot', 24, false, [
     [1, 1, 0, 0, 6, 14, 6, 21, 0, 0, 0, -1],
     [1, 1, 0, 0, 7, 15, 7, 15, 0, -1, 0, -1],
     [1, 1, 0, 0, 8, 16, 8, 16, 0, -2],
-], [[2, 1], [1, 0]].concat(utils_1.repeat(4, [0, 0])));
+], [[2, 1], [1, 0], ...utils_1.repeat(4, [0, 0])]);
 exports.fly = createBodyAnimation('fly', 16, true, [
     [1, 1, 3, 0, 8, 10, 6, 5, 0, -16],
     [1, 1, 4, 0, 8, 10, 6, 5, 0, -15],
@@ -406,7 +405,10 @@ exports.flyDownBug = createBodyAnimation('fly-down-bug', 16, false, [
     [1, 1, 4, 0, 8, 10, 6, 5, 0, -4],
     [1, 1, 1, 0, 8, 10, 6, 5, 0, -2]
 ]);
-exports.swing = createBodyAnimation('swing', 12, false, utils_1.repeat(1, [1, 1, 0, 0, 1, 1, 1, 1]).concat(utils_1.repeat(3, [2, 1, 0, 0, 12, 17, 11, 11, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1])));
+exports.swing = createBodyAnimation('swing', 12, false, [
+    ...utils_1.repeat(1, [1, 1, 0, 0, 1, 1, 1, 1]),
+    ...utils_1.repeat(3, [2, 1, 0, 0, 12, 17, 11, 11, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1]),
+]);
 exports.flyAnims = [undefined, exports.fly, exports.fly, exports.fly, exports.flyBug];
 exports.flyUpAnims = [undefined, exports.flyUp, exports.flyUp, exports.flyUp, exports.flyUpBug];
 exports.flyDownAnims = [undefined, exports.flyDown, exports.flyDown, exports.flyDown, exports.flyDownBug];
@@ -415,26 +417,25 @@ exports.animations = [
     exports.fly, exports.flyBug, exports.flyUp, exports.flyUpBug, exports.flyDown, exports.flyDownBug, exports.sitToTrot, exports.lieToTrot, exports.flyToTrot, exports.flyToTrotBug,
     exports.swim, exports.trotToSwim, exports.swimToTrot, exports.flyToSwim, exports.swimToFly,
 ];
-exports.sitDownUp = mergeAnimations('sit', 24, false, utils_1.repeat(12, exports.stand).concat([exports.sitDown], utils_1.repeat(12, exports.sit), [exports.standUp]));
-exports.lieDownUp = mergeAnimations('lie', 24, false, utils_1.repeat(12, exports.sit).concat([exports.lieDown], utils_1.repeat(12, exports.lie), [exports.sitUp]));
+exports.sitDownUp = mergeAnimations('sit', 24, false, [...utils_1.repeat(12, exports.stand), exports.sitDown, ...utils_1.repeat(12, exports.sit), exports.standUp]);
+exports.lieDownUp = mergeAnimations('lie', 24, false, [...utils_1.repeat(12, exports.sit), exports.lieDown, ...utils_1.repeat(12, exports.lie), exports.sitUp]);
 function mergeAnimations(name, fps, loop, animations) {
     return {
-        name: name,
-        fps: fps,
-        loop: loop,
-        frames: utils_1.flatten(animations.map(function (a) { return a.frames; })),
-        shadow: utils_1.flatten(animations.map(function (a) { return a.shadow || a.frames.map(function () { return ({ frame: 0, offset: 0 }); }); })),
+        name,
+        fps,
+        loop,
+        frames: utils_1.flatten(animations.map(a => a.frames)),
+        shadow: utils_1.flatten(animations.map(a => a.shadow || a.frames.map(() => ({ frame: 0, offset: 0 })))),
     };
 }
 exports.mergeAnimations = mergeAnimations;
 // head animations
-function createHeadFrame(_a) {
-    var _b = _a[0], headX = _b === void 0 ? 0 : _b, _c = _a[1], headY = _c === void 0 ? 0 : _c, _d = _a[2], left = _d === void 0 ? 0 : _d, _e = _a[3], right = _e === void 0 ? 0 : _e, _f = _a[4], mouth = _f === void 0 ? 0 : _f;
-    return { headX: headX, headY: headY, left: left, right: right, mouth: mouth };
+function createHeadFrame([headX = 0, headY = 0, left = 0, right = 0, mouth = 0]) {
+    return { headX, headY, left, right, mouth };
 }
 exports.createHeadFrame = createHeadFrame;
 function createHeadAnimation(name, fps, loop, frames) {
-    return { name: name, fps: fps, loop: loop, frames: frames.map(createHeadFrame) };
+    return { name, fps, loop, frames: frames.map(createHeadFrame) };
 }
 exports.createHeadAnimation = createHeadAnimation;
 exports.smile = createHeadAnimation('smile', 24, true, [
@@ -444,24 +445,33 @@ exports.nom = createHeadAnimation('nom', 12, true, [
     [0, 0, 1, 1, 0],
     [0, 0, 1, 1, 25],
 ]);
-exports.laugh = createHeadAnimation('laugh', 8, false, utils_1.repeat(4, [0, 0, 14, 14, 5], [0, 1, 14, 14, 5]).slice());
+exports.laugh = createHeadAnimation('laugh', 8, false, [
+    ...utils_1.repeat(4, [0, 0, 14, 14, 5], [0, 1, 14, 14, 5]),
+]);
 exports.yawn = createHeadAnimation('yawn', 12, false, [
-    [0, 0, 3, 3, 8]
-].concat(utils_1.repeat(18, [1, -1, 12, 12, 16]), utils_1.repeat(8, [0, 0, 12, 12, 12]), [
+    [0, 0, 3, 3, 8],
+    ...utils_1.repeat(18, [1, -1, 12, 12, 16]),
+    ...utils_1.repeat(8, [0, 0, 12, 12, 12]),
     [0, 0, 18, 18, 2],
-]));
+]);
 exports.surprise = createHeadAnimation('surprise', 8, false, [
-    [0, 1, 6, 6, 1]
-].concat(utils_1.repeat(10, [0, 0, 1, 1, 12])));
+    [0, 1, 6, 6, 1],
+    ...utils_1.repeat(10, [0, 0, 1, 1, 12]),
+]);
 exports.excite = createHeadAnimation('excite', 8, false, [
-    [0, 1, 6, 6, 0]
-].concat(utils_1.repeat(10, [0, 0, 1, 1, 5])));
+    [0, 1, 6, 6, 0],
+    ...utils_1.repeat(10, [0, 0, 1, 1, 5]),
+]);
 exports.surpriseSad = createHeadAnimation('surpriseSad', 8, false, [
-    [0, 1, 15, 15, 8]
-].concat(utils_1.repeat(8, [0, 0, 15, 15, 8])));
+    [0, 1, 15, 15, 8],
+    ...utils_1.repeat(8, [0, 0, 15, 15, 8]),
+]);
 exports.sneeze = createHeadAnimation('sneeze', 12, false, [
-    [0, 0, 18, 18, 8]
-].concat(utils_1.repeat(2, [1, -1, 18, 18, 16]), utils_1.repeat(8, [-1, 1, 23, 23, 13]), utils_1.repeat(4, [0, 0, 18, 18, 7])));
+    [0, 0, 18, 18, 8],
+    ...utils_1.repeat(2, [1, -1, 18, 18, 16]),
+    ...utils_1.repeat(8, [-1, 1, 23, 23, 13]),
+    ...utils_1.repeat(4, [0, 0, 18, 18, 7]),
+]);
 exports.headAnimations = [
     exports.smile, exports.nom, exports.laugh, exports.yawn, exports.surprise, exports.surpriseSad, exports.sneeze, exports.excite,
 ];
@@ -470,3 +480,4 @@ exports.defaultBodyAnimation = createBodyAnimation('default', 24, true, [[1, 1, 
 exports.defaultHeadAnimation = createHeadAnimation('default', 24, true, [[0, 0, -1, -1, -1]]);
 exports.defaultBodyFrame = exports.defaultBodyAnimation.frames[0];
 exports.defaultHeadFrame = exports.defaultHeadAnimation.frames[0];
+//# sourceMappingURL=ponyAnimations.js.map

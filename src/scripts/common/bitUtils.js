@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 function numberToBitCount(value) {
     value = value >>> 0;
-    for (var mask = 0xffffffff >>> 0, bits = 0; mask; mask = (mask << 1) >>> 0, bits++) {
+    for (let mask = 0xffffffff >>> 0, bits = 0; mask; mask = (mask << 1) >>> 0, bits++) {
         if ((value & mask) === 0) {
             return bits;
         }
@@ -12,7 +12,7 @@ function numberToBitCount(value) {
 exports.numberToBitCount = numberToBitCount;
 function countBits(value) {
     value = value >>> 0;
-    var bits = 0;
+    let bits = 0;
     while (value) {
         bits += value & 1;
         value = value >>> 1;
@@ -21,27 +21,27 @@ function countBits(value) {
 }
 exports.countBits = countBits;
 function bitWriter(writes) {
-    var buffer = new Uint8Array(16);
-    var length = 0;
-    var byte = 0;
-    var byteBits = 0;
+    let buffer = new Uint8Array(16);
+    let length = 0;
+    let byte = 0;
+    let byteBits = 0;
     function writeByte(value) {
         if (buffer.length <= length) {
-            var newBuffer = new Uint8Array(buffer.length * 2);
+            const newBuffer = new Uint8Array(buffer.length * 2);
             newBuffer.set(buffer);
             buffer = newBuffer;
         }
         buffer[length] = value;
         length++;
     }
-    writes(function (value, bits) {
+    writes((value, bits) => {
         if (bits < 0 || bits > 32) {
             throw new Error('Invalid bit count');
         }
         while (bits) {
-            var revByteBits = 8 - byteBits;
-            var writeBits = revByteBits < bits ? revByteBits : bits;
-            var write = (value >> (bits - writeBits)) & (0xff >> (8 - writeBits));
+            const revByteBits = 8 - byteBits;
+            const writeBits = revByteBits < bits ? revByteBits : bits;
+            const write = (value >> (bits - writeBits)) & (0xff >> (8 - writeBits));
             byte |= write << (revByteBits - writeBits);
             byteBits += writeBits;
             bits -= writeBits;
@@ -61,8 +61,8 @@ function bitWriter(writes) {
 }
 exports.bitWriter = bitWriter;
 function bitReader(buffer) {
-    var offset = 0;
-    return bitReaderCustom(function () {
+    let offset = 0;
+    return bitReaderCustom(() => {
         if (buffer.length <= offset) {
             throw new Error('Reading past end');
         }
@@ -71,20 +71,20 @@ function bitReader(buffer) {
 }
 exports.bitReader = bitReader;
 function bitReaderCustom(readByte) {
-    var byte = 0;
-    var byteBits = 0;
-    return function (bits) {
+    let byte = 0;
+    let byteBits = 0;
+    return bits => {
         if (bits < 0 || bits > 32) {
             throw new Error('Invalid bit count');
         }
-        var result = 0;
+        let result = 0;
         while (bits) {
             if (!byteBits) {
                 byte = readByte();
                 byteBits = 8;
             }
-            var readBits = byteBits < bits ? byteBits : bits;
-            var read = (byte >> (byteBits - readBits)) & (0xff >> (8 - readBits));
+            const readBits = byteBits < bits ? byteBits : bits;
+            const read = (byte >> (byteBits - readBits)) & (0xff >> (8 - readBits));
             result = (result << readBits) | read;
             bits -= readBits;
             byteBits -= readBits;
@@ -93,3 +93,4 @@ function bitReaderCustom(readByte) {
     };
 }
 exports.bitReaderCustom = bitReaderCustom;
+//# sourceMappingURL=bitUtils.js.map

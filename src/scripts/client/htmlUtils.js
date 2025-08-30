@@ -1,28 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var emoji_1 = require("./emoji");
-var fonts_1 = require("./fonts");
-var spriteFont_1 = require("../graphics/spriteFont");
+const emoji_1 = require("./emoji");
+const fonts_1 = require("./fonts");
+const spriteFont_1 = require("../graphics/spriteFont");
 function createHtmlNodes(value, scale) {
-    return value ? emoji_1.splitEmojis(value).map(function (x) {
-        var sprite = emoji_1.hasEmojis(x) && fonts_1.font && spriteFont_1.getCharacterSprite(x, fonts_1.font);
+    return value ? emoji_1.splitEmojis(value).map(x => {
+        const sprite = emoji_1.hasEmojis(x) && fonts_1.font && spriteFont_1.getCharacterSprite(x, fonts_1.font);
         if (sprite) {
-            var emote = emoji_1.findEmoji(x);
-            var img_1 = document.createElement('img');
-            img_1.className = 'pixelart';
-            img_1.style.display = 'inline-block';
-            img_1.style.visibility = 'hidden';
-            img_1.style.width = (sprite.w + sprite.ox) * scale + "px";
-            img_1.style.height = 10 * scale + "px";
+            const emote = emoji_1.findEmoji(x);
+            const img = document.createElement('img');
+            img.className = 'pixelart';
+            img.style.display = 'inline-block';
+            img.style.visibility = 'hidden';
+            img.style.width = `${(sprite.w + sprite.ox) * scale}px`;
+            img.style.height = `${10 * scale}px`;
             if (emote) {
-                img_1.setAttribute('aria-label', emote.names[0]);
+                img.setAttribute('aria-label', emote.names[0]);
             }
-            emoji_1.getEmojiImageAsync(sprite, function (src) {
-                img_1.alt = x;
-                img_1.src = src;
-                img_1.style.visibility = 'visible';
+            emoji_1.getEmojiImageAsync(sprite, src => {
+                img.alt = x;
+                img.src = src;
+                img.style.visibility = 'visible';
             });
-            return img_1;
+            return img;
         }
         else {
             return document.createTextNode(x);
@@ -35,7 +35,7 @@ function textNode(text) {
 }
 exports.textNode = textNode;
 function element(tag, className, nodes, attrs, events) {
-    var element = document.createElement(tag);
+    const element = document.createElement(tag);
     if (className) {
         element.className = className;
     }
@@ -43,17 +43,17 @@ function element(tag, className, nodes, attrs, events) {
         appendAllNodes(element, nodes);
     }
     if (attrs !== undefined) {
-        Object.keys(attrs).forEach(function (key) { return element.setAttribute(key, attrs[key]); });
+        Object.keys(attrs).forEach(key => element.setAttribute(key, attrs[key]));
     }
     if (events !== undefined) {
-        Object.keys(events).forEach(function (key) { return element.addEventListener(key, events[key]); });
+        Object.keys(events).forEach(key => element.addEventListener(key, events[key]));
     }
     return element;
 }
 exports.element = element;
 function appendAllNodes(element, nodes) {
-    for (var i = 0; i < nodes.length; i++) {
-        var node = nodes[i];
+    for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i];
         if (node !== undefined) {
             element.appendChild(node);
         }
@@ -61,14 +61,14 @@ function appendAllNodes(element, nodes) {
 }
 exports.appendAllNodes = appendAllNodes;
 function removeAllNodes(element) {
-    var child;
+    let child;
     while (child = element.lastChild) {
         element.removeChild(child);
     }
 }
 exports.removeAllNodes = removeAllNodes;
 function removeFirstChild(element) {
-    var child;
+    let child;
     if (child = element.firstChild) {
         element.removeChild(child);
     }
@@ -82,7 +82,7 @@ function replaceNodes(element, text) {
     while (element.lastChild && element.lastChild !== element.firstChild) {
         element.removeChild(element.lastChild);
     }
-    var firstChild = element.firstChild;
+    let firstChild = element.firstChild;
     if (!firstChild) {
         element.appendChild(firstChild = textNode(''));
     }
@@ -96,8 +96,8 @@ function replaceNodes(element, text) {
 }
 exports.replaceNodes = replaceNodes;
 function findParentElement(element, selector) {
-    var elements = Array.from(document.querySelectorAll(selector));
-    var current = element.parentElement;
+    const elements = Array.from(document.querySelectorAll(selector));
+    let current = element.parentElement;
     while (current && elements.indexOf(current) === -1) {
         current = current.parentElement;
     }
@@ -105,12 +105,12 @@ function findParentElement(element, selector) {
 }
 exports.findParentElement = findParentElement;
 function findFocusableElements(root) {
-    var elements = root.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    const elements = root.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
     return Array.from(elements);
 }
 exports.findFocusableElements = findFocusableElements;
 function focusFirstElement(root) {
-    var elements = findFocusableElements(root);
+    const elements = findFocusableElements(root);
     if (elements.length) {
         elements[0].focus();
         return elements[0];
@@ -119,18 +119,18 @@ function focusFirstElement(root) {
 }
 exports.focusFirstElement = focusFirstElement;
 function focusElement(root, selector) {
-    var target = root.querySelector(selector);
+    const target = root.querySelector(selector);
     if (target) {
         target.focus();
     }
 }
 exports.focusElement = focusElement;
 function focusElementAfterTimeout(root, selector) {
-    setTimeout(function () { return focusElement(root, selector); }, 10);
+    setTimeout(() => focusElement(root, selector), 10);
 }
 exports.focusElementAfterTimeout = focusElementAfterTimeout;
 function isParentOf(parent, child) {
-    for (var current = child.parentElement; current; current = current.parentElement) {
+    for (let current = child.parentElement; current; current = current.parentElement) {
         if (current === parent) {
             return true;
         }
@@ -139,16 +139,17 @@ function isParentOf(parent, child) {
 }
 exports.isParentOf = isParentOf;
 function showTextInNewTab(text) {
-    var wnd = window.open();
-    var pre = wnd.document.createElement('pre');
+    const wnd = window.open();
+    const pre = wnd.document.createElement('pre');
     pre.innerText = text;
     wnd.document.body.appendChild(pre);
 }
 exports.showTextInNewTab = showTextInNewTab;
 function addStyle(style) {
-    var styleElement = document.createElement('style');
+    const styleElement = document.createElement('style');
     styleElement.appendChild(document.createTextNode(style));
     document.head.appendChild(styleElement);
     return styleElement;
 }
 exports.addStyle = addStyle;
+//# sourceMappingURL=htmlUtils.js.map

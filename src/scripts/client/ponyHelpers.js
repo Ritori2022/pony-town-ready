@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var colors_1 = require("../common/colors");
-var ponyAnimations_1 = require("./ponyAnimations");
-var defaultBlushColor = colors_1.blushColor(0);
+const colors_1 = require("../common/colors");
+const ponyAnimations_1 = require("./ponyAnimations");
+const defaultBlushColor = colors_1.blushColor(0);
 function defaultPonyState() {
     return {
         animation: ponyAnimations_1.stand,
@@ -54,3 +54,4 @@ function defaultDrawPonyOptions() {
     };
 }
 exports.defaultDrawPonyOptions = defaultDrawPonyOptions;
+//# sourceMappingURL=ponyHelpers.js.map

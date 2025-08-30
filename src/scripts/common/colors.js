@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var color_1 = require("./color");
-var utils_1 = require("./utils");
-var ponyInfo_1 = require("./ponyInfo");
+const color_1 = require("./color");
+const utils_1 = require("./utils");
+const ponyInfo_1 = require("./ponyInfo");
 // basic
 exports.TRANSPARENT = 0;
 exports.WHITE = 0xffffffff;
@@ -95,14 +95,14 @@ function fillToOutlineWithDarken(color) {
 }
 exports.fillToOutlineWithDarken = fillToOutlineWithDarken;
 function fillToOutlineColor(color) {
-    var _a = color_1.colorToHSVA(color), h = _a.h, s = _a.s, v = _a.v, a = _a.a;
+    const { h, s, v, a } = color_1.colorToHSVA(color);
     return color_1.colorFromHSVA(h, Math.min(s * 1.3, 1), v * 0.7, a);
 }
 exports.fillToOutlineColor = fillToOutlineColor;
-var LIGHT_BLUSH = 0xff89aeff;
-var DARK_BLUSH = 0xc90040ff;
+const LIGHT_BLUSH = 0xff89aeff;
+const DARK_BLUSH = 0xc90040ff;
 function blushColor(coat) {
-    var _a = color_1.colorToHSVA(coat), h = _a.h, s = _a.s, v = _a.v;
+    const { h, s, v } = color_1.colorToHSVA(coat);
     if ((h < 15 && s > 0.2 && s < 0.7 && v > 0.85) ||
         (h > 15 && h < 50 && s > 0.2 && v > 0.85) ||
         (h > 280 && s > 0.2 && s < 0.7 && v > 0.85)) {
@@ -161,3 +161,4 @@ function getTileColor(tile, season) {
     }
 }
 exports.getTileColor = getTileColor;
+//# sourceMappingURL=colors.js.map

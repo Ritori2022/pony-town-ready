@@ -1,26 +1,65 @@
 "use strict";
 /* tslint:disable:max-line-length */
 Object.defineProperty(exports, "__esModule", { value: true });
+var GamepadAxes;
+(function (GamepadAxes) {
+    GamepadAxes[GamepadAxes["LeftStickX"] = 0] = "LeftStickX";
+    GamepadAxes[GamepadAxes["LeftStickY"] = 1] = "LeftStickY";
+    GamepadAxes[GamepadAxes["RightStickX"] = 2] = "RightStickX";
+    GamepadAxes[GamepadAxes["RightStickY"] = 3] = "RightStickY";
+    GamepadAxes[GamepadAxes["DpadX"] = 4] = "DpadX";
+    GamepadAxes[GamepadAxes["DpadY"] = 5] = "DpadY";
+    GamepadAxes[GamepadAxes["LeftTrigger"] = 6] = "LeftTrigger";
+    GamepadAxes[GamepadAxes["RightTrigger"] = 7] = "RightTrigger";
+})(GamepadAxes = exports.GamepadAxes || (exports.GamepadAxes = {}));
+var GamepadButtons;
+(function (GamepadButtons) {
+    GamepadButtons[GamepadButtons["A"] = 0] = "A";
+    GamepadButtons[GamepadButtons["B"] = 1] = "B";
+    GamepadButtons[GamepadButtons["X"] = 2] = "X";
+    GamepadButtons[GamepadButtons["Y"] = 3] = "Y";
+    GamepadButtons[GamepadButtons["Back"] = 4] = "Back";
+    GamepadButtons[GamepadButtons["Start"] = 5] = "Start";
+    GamepadButtons[GamepadButtons["DpadDown"] = 6] = "DpadDown";
+    GamepadButtons[GamepadButtons["DpadLeft"] = 7] = "DpadLeft";
+    GamepadButtons[GamepadButtons["DpadRight"] = 8] = "DpadRight";
+    GamepadButtons[GamepadButtons["DpadUp"] = 9] = "DpadUp";
+    GamepadButtons[GamepadButtons["LeftShoulder"] = 10] = "LeftShoulder";
+    GamepadButtons[GamepadButtons["LeftStick"] = 11] = "LeftStick";
+    GamepadButtons[GamepadButtons["LeftStickDown"] = 12] = "LeftStickDown";
+    GamepadButtons[GamepadButtons["LeftStickLeft"] = 13] = "LeftStickLeft";
+    GamepadButtons[GamepadButtons["LeftStickRight"] = 14] = "LeftStickRight";
+    GamepadButtons[GamepadButtons["LeftStickUp"] = 15] = "LeftStickUp";
+    GamepadButtons[GamepadButtons["LeftTrigger"] = 16] = "LeftTrigger";
+    GamepadButtons[GamepadButtons["RightShoulder"] = 17] = "RightShoulder";
+    GamepadButtons[GamepadButtons["RightStick"] = 18] = "RightStick";
+    GamepadButtons[GamepadButtons["RightStickDown"] = 19] = "RightStickDown";
+    GamepadButtons[GamepadButtons["RightStickLeft"] = 20] = "RightStickLeft";
+    GamepadButtons[GamepadButtons["RightStickRight"] = 21] = "RightStickRight";
+    GamepadButtons[GamepadButtons["RightStickUp"] = 22] = "RightStickUp";
+    GamepadButtons[GamepadButtons["RightTrigger"] = 23] = "RightTrigger";
+    GamepadButtons[GamepadButtons["Home"] = 24] = "Home";
+})(GamepadButtons = exports.GamepadButtons || (exports.GamepadButtons = {}));
 function gamepad(name, supported, axes, buttons) {
-    return { name: name, supported: supported, axes: axes, buttons: buttons };
+    return { name, supported, axes, buttons };
 }
 function browser(browser, id, os) {
-    return { browser: browser, id: id, os: os };
+    return { browser, id, os };
 }
 function index(index) {
-    return { index: index };
+    return { index };
 }
 function positive(buttonPositive) {
-    return { buttonPositive: buttonPositive };
+    return { buttonPositive };
 }
 function positiveNegative(buttonPositive, buttonNegative) {
-    return { buttonPositive: buttonPositive, buttonNegative: buttonNegative };
+    return { buttonPositive, buttonNegative };
 }
 function axisDirection(axis, direction) {
-    return { axis: axis, direction: direction };
+    return { axis, direction };
 }
 function axes(lx, ly, rx, ry, dpadX, dpadY, lt, rt) {
-    var result = [];
+    const result = [];
     result[0 /* LeftStickX */] = index(lx);
     result[1 /* LeftStickY */] = index(ly);
     result[2 /* RightStickX */] = index(rx);
@@ -32,7 +71,7 @@ function axes(lx, ly, rx, ry, dpadX, dpadY, lt, rt) {
     return result;
 }
 function buttons(a, b, x, y, back, start, dpad_down, dpad_left, dpad_right, dpad_up, left_shoulder, left_stick, left_stick_down, left_stick_left, left_stick_right, left_stick_up, left_trigger, right_shoulder, right_stick, right_stick_down, right_stick_left, right_stick_right, right_stick_up, right_trigger, home) {
-    var result = [];
+    const result = [];
     result[0 /* A */] = index(a);
     result[1 /* B */] = index(b);
     result[2 /* X */] = index(x);
@@ -122,3 +161,4 @@ exports.GAMEPAD_MAPPINGS = [
         browser('Firefox', 'xinput', 'Windows NT'),
     ], axes(0, 1, 2, 3, index(6), index(7), undefined, index(5)), buttons(0, 1, 2, 3, 8, 9, index(13), index(14), index(15), index(12), 4, 10, axisDirection(1, 1), axisDirection(0, -1), axisDirection(0, 1), axisDirection(1, -1), index(6), 5, 11, axisDirection(3, 1), axisDirection(2, -1), axisDirection(2, 1), axisDirection(3, -1), index(7), undefined)),
 ];
+//# sourceMappingURL=gamepad-mappings.js.map

@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var lodash_1 = require("lodash");
-var canvasUtils_1 = require("./canvasUtils");
-var contextSpriteBatch_1 = require("../graphics/contextSpriteBatch");
-var colors_1 = require("../common/colors");
-var sprites_1 = require("../generated/sprites");
-var utils_1 = require("../common/utils");
+const lodash_1 = require("lodash");
+const canvasUtils_1 = require("./canvasUtils");
+const contextSpriteBatch_1 = require("../graphics/contextSpriteBatch");
+const colors_1 = require("../common/colors");
+const sprites_1 = require("../generated/sprites");
+const utils_1 = require("../common/utils");
 exports.emojis = [
     // faces
     ['🙂', 'face', 'tiny', 'tinyface', 'slight_smile'],
@@ -101,40 +101,39 @@ exports.emojis = [
     ['⚧', 'trans', 'transgender'],
 ].map(createEmoji);
 exports.emojiMap = new Map();
-exports.emojiNames = exports.emojis.slice().sort().map(function (e) { return ":" + e.names[0] + ":"; });
-exports.emojis.forEach(function (e) { return e.names.forEach(function (name) { return exports.emojiMap.set(":" + name + ":", e.symbol); }); });
+exports.emojiNames = exports.emojis.slice().sort().map(e => `:${e.names[0]}:`);
+exports.emojis.forEach(e => e.names.forEach(name => exports.emojiMap.set(`:${name}:`, e.symbol)));
 function findEmoji(name) {
-    return exports.emojis.find(function (e) { return name === e.symbol || utils_1.includes(e.names, name); });
+    return exports.emojis.find(e => name === e.symbol || utils_1.includes(e.names, name));
 }
 exports.findEmoji = findEmoji;
 function replaceEmojis(text) {
-    return (text || '').replace(/:[a-z0-9_]+:/ig, function (match) { return exports.emojiMap.get(match) || match; });
+    return (text || '').replace(/:[a-z0-9_]+:/ig, match => exports.emojiMap.get(match) || match);
 }
 exports.replaceEmojis = replaceEmojis;
-function createEmoji(_a) {
-    var symbol = _a[0], names = _a.slice(1);
-    return { symbol: symbol, names: names.concat(names.filter(function (n) { return /_/.test(n); }).map(function (n) { return n.replace(/_/g, ''); })) };
+function createEmoji([symbol, ...names]) {
+    return { symbol, names: [...names, ...names.filter(n => /_/.test(n)).map(n => n.replace(/_/g, ''))] };
 }
-var emojiImages = new Map();
-var emojiImagePromises = new Map();
+const emojiImages = new Map();
+const emojiImagePromises = new Map();
 function getEmojiImageAsync(sprite, callback) {
-    var src = emojiImages.get(sprite);
+    const src = emojiImages.get(sprite);
     if (src) {
         callback(src);
         return;
     }
-    var promise = emojiImagePromises.get(sprite);
+    const promise = emojiImagePromises.get(sprite);
     if (promise) {
         promise.then(callback);
         return;
     }
-    var width = sprite.w + sprite.ox;
+    const width = sprite.w + sprite.ox;
     // const height = sprite.h + sprite.oy;
-    var canvas = contextSpriteBatch_1.drawCanvas(width, 10, sprites_1.normalSpriteSheet, undefined, function (batch) { return batch.drawSprite(sprite, colors_1.WHITE, 0, 0); });
-    var newPromise = canvasUtils_1.canvasToSource(canvas);
+    const canvas = contextSpriteBatch_1.drawCanvas(width, 10, sprites_1.normalSpriteSheet, undefined, batch => batch.drawSprite(sprite, colors_1.WHITE, 0, 0));
+    const newPromise = canvasUtils_1.canvasToSource(canvas);
     emojiImagePromises.set(sprite, newPromise);
     newPromise
-        .then(function (src) {
+        .then(src => {
         emojiImages.set(sprite, src);
         emojiImagePromises.delete(sprite);
         return src;
@@ -142,9 +141,10 @@ function getEmojiImageAsync(sprite, callback) {
         .then(callback);
 }
 exports.getEmojiImageAsync = getEmojiImageAsync;
-var emojisRegex = new RegExp("(" + exports.emojis.map(function (e) { return e.symbol; }).concat([
+const emojisRegex = new RegExp(`(${[
+    ...exports.emojis.map(e => e.symbol),
     '♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓', '⛎',
-]).join('|') + ")", 'g');
+].join('|')})`, 'g');
 function splitEmojis(text) {
     return text.split(emojisRegex);
 }
@@ -157,14 +157,15 @@ function nameToHTML(name) {
     return lodash_1.escape(name);
 }
 exports.nameToHTML = nameToHTML;
-var names = exports.emojiNames.slice().sort();
+const names = exports.emojiNames.slice().sort();
 function autocompleteMesssage(message, shift, state) {
-    return message.replace(/:[a-z0-9_]+:?$/, function (match) {
+    return message.replace(/:[a-z0-9_]+:?$/, match => {
         state.lastEmoji = state.lastEmoji || match;
-        var matches = names.filter(function (e) { return e.indexOf(state.lastEmoji) === 0; });
-        var index = matches.indexOf(match);
-        var offset = index === -1 ? 0 : (index + matches.length + (shift ? -1 : 1)) % matches.length;
+        const matches = names.filter(e => e.indexOf(state.lastEmoji) === 0);
+        const index = matches.indexOf(match);
+        const offset = index === -1 ? 0 : (index + matches.length + (shift ? -1 : 1)) % matches.length;
         return matches[offset] || match;
     });
 }
 exports.autocompleteMesssage = autocompleteMesssage;
+//# sourceMappingURL=emoji.js.map

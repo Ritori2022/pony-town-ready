@@ -1,22 +1,14 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = require("@angular/core");
-var icons_1 = require("../../../client/icons");
-var model_1 = require("../../services/model");
-var game_1 = require("../../../client/game");
-var utils_1 = require("../../../common/utils");
-var settingsService_1 = require("../../services/settingsService");
-var FriendsBox = /** @class */ (function () {
-    function FriendsBox(settings, model, game) {
+const tslib_1 = require("tslib");
+const core_1 = require("@angular/core");
+const icons_1 = require("../../../client/icons");
+const model_1 = require("../../services/model");
+const game_1 = require("../../../client/game");
+const utils_1 = require("../../../common/utils");
+const settingsService_1 = require("../../services/settingsService");
+let FriendsBox = class FriendsBox {
+    constructor(settings, model, game) {
         this.settings = settings;
         this.model = model;
         this.game = game;
@@ -27,63 +19,55 @@ var FriendsBox = /** @class */ (function () {
         this.statusIcon = icons_1.faCircle;
         this.sendMessage = new core_1.EventEmitter();
     }
-    Object.defineProperty(FriendsBox.prototype, "friends", {
-        get: function () {
-            return this.model.friends;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(FriendsBox.prototype, "hidden", {
-        get: function () {
-            return !!this.settings.account.hidden;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    FriendsBox.prototype.toggleHidden = function () {
+    get friends() {
+        return this.model.friends;
+    }
+    get hidden() {
+        return !!this.settings.account.hidden;
+    }
+    toggleHidden() {
         this.settings.account.hidden = !this.settings.account.hidden;
         this.settings.saveAccountSettings(this.settings.account);
-    };
-    FriendsBox.prototype.toggle = function () {
+    }
+    toggle() {
         this.removing = undefined;
-    };
-    FriendsBox.prototype.sendMessageTo = function (friend) {
+    }
+    sendMessageTo(friend) {
         this.sendMessage.emit(friend);
-    };
-    FriendsBox.prototype.inviteToParty = function (friend) {
-        this.game.send(function (server) { return server.playerAction(friend.entityId, 3 /* InviteToParty */, undefined); });
-    };
-    FriendsBox.prototype.remove = function (friend) {
+    }
+    inviteToParty(friend) {
+        this.game.send(server => server.playerAction(friend.entityId, 3 /* InviteToParty */, undefined));
+    }
+    remove(friend) {
         this.removing = friend;
-    };
-    FriendsBox.prototype.cancelRemove = function () {
+    }
+    cancelRemove() {
         this.removing = undefined;
-    };
-    FriendsBox.prototype.confirmRemove = function () {
+    }
+    confirmRemove() {
         if (this.removing && this.model.friends) {
-            var accountId_1 = this.removing.accountId;
-            this.game.send(function (server) { return server.actionParam(22 /* RemoveFriend */, accountId_1); });
+            const { accountId } = this.removing;
+            this.game.send(server => server.actionParam(22 /* RemoveFriend */, accountId));
             utils_1.removeItem(this.model.friends, this.removing);
             this.removing = undefined;
         }
-    };
-    FriendsBox.prototype.setStatus = function (status) {
+    }
+    setStatus(status) {
         this.settings.account.hidden = status === 'invisible';
         this.settings.saveAccountSettings(this.settings.account);
-    };
-    __decorate([
-        core_1.Output(),
-        __metadata("design:type", Object)
-    ], FriendsBox.prototype, "sendMessage", void 0);
-    FriendsBox = __decorate([
-        core_1.Component({
-            selector: 'friends-box',
-            templateUrl: 'friends-box.pug',
-            styleUrls: ['friends-box.scss'],
-        }),
-        __metadata("design:paramtypes", [settingsService_1.SettingsService, model_1.Model, game_1.PonyTownGame])
-    ], FriendsBox);
-    return FriendsBox;
-}());
+    }
+};
+tslib_1.__decorate([
+    core_1.Output(),
+    tslib_1.__metadata("design:type", Object)
+], FriendsBox.prototype, "sendMessage", void 0);
+FriendsBox = tslib_1.__decorate([
+    core_1.Component({
+        selector: 'friends-box',
+        templateUrl: 'friends-box.pug',
+        styleUrls: ['friends-box.scss'],
+    }),
+    tslib_1.__metadata("design:paramtypes", [settingsService_1.SettingsService, model_1.Model, game_1.PonyTownGame])
+], FriendsBox);
 exports.FriendsBox = FriendsBox;
+//# sourceMappingURL=friends-box.js.map

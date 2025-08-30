@@ -12,3 +12,4 @@ exports.NAME_ERROR = 'Invalid name';
 exports.CHARACTER_SAVING_ERROR = 'Error saving character';
 exports.CHARACTER_LIMIT_ERROR = 'Character limit reached';
 exports.NOT_AUTHENTICATED_ERROR = 'Not authenticated';
+//# sourceMappingURL=errors.js.map

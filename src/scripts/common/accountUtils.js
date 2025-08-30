@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var constants_1 = require("./constants");
-var utils_1 = require("./utils");
+const constants_1 = require("./constants");
+const utils_1 = require("./utils");
 function hasRole(account, role) {
     return !!(account && account.roles && account.roles.indexOf(role) !== -1);
 }
@@ -23,8 +23,8 @@ function meetsRequirement(account, require) {
 }
 exports.meetsRequirement = meetsRequirement;
 function meetsSupporterRequirement(account, require) {
-    var level = account.supporter || 0;
-    var modOrDev = isMod(account) || isDev(account);
+    const level = account.supporter || 0;
+    const modOrDev = isMod(account) || isDev(account);
     if (require === 'inv') {
         return modOrDev || level >= 1 || !!account.supporterInvited;
     }
@@ -70,3 +70,4 @@ function getSupporterInviteLimit(account) {
     }
 }
 exports.getSupporterInviteLimit = getSupporterInviteLimit;
+//# sourceMappingURL=accountUtils.js.map

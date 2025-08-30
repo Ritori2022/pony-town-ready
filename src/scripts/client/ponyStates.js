@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var animator_1 = require("../common/animator");
-var ponyAnimations_1 = require("./ponyAnimations");
+const animator_1 = require("../common/animator");
+const ponyAnimations_1 = require("./ponyAnimations");
 function n(value) {
     return (DEVELOPMENT || SERVER) ? value : '';
 }
@@ -128,3 +128,4 @@ function toBoopState(state) {
     }
 }
 exports.toBoopState = toBoopState;
+//# sourceMappingURL=ponyStates.js.map

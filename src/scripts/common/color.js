@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var lodash_1 = require("lodash");
-var utils_1 = require("./utils");
+const lodash_1 = require("lodash");
+const utils_1 = require("./utils");
 exports.colorNames = {
     aliceblue: 'f0f8ff',
     antiquewhite: 'faebd7',
@@ -147,8 +147,8 @@ exports.colorNames = {
     yellow: 'ffff00',
     yellowgreen: '9acd32'
 };
-var TRANSPARENT = 0x00000000 >>> 0;
-var BLACK = 0x000000ff >>> 0;
+const TRANSPARENT = 0x00000000 >>> 0;
+const BLACK = 0x000000ff >>> 0;
 function getR(color) {
     return (color >> 24) & 0xff;
 }
@@ -188,12 +188,12 @@ function colorToHSVA(color, h) {
 }
 exports.colorToHSVA = colorToHSVA;
 function colorToCSS(color) {
-    var alpha = getAlpha(color);
+    const alpha = getAlpha(color);
     if (alpha === 0xff) {
-        return "#" + colorToHexRGB(color);
+        return `#${colorToHexRGB(color)}`;
     }
     else {
-        return "rgba(" + getR(color) + "," + getG(color) + "," + getB(color) + "," + alpha / 255 + ")";
+        return `rgba(${getR(color)},${getG(color)},${getB(color)},${alpha / 255})`;
     }
 }
 exports.colorToCSS = colorToCSS;
@@ -205,7 +205,7 @@ function colorToHexRGB(color) {
 }
 exports.colorToHexRGB = colorToHexRGB;
 function colorToFloatArray(color) {
-    var result = new Float32Array(4);
+    const result = new Float32Array(4);
     colorToExistingFloatArray(result, color);
     return result;
 }
@@ -217,17 +217,17 @@ function colorToExistingFloatArray(array, color) {
     array[3] = getAlpha(color) / 255;
 }
 exports.colorToExistingFloatArray = colorToExistingFloatArray;
-var int8 = new Int8Array(4);
-var int32 = new Int32Array(int8.buffer, 0, 1);
-var float32 = new Float32Array(int8.buffer, 0, 1);
+const int8 = new Int8Array(4);
+const int32 = new Int32Array(int8.buffer, 0, 1);
+const float32 = new Float32Array(int8.buffer, 0, 1);
 function colorToFloat(color) {
-    var int = (getAlpha(color) << 24) | (getB(color) << 16) | (getG(color) << 8) | getR(color);
+    const int = (getAlpha(color) << 24) | (getB(color) << 16) | (getG(color) << 8) | getR(color);
     int32[0] = int & 0xfeffffff;
     return float32[0];
 }
 exports.colorToFloat = colorToFloat;
 function colorToFloatAlpha(color, alpha /* 0-1 */) {
-    var int = (((getAlpha(color) * alpha) & 0xff) << 24) | (getB(color) << 16) | (getG(color) << 8) | getR(color);
+    const int = (((getAlpha(color) * alpha) & 0xff) << 24) | (getB(color) << 16) | (getG(color) << 8) | getR(color);
     int32[0] = int & 0xfeffffff;
     return float32[0];
 }
@@ -238,12 +238,11 @@ function colorFromRGBA(r, g, b, a /* 0-255 */) {
 }
 exports.colorFromRGBA = colorFromRGBA;
 function colorFromHSVA(h, s, v, a /* 0-1 */) {
-    var _a = hsv2rgb(h, s, v), r = _a.r, g = _a.g, b = _a.b;
+    const { r, g, b } = hsv2rgb(h, s, v);
     return colorFromRGBA(r, g, b, a * 255);
 }
 exports.colorFromHSVA = colorFromHSVA;
-function colorFromHSVAObject(_a) {
-    var h = _a.h, s = _a.s, v = _a.v, a = _a.a;
+function colorFromHSVAObject({ h, s, v, a }) {
     return colorFromHSVA(h, s, v, a);
 }
 exports.colorFromHSVAObject = colorFromHSVAObject;
@@ -251,7 +250,7 @@ exports.colorFromHSVAObject = colorFromHSVAObject;
 function parseColorFast(str) {
     if (!lodash_1.isString(str))
         return TRANSPARENT;
-    var int = parseInt(str, 16);
+    const int = parseInt(str, 16);
     if (str.length !== 6 || isNaN(int) || int < 0) {
         return parseColorWithAlpha(str, 1);
     }
@@ -267,13 +266,13 @@ function parseColor(str) {
     if (str === '' || str === 'none' || str === 'transparent')
         return TRANSPARENT;
     str = exports.colorNames[str] || str;
-    var m = /(\d+)[ ,]+(\d+)[ ,]+(\d+)(?:[ ,]+(\d*\.?\d+))?/.exec(str);
+    const m = /(\d+)[ ,]+(\d+)[ ,]+(\d+)(?:[ ,]+(\d*\.?\d+))?/.exec(str);
     if (m) {
         return colorFromRGBA(parseInt(m[1], 10), parseInt(m[2], 10), parseInt(m[3], 10), m[4] ? parseFloat(m[4]) * 255 : 255);
     }
-    var n = /[0-9a-f]+/i.exec(str);
+    const n = /[0-9a-f]+/i.exec(str);
     if (n) {
-        var s = n[0];
+        const s = n[0];
         if (s.length === 3) {
             return colorFromRGBA(parseInt(s.charAt(0), 16) * 0x11, parseInt(s.charAt(1), 16) * 0x11, parseInt(s.charAt(2), 16) * 0x11, 255);
         }
@@ -290,8 +289,8 @@ function parseColorWithAlpha(str, alpha /* 0-1 */) {
 exports.parseColorWithAlpha = parseColorWithAlpha;
 // utils
 function toGrayscale(color) {
-    var c = Math.round(utils_1.clamp(getR(color) * 0.2126 + getG(color) * 0.7152 + getB(color) * 0.0722, 0, 255)) | 0;
-    var a = getAlpha(color);
+    const c = Math.round(utils_1.clamp(getR(color) * 0.2126 + getG(color) * 0.7152 + getB(color) * 0.0722, 0, 255)) | 0;
+    const a = getAlpha(color);
     return colorFromRGBA(c, c, c, a);
 }
 exports.toGrayscale = toGrayscale;
@@ -304,23 +303,22 @@ function multiplyColor(color, factor /* 0-1 */) {
 }
 exports.multiplyColor = multiplyColor;
 function lerpColors(a, b, factor) {
-    var f = factor;
-    var t = 1 - factor;
+    const f = factor;
+    const t = 1 - factor;
     return colorFromRGBA(getR(a) * t + getR(b) * f, getG(a) * t + getG(b) * f, getB(a) * t + getB(b) * f, getAlpha(a) * t + getAlpha(b) * f);
 }
 exports.lerpColors = lerpColors;
 /// r, g, b = <0, 255>, a = <0, 1>
-function rgb2hsv(r, g, b, a /* 0-1 */, h) {
-    if (h === void 0) { h = 0; }
+function rgb2hsv(r, g, b, a /* 0-1 */, h = 0) {
     r = r / 255;
     g = g / 255;
     b = b / 255;
     h = h / 360;
-    var max = Math.max(r, g, b);
-    var min = Math.min(r, g, b);
-    var v = max;
-    var d = max - min;
-    var s = max === 0 ? 0 : d / max;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const v = max;
+    const d = max - min;
+    const s = max === 0 ? 0 : d / max;
     if (max !== min) {
         switch (max) {
             case r:
@@ -335,7 +333,7 @@ function rgb2hsv(r, g, b, a /* 0-1 */, h) {
         }
         h /= 6;
     }
-    return { h: h * 360, s: s, v: v, a: a };
+    return { h: h * 360, s, v, a };
 }
 exports.rgb2hsv = rgb2hsv;
 /// h = <0, 360>; s, v = <0, 1>
@@ -343,16 +341,16 @@ function hsv2rgb(h, s, v) {
     h = Math.max(0, Math.min(360, h === 360 ? 0 : h));
     s = Math.max(0, Math.min(1, s));
     v = Math.max(0, Math.min(1, v));
-    var r = v;
-    var g = v;
-    var b = v;
+    let r = v;
+    let g = v;
+    let b = v;
     if (s !== 0) {
         h /= 60;
-        var i = Math.floor(h);
-        var f = h - i;
-        var p = v * (1 - s);
-        var q = v * (1 - s * f);
-        var t = v * (1 - s * (1 - f));
+        const i = Math.floor(h);
+        const f = h - i;
+        const p = v * (1 - s);
+        const q = v * (1 - s * f);
+        const t = v * (1 - s * (1 - f));
         switch (i) {
             case 0:
                 r = v;
@@ -394,11 +392,11 @@ function hsv2rgb(h, s, v) {
 exports.hsv2rgb = hsv2rgb;
 function h2rgb(h) {
     h /= 60;
-    var r = 0, g = 0, b = 0;
-    var i = Math.floor(h);
-    var f = h - i;
-    var q = (1 - f);
-    var t = (1 - (1 - f));
+    let r = 0, g = 0, b = 0;
+    const i = Math.floor(h);
+    const f = h - i;
+    const q = (1 - f);
+    const t = (1 - (1 - f));
     switch (i) {
         case 0:
             r = 1;
@@ -431,3 +429,4 @@ function h2rgb(h) {
     };
 }
 exports.h2rgb = h2rgb;
+//# sourceMappingURL=color.js.map

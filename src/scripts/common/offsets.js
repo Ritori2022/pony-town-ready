@@ -1,10 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var createPoint = function (_a) {
-    var x = _a[0], y = _a[1];
-    return ({ x: x, y: y });
-};
-var createPoints = function (pts) { return pts.map(createPoint); };
+const createPoint = ([x, y]) => ({ x, y });
+const createPoints = (pts) => pts.map(createPoint);
 exports.cmOffsets = [];
 exports.headOffsets = [];
 exports.tailOffsets = [];
@@ -123,3 +120,4 @@ exports.HEAD_ACCESSORY_OFFSETS = createPoints([
     [0, -4],
     [0, -3],
 ]);
+//# sourceMappingURL=offsets.js.map

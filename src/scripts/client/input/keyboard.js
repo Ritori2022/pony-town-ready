@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var utils_1 = require("../../common/utils");
-var firefox = !SERVER && /firefox/i.test(navigator.userAgent);
+const utils_1 = require("../../common/utils");
+const firefox = !SERVER && /firefox/i.test(navigator.userAgent);
 function isKeyEventInvalid(e) {
     return e.target && /^(input|textarea|select)$/i.test(e.target.tagName);
 }
@@ -17,72 +17,71 @@ function fixKeyCode(key) {
     }
     return key;
 }
-var iosKeyToKeyCode = {
+const iosKeyToKeyCode = {
     UIKeyInputEscape: 27 /* ESCAPE */,
     UIKeyInputUpArrow: 38 /* UP */,
     UIKeyInputLeftArrow: 37 /* LEFT */,
     UIKeyInputRightArrow: 39 /* RIGHT */,
     UIKeyInputDownArrow: 40 /* DOWN */,
 };
-var iosHandledKeyCodes = [27 /* ESCAPE */, 38 /* UP */, 37 /* LEFT */, 39 /* RIGHT */, 40 /* DOWN */];
-var KeyboardController = /** @class */ (function () {
-    function KeyboardController(manager) {
-        var _this = this;
+const iosHandledKeyCodes = [27 /* ESCAPE */, 38 /* UP */, 37 /* LEFT */, 39 /* RIGHT */, 40 /* DOWN */];
+class KeyboardController {
+    constructor(manager) {
         this.manager = manager;
         this.initialized = false;
         this.stack = [];
-        this.keydown = function (e) {
-            if (!_this.manager.disabledKeyboard && !isKeyEventInvalid(e)) {
-                var code = fixKeyCode(e.keyCode);
-                _this.manager.setValue(code, 1);
+        this.keydown = (e) => {
+            if (!this.manager.disabledKeyboard && !isKeyEventInvalid(e)) {
+                const code = fixKeyCode(e.keyCode);
+                this.manager.setValue(code, 1);
                 if (!allowKey(code)) {
                     e.preventDefault();
                     e.stopPropagation();
                 }
-                if (!utils_1.includes(_this.stack, code) && !utils_1.includes(iosHandledKeyCodes, code)) {
-                    _this.stack.push(code);
+                if (!utils_1.includes(this.stack, code) && !utils_1.includes(iosHandledKeyCodes, code)) {
+                    this.stack.push(code);
                 }
             }
         };
-        this.keyup = function (e) {
-            var code = fixKeyCode(e.keyCode);
+        this.keyup = (e) => {
+            let code = fixKeyCode(e.keyCode);
             // fix keyCode on iOS bluetooth keyboard
             if (code === 0) {
                 code = iosKeyToKeyCode[e.key] || 0;
                 if (code === 0) {
-                    code = _this.stack.pop() || 0;
+                    code = this.stack.pop() || 0;
                 }
             }
-            if (_this.manager.setValue(code, 0)) {
+            if (this.manager.setValue(code, 0)) {
                 e.preventDefault();
                 e.stopPropagation();
             }
-            utils_1.removeItem(_this.stack, code);
+            utils_1.removeItem(this.stack, code);
         };
-        this.blur = function () {
-            _this.manager.clear();
+        this.blur = () => {
+            this.manager.clear();
         };
     }
-    KeyboardController.prototype.initialize = function () {
+    initialize() {
         if (!this.initialized) {
             this.initialized = true;
             window.addEventListener('keydown', this.keydown);
             window.addEventListener('keyup', this.keyup);
             window.addEventListener('blur', this.blur);
         }
-    };
-    KeyboardController.prototype.release = function () {
+    }
+    release() {
         this.initialized = false;
         window.removeEventListener('keydown', this.keydown);
         window.removeEventListener('keyup', this.keyup);
         window.removeEventListener('blur', this.blur);
         this.clear();
-    };
-    KeyboardController.prototype.update = function () {
-    };
-    KeyboardController.prototype.clear = function () {
+    }
+    update() {
+    }
+    clear() {
         this.stack.length = 0;
-    };
-    return KeyboardController;
-}());
+    }
+}
 exports.KeyboardController = KeyboardController;
+//# sourceMappingURL=keyboard.js.map

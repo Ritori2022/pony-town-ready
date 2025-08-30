@@ -1,24 +1,11 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-function animatorState(name, animation, variants) {
-    if (variants === void 0) { variants = {}; }
-    return { name: name, animation: animation, variants: variants, from: [] };
+function animatorState(name, animation, variants = {}) {
+    return { name, animation, variants, from: [] };
 }
 exports.animatorState = animatorState;
-function animatorTransition(from, to, options) {
-    if (options === void 0) { options = {}; }
-    to.from.push(__assign({ state: from }, options));
+function animatorTransition(from, to, options = {}) {
+    to.from.push(Object.assign({ state: from }, options));
 }
 exports.animatorTransition = animatorTransition;
 exports.anyState = animatorState('any', { fps: 1, loop: false, frames: [] });
@@ -37,7 +24,7 @@ function getAnimation(animator) {
 }
 exports.getAnimation = getAnimation;
 function getAnimationFrame(animator) {
-    var animation = getAnimation(animator);
+    const animation = getAnimation(animator);
     return animation ? Math.floor(animator.time * animation.fps) % animation.frames.length : 0;
 }
 exports.getAnimationFrame = getAnimationFrame;
@@ -65,21 +52,21 @@ function setAnimatorState(animator, state) {
 }
 exports.setAnimatorState = setAnimatorState;
 function updateAnimator(animator, delta) {
-    var time = animator.time;
+    const time = animator.time;
     animator.time += delta;
     if (animator.target !== undefined && animator.state !== undefined && animator.state !== animator.target) {
-        var animation = getAnimationForState(animator.state, animator.variant);
-        var animationLength = animation.frames.length / animation.fps;
-        var frameBefore = Math.floor(time / animationLength);
-        var frameAfter = Math.floor(animator.time / animationLength);
-        var frameTimeAfter = (animator.time % animationLength) / animationLength;
-        var animationEnded = frameBefore !== frameAfter;
-        var switched = false;
+        const animation = getAnimationForState(animator.state, animator.variant);
+        const animationLength = animation.frames.length / animation.fps;
+        const frameBefore = Math.floor(time / animationLength);
+        const frameAfter = Math.floor(animator.time / animationLength);
+        const frameTimeAfter = (animator.time % animationLength) / animationLength;
+        let animationEnded = frameBefore !== frameAfter;
+        let switched = false;
         do {
             switched = false;
-            var transition = animator.next = animator.next || findTransition(animator.state, animator.target);
+            const transition = animator.next = animator.next || findTransition(animator.state, animator.target);
             if (transition !== undefined) {
-                var exitAfter = transition.exitAfter === undefined ? 1 : transition.exitAfter;
+                const exitAfter = transition.exitAfter === undefined ? 1 : transition.exitAfter;
                 if (frameTimeAfter >= exitAfter || animationEnded) {
                     if (!transition.keepTime) {
                         animator.time = transition.enterTime || 0;
@@ -112,8 +99,8 @@ function findTransition(current, target) {
         || findTransMinMax(current, target, 2, 10);
 }
 function findTransMinMax(current, target, min, max) {
-    for (var i = min; i <= max; i++) {
-        var trans = findTrans(current, target, target, 0, i, [current]);
+    for (let i = min; i <= max; i++) {
+        const trans = findTrans(current, target, target, 0, i, [current]);
         if (trans !== undefined) {
             return trans;
         }
@@ -123,16 +110,14 @@ function findTransMinMax(current, target, min, max) {
 function findTrans(current, target, finalTarget, depth, maxDepth, done) {
     if (done.indexOf(target) === -1) {
         done.push(target);
-        for (var _i = 0, _a = target.from; _i < _a.length; _i++) {
-            var from = _a[_i];
+        for (const from of target.from) {
             if (from.state === current && (from.onlyDirectTo === undefined || from.onlyDirectTo === finalTarget)) {
-                return __assign({}, from, { state: target });
+                return Object.assign({}, from, { state: target });
             }
         }
         if (depth < maxDepth) {
-            for (var _b = 0, _c = target.from; _b < _c.length; _b++) {
-                var from = _c[_b];
-                var trans = findTrans(current, from.state, finalTarget, depth + 1, maxDepth, done);
+            for (const from of target.from) {
+                const trans = findTrans(current, from.state, finalTarget, depth + 1, maxDepth, done);
                 if (trans !== undefined) {
                     return trans;
                 }
@@ -141,3 +126,4 @@ function findTrans(current, target, finalTarget, depth, maxDepth, done) {
     }
     return undefined;
 }
+//# sourceMappingURL=animator.js.map

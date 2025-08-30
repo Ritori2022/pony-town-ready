@@ -1,56 +1,45 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var ponyUtils_1 = require("../client/ponyUtils");
-var ponyAnimations_1 = require("../client/ponyAnimations");
-var interfaces_1 = require("./interfaces");
-var utils_1 = require("./utils");
-var constants_1 = require("./constants");
-var ponyInfo_1 = require("./ponyInfo");
-var entities_1 = require("./entities");
-var animationPlayer_1 = require("./animationPlayer");
-var colors_1 = require("./colors");
-var expressionEncoder_1 = require("./encoders/expressionEncoder");
-var positionUtils_1 = require("./positionUtils");
-var ponyDraw_1 = require("../client/ponyDraw");
-var entityUtils_1 = require("./entityUtils");
-var animator_1 = require("./animator");
-var ponyStates_1 = require("../client/ponyStates");
-var compressPony_1 = require("./compressPony");
-var ponyHelpers_1 = require("../client/ponyHelpers");
-var spriteAnimations_1 = require("../client/spriteAnimations");
-var rect_1 = require("./rect");
-var worldMap_1 = require("./worldMap");
-var draw_1 = require("../client/draw");
-var mixins_1 = require("./mixins");
-var handlers_1 = require("../client/handlers");
-var sprites = require("../generated/sprites");
-var color_1 = require("./color");
-var flyY = 15;
-var lightExtentX = 100;
-var lightExtentY = 70;
-var emptyBounds = rect_1.rect(0, 0, 0, 0);
-var bounds = rect_1.rect(-ponyUtils_1.PONY_WIDTH / 2, -ponyUtils_1.PONY_HEIGHT, ponyUtils_1.PONY_WIDTH, ponyUtils_1.PONY_HEIGHT + 5);
-var boundsFly = rect_1.rect(bounds.x, bounds.y - flyY, bounds.w, bounds.h + flyY);
-var lightBounds = makeLightBounds(bounds);
-var lightBoundsFly = makeLightBounds(boundsFly);
-var interactBounds = rect_1.rect(-20, -50, 40, 50);
-var interactBoundsFly = rect_1.rect(interactBounds.x, interactBounds.y - flyY, interactBounds.w, interactBounds.h);
-var defaultExpr = expressionEncoder_1.encodeExpression(undefined);
+const ponyUtils_1 = require("../client/ponyUtils");
+const ponyAnimations_1 = require("../client/ponyAnimations");
+const interfaces_1 = require("./interfaces");
+const utils_1 = require("./utils");
+const constants_1 = require("./constants");
+const ponyInfo_1 = require("./ponyInfo");
+const entities_1 = require("./entities");
+const animationPlayer_1 = require("./animationPlayer");
+const colors_1 = require("./colors");
+const expressionEncoder_1 = require("./encoders/expressionEncoder");
+const positionUtils_1 = require("./positionUtils");
+const ponyDraw_1 = require("../client/ponyDraw");
+const entityUtils_1 = require("./entityUtils");
+const animator_1 = require("./animator");
+const ponyStates_1 = require("../client/ponyStates");
+const compressPony_1 = require("./compressPony");
+const ponyHelpers_1 = require("../client/ponyHelpers");
+const spriteAnimations_1 = require("../client/spriteAnimations");
+const rect_1 = require("./rect");
+const worldMap_1 = require("./worldMap");
+const draw_1 = require("../client/draw");
+const mixins_1 = require("./mixins");
+const handlers_1 = require("../client/handlers");
+const sprites = require("../generated/sprites");
+const color_1 = require("./color");
+const flyY = 15;
+const lightExtentX = 100;
+const lightExtentY = 70;
+const emptyBounds = rect_1.rect(0, 0, 0, 0);
+const bounds = rect_1.rect(-ponyUtils_1.PONY_WIDTH / 2, -ponyUtils_1.PONY_HEIGHT, ponyUtils_1.PONY_WIDTH, ponyUtils_1.PONY_HEIGHT + 5);
+const boundsFly = rect_1.rect(bounds.x, bounds.y - flyY, bounds.w, bounds.h + flyY);
+const lightBounds = makeLightBounds(bounds);
+const lightBoundsFly = makeLightBounds(boundsFly);
+const interactBounds = rect_1.rect(-20, -50, 40, 50);
+const interactBoundsFly = rect_1.rect(interactBounds.x, interactBounds.y - flyY, interactBounds.w, interactBounds.h);
+const defaultExpr = expressionEncoder_1.encodeExpression(undefined);
 function createPony(id, state, info, defaultPalette, paletteManager) {
-    var pony = {
-        id: id,
-        state: state,
+    const pony = {
+        id,
+        state,
         playerState: 0 /* None */,
         type: constants_1.PONY_TYPE,
         flags: 1 /* Movable */ | 64 /* CanCollide */ | 256 /* Interactive */,
@@ -61,7 +50,7 @@ function createPony(id, state, info, defaultPalette, paletteManager) {
         z: 0,
         vx: 0,
         vy: 0,
-        info: info,
+        info,
         order: 0,
         timestamp: 0,
         colliders: mixins_1.ponyColliders,
@@ -85,7 +74,7 @@ function createPony(id, state, info, defaultPalette, paletteManager) {
         blinkTime: 0,
         nextBlink: Math.random() * 5,
         currentExpression: defaultExpr,
-        drawingOptions: __assign({}, ponyHelpers_1.defaultDrawPonyOptions(), { shadow: true, bounce: BETA }),
+        drawingOptions: Object.assign({}, ponyHelpers_1.defaultDrawPonyOptions(), { shadow: true, bounce: BETA }),
         zzzEffect: animationPlayer_1.createAnimationPlayer(defaultPalette),
         cryEffect: animationPlayer_1.createAnimationPlayer(defaultPalette),
         sneezeEffect: animationPlayer_1.createAnimationPlayer(defaultPalette),
@@ -104,11 +93,11 @@ function createPony(id, state, info, defaultPalette, paletteManager) {
         chatBounds: interactBounds,
         lightBounds: emptyBounds,
         lightSpriteBounds: emptyBounds,
-        paletteManager: paletteManager,
+        paletteManager,
         lastBoopSplash: 0,
         magicColor: 0,
     };
-    pony.ponyState.drawFaceExtra = function (batch) { return drawFaceExtra(batch, pony); };
+    pony.ponyState.drawFaceExtra = batch => drawFaceExtra(batch, pony);
     return pony;
 }
 exports.createPony = createPony;
@@ -155,8 +144,8 @@ function canPonyFlyUp(pony) {
 }
 exports.canPonyFlyUp = canPonyFlyUp;
 function getPonyChatHeight(pony) {
-    var baseHeight = 2;
-    var state = pony.ponyState;
+    const baseHeight = 2;
+    const state = pony.ponyState;
     if (pony.animator.state === ponyStates_1.trotting) {
         return baseHeight;
     }
@@ -164,9 +153,9 @@ function getPonyChatHeight(pony) {
         return baseHeight - 16;
     }
     else {
-        var frame = ponyDraw_1.getPonyAnimationFrame(state.animation, state.animationFrame, ponyAnimations_1.defaultBodyFrame);
-        var animation = state.headAnimation || ponyAnimations_1.defaultHeadAnimation;
-        var headFrame = ponyDraw_1.getPonyAnimationFrame(animation, state.headAnimationFrame, ponyAnimations_1.defaultHeadFrame);
+        const frame = ponyDraw_1.getPonyAnimationFrame(state.animation, state.animationFrame, ponyAnimations_1.defaultBodyFrame);
+        const animation = state.headAnimation || ponyAnimations_1.defaultHeadAnimation;
+        const headFrame = ponyDraw_1.getPonyAnimationFrame(animation, state.headAnimationFrame, ponyAnimations_1.defaultHeadFrame);
         return baseHeight + ponyDraw_1.getHeadY(frame, headFrame);
     }
 }
@@ -189,7 +178,7 @@ exports.updatePonyInfo = updatePonyInfo;
 function ensurePonyInfoDecoded(pony) {
     if (pony.info !== undefined && pony.palettePonyInfo === undefined) {
         pony.palettePonyInfo = compressPony_1.decodePonyInfo(pony.info, pony.paletteManager);
-        var wingType = pony.palettePonyInfo.wings && pony.palettePonyInfo.wings.type || 0;
+        const wingType = pony.palettePonyInfo.wings && pony.palettePonyInfo.wings.type || 0;
         pony.animator.variant = wingType === 4 ? 'bug' : '';
         pony.ponyState.blushColor = colors_1.blushColor(pony.palettePonyInfo.coatPalette.colors[1]);
         pony.magicColor = color_1.withAlpha(pony.palettePonyInfo.magicColorValue, colors_1.MAGIC_ALPHA);
@@ -247,39 +236,39 @@ function drawPonyEntity(batch, pony, drawOptions) {
         batch.drawBatch(pony.batch);
     }
     else if (pony.palettePonyInfo !== undefined) {
-        var swimming_1 = false;
+        let swimming = false;
         if (ponyStates_1.isSwimmingState(pony.animator.state)) {
             if (pony.animator.state === ponyStates_1.swimmingToFlying) {
-                swimming_1 = pony.animator.time < 0.4;
+                swimming = pony.animator.time < 0.4;
             }
             else {
-                swimming_1 = true;
+                swimming = true;
             }
         }
-        var createBatch = pony.vx === 0 && pony.vy === 0 && !swimming_1;
-        var right = entityUtils_1.isFacingRight(pony);
+        const createBatch = pony.vx === 0 && pony.vy === 0 && !swimming;
+        const right = entityUtils_1.isFacingRight(pony);
         if (createBatch) {
             batch.startBatch();
         }
         batch.save();
         transformBatch(batch, pony);
-        var options = pony.drawingOptions;
+        const options = pony.drawingOptions;
         options.flipped = right;
         options.selected = pony.selected === true;
         options.extra = pony.extra;
         options.toy = pony.toy;
-        options.swimming = swimming_1;
+        options.swimming = swimming;
         options.shadow = !pony.swimming;
         options.gameTime = drawOptions.gameTime + pony.id * 0.1;
         options.shadowColor = drawOptions.shadowColor;
-        var ponyState = pony.ponyState;
+        const ponyState = pony.ponyState;
         ponyDraw_1.drawPony(batch, pony.palettePonyInfo, ponyState, 0, 0, options);
         if (animationPlayer_1.isAnimationPlaying(pony.zzzEffect) || animationPlayer_1.isAnimationPlaying(pony.sneezeEffect) ||
             animationPlayer_1.isAnimationPlaying(pony.holdPoofEffect) || animationPlayer_1.isAnimationPlaying(pony.heartsEffect) ||
             animationPlayer_1.isAnimationPlaying(pony.magicEffect)) {
-            var _a = ponyDraw_1.getPonyHeadPosition(pony.ponyState, 0, 0), x = _a.x, y = _a.y;
-            var right_1 = entityUtils_1.isFacingRight(pony);
-            var flip = right_1 ? !ponyState.headTurned : ponyState.headTurned;
+            const { x, y } = ponyDraw_1.getPonyHeadPosition(pony.ponyState, 0, 0);
+            const right = entityUtils_1.isFacingRight(pony);
+            const flip = right ? !ponyState.headTurned : ponyState.headTurned;
             batch.multiplyTransform(ponyDraw_1.createHeadTransform(undefined, x, y, ponyState));
             animationPlayer_1.drawAnimation(batch, pony.zzzEffect, 0, 0, colors_1.WHITE, flip);
             animationPlayer_1.drawAnimation(batch, pony.sneezeEffect, 0, 0, colors_1.WHITE, flip);
@@ -287,7 +276,7 @@ function drawPonyEntity(batch, pony, drawOptions) {
             animationPlayer_1.drawAnimation(batch, pony.heartsEffect, 0, 0, colors_1.HEARTS_COLOR, flip);
             if (pony.magicEffect.currentAnimation !== undefined) {
                 animationPlayer_1.drawAnimation(batch, pony.magicEffect, 0, 0, pony.magicColor, flip);
-                var sprite = sprites.magic3.frames[pony.magicEffect.frame];
+                const sprite = sprites.magic3.frames[pony.magicEffect.frame];
                 sprite && batch.drawSprite(sprite, colors_1.WHITE, pony.heartsEffect.palette, 0, 0);
             }
         }
@@ -308,21 +297,21 @@ function drawPonyEntity(batch, pony, drawOptions) {
     }
 }
 exports.drawPonyEntity = drawPonyEntity;
-var magickLightSizes = [
+const magickLightSizes = [
     0, 1.02,
     0.97, 0.94, 0.91, 0.94, 0.97, 1.00,
     0.97, 0.94, 0.91,
 ];
 function drawPonyEntityLight(batch, pony, options) {
-    var ponyState = pony.ponyState;
-    var holding = ponyState.holding;
-    var drawHolding = holding !== undefined && holding.drawLight !== undefined;
-    var drawMagic = pony.magicEffect.currentAnimation !== undefined;
-    var draw = drawHolding || drawMagic;
+    const ponyState = pony.ponyState;
+    const holding = ponyState.holding;
+    const drawHolding = holding !== undefined && holding.drawLight !== undefined;
+    const drawMagic = pony.magicEffect.currentAnimation !== undefined;
+    const draw = drawHolding || drawMagic;
     if (draw) {
         batch.save();
         transformBatch(batch, pony);
-        var _a = ponyDraw_1.getPonyHeadPosition(ponyState, 0, 0), x = _a.x, y = _a.y;
+        const { x, y } = ponyDraw_1.getPonyHeadPosition(ponyState, 0, 0);
         batch.multiplyTransform(ponyDraw_1.createHeadTransform(undefined, x, y, ponyState));
         if (drawHolding) {
             holding.x = positionUtils_1.toWorldX(holding.pickableX);
@@ -330,7 +319,7 @@ function drawPonyEntityLight(batch, pony, options) {
             holding.drawLight(batch, options);
         }
         if (drawMagic) {
-            var size = 200 * (magickLightSizes[pony.magicEffect.frame] || 0);
+            const size = 200 * (magickLightSizes[pony.magicEffect.frame] || 0);
             batch.drawImage(colors_1.WHITE, -1, -1, 2, 2, 30 - size / 2, 27 - size / 2, size, size);
         }
         batch.restore();
@@ -338,15 +327,15 @@ function drawPonyEntityLight(batch, pony, options) {
 }
 exports.drawPonyEntityLight = drawPonyEntityLight;
 function drawPonyEntityLightSprite(batch, pony, options) {
-    var ponyState = pony.ponyState;
-    var holding = ponyState.holding;
-    var drawHolding = holding !== undefined && holding.drawLightSprite !== undefined;
+    const ponyState = pony.ponyState;
+    const holding = ponyState.holding;
+    const drawHolding = holding !== undefined && holding.drawLightSprite !== undefined;
     // const drawMagic = pony.magicEffect.currentAnimation !== undefined;
-    var draw = drawHolding; // || drawMagic;
+    const draw = drawHolding; // || drawMagic;
     if (draw) {
         batch.save();
         transformBatch(batch, pony);
-        var _a = ponyDraw_1.getPonyHeadPosition(ponyState, 0, 0), x = _a.x, y = _a.y;
+        const { x, y } = ponyDraw_1.getPonyHeadPosition(ponyState, 0, 0);
         batch.multiplyTransform(ponyDraw_1.createHeadTransform(undefined, x, y, ponyState));
         if (drawHolding) {
             holding.x = positionUtils_1.toWorldX(holding.pickableX);
@@ -363,7 +352,7 @@ function drawPonyEntityLightSprite(batch, pony, options) {
 }
 exports.drawPonyEntityLightSprite = drawPonyEntityLightSprite;
 function flagsToState(state, moving, isSwimming) {
-    var ponyState = state & 240 /* PonyStateMask */;
+    const ponyState = state & 240 /* PonyStateMask */;
     if (isSwimming) {
         return ponyStates_1.swimming;
     }
@@ -384,16 +373,16 @@ function flagsToState(state, moving, isSwimming) {
             case 64 /* PonyLying */: return ponyStates_1.lying;
             case 80 /* PonyFlying */: return ponyStates_1.hovering;
             default:
-                throw new Error("Invalid pony state (" + ponyState + ")");
+                throw new Error(`Invalid pony state (${ponyState})`);
         }
     }
 }
 exports.flagsToState = flagsToState;
 function updatePonyEntity(pony, delta, gameTime, safe) {
     // update state
-    var state = pony.ponyState;
-    var walking = pony.vx !== 0 || pony.vy !== 0;
-    var animationState = flagsToState(pony.state, walking, pony.swimming);
+    const state = pony.ponyState;
+    const walking = pony.vx !== 0 || pony.vy !== 0;
+    const animationState = flagsToState(pony.state, walking, pony.swimming);
     if (pony.inTheAirDelay > 0) {
         pony.inTheAirDelay -= delta;
     }
@@ -410,7 +399,7 @@ function updatePonyEntity(pony, delta, gameTime, safe) {
                 break;
             default:
                 if (DEVELOPMENT) {
-                    console.error("Invalid DoAction: " + pony.doAction);
+                    console.error(`Invalid DoAction: ${pony.doAction}`);
                 }
         }
         pony.doAction = 0 /* None */;
@@ -421,7 +410,7 @@ function updatePonyEntity(pony, delta, gameTime, safe) {
     // head
     pony.headTime += delta;
     if (pony.headAnimation !== undefined) {
-        var frame = Math.floor(pony.headTime * pony.headAnimation.fps);
+        const frame = Math.floor(pony.headTime * pony.headAnimation.fps);
         if (frame >= pony.headAnimation.frames.length && !pony.headAnimation.loop) {
             pony.headAnimation = undefined;
             state.headAnimationFrame = 0;
@@ -453,7 +442,7 @@ function updatePonyEntity(pony, delta, gameTime, safe) {
     animationPlayer_1.updateAnimation(pony.heartsEffect, delta);
     animationPlayer_1.updateAnimation(pony.magicEffect, delta);
     // holding
-    var holdingUpdated = state.holding !== undefined &&
+    const holdingUpdated = state.holding !== undefined &&
         state.holding.update !== undefined &&
         state.holding.update(delta, gameTime);
     // blink
@@ -464,7 +453,7 @@ function updatePonyEntity(pony, delta, gameTime, safe) {
     // update animator
     animator_1.updateAnimator(pony.animator, delta);
     // update state
-    var blinkFrame = Math.floor((pony.blinkTime - pony.nextBlink) * constants_1.blinkFps);
+    const blinkFrame = Math.floor((pony.blinkTime - pony.nextBlink) * constants_1.blinkFps);
     state.blinkFrame = blinkFrame < ponyUtils_1.BLINK_FRAMES.length ? ponyUtils_1.BLINK_FRAMES[blinkFrame] : 1;
     state.headTurned = (pony.state & 4 /* HeadTurned */) !== 0;
     state.animation = animator_1.getAnimation(pony.animator) || ponyAnimations_1.stand;
@@ -476,8 +465,8 @@ function updatePonyEntity(pony, delta, gameTime, safe) {
     }
     // discard batch if outdated
     if (pony.batch !== undefined) {
-        var options = pony.drawingOptions;
-        var right = entityUtils_1.isFacingRight(pony);
+        const options = pony.drawingOptions;
+        const right = entityUtils_1.isFacingRight(pony);
         if (holdingUpdated ||
             positionUtils_1.toScreenX(pony.x) !== pony.lastX || positionUtils_1.toScreenYWithZ(pony.y, pony.z) !== pony.lastY ||
             pony.lastRight !== right ||
@@ -490,9 +479,9 @@ function updatePonyEntity(pony, delta, gameTime, safe) {
         }
     }
     // update bounds
-    var flying = entityUtils_1.isPonyFlying(pony);
-    var flyingUpOrDown = ponyStates_1.isFlyingUpOrDown(pony.animator.state);
-    var flyingOrFlyingUpOrDown = flying || flyingUpOrDown;
+    const flying = entityUtils_1.isPonyFlying(pony);
+    const flyingUpOrDown = ponyStates_1.isFlyingUpOrDown(pony.animator.state);
+    const flyingOrFlyingUpOrDown = flying || flyingUpOrDown;
     pony.bounds = flyingOrFlyingUpOrDown ? boundsFly : bounds;
     pony.interactBounds = flying ? interactBoundsFly : interactBounds;
     pony.lightBounds = flyingOrFlyingUpOrDown ? lightBoundsFly : lightBounds;
@@ -500,9 +489,9 @@ function updatePonyEntity(pony, delta, gameTime, safe) {
 }
 exports.updatePonyEntity = updatePonyEntity;
 function updatePonyHold(pony, game) {
-    var ponyState = pony.ponyState;
-    var hadLight = draw_1.hasDrawLight(pony);
-    var hadLightSprite = draw_1.hasLightSprite(pony);
+    const ponyState = pony.ponyState;
+    const hadLight = draw_1.hasDrawLight(pony);
+    const hadLightSprite = draw_1.hasLightSprite(pony);
     if (pony.hold !== 0) {
         if (ponyState.holding === undefined) {
             ponyState.holding = entities_1.createAnEntity(pony.hold, 0, 0, 0, {}, pony.paletteManager, game);
@@ -516,15 +505,15 @@ function updatePonyHold(pony, game) {
         entityUtils_1.releaseEntity(ponyState.holding);
         ponyState.holding = undefined;
     }
-    var hasLight = draw_1.hasDrawLight(pony);
-    var hasLightSprite1 = draw_1.hasLightSprite(pony);
+    const hasLight = draw_1.hasDrawLight(pony);
+    const hasLightSprite1 = draw_1.hasLightSprite(pony);
     worldMap_1.addOrRemoveFromEntityList(game.map.entitiesLight, pony, hadLight, hasLight);
     worldMap_1.addOrRemoveFromEntityList(game.map.entitiesLightSprite, pony, hadLightSprite, hasLightSprite1);
 }
 exports.updatePonyHold = updatePonyHold;
 function filterExpression(expression) {
-    var extra = expression.extra;
-    var blush = utils_1.hasFlag(extra, 1 /* Blush */);
+    const extra = expression.extra;
+    const blush = utils_1.hasFlag(extra, 1 /* Blush */);
     if (blush ||
         utils_1.hasFlag(extra, 16 /* Hearts */) ||
         utils_1.hasFlag(extra, 4 /* Cry */) ||
@@ -561,13 +550,13 @@ function filterExpression(expression) {
     }
 }
 function updatePonyExpression(pony, expr, safe) {
-    var expression = expressionEncoder_1.decodeExpression(expr);
+    const expression = expressionEncoder_1.decodeExpression(expr);
     pony.currentExpression = pony.expr;
     pony.ponyState.expression = expression;
     if (expression && safe) {
         filterExpression(expression);
     }
-    var extra = (expression && expression.extra) || 0;
+    const extra = (expression && expression.extra) || 0;
     if (utils_1.hasFlag(extra, 4 /* Cry */)) {
         animationPlayer_1.playAnimation(pony.cryEffect, spriteAnimations_1.cryAnimation);
     }
@@ -600,14 +589,14 @@ function releasePalettePonyInfo(pony) {
         pony.palettePonyInfo = undefined;
     }
 }
-function makeLightBounds(_a) {
-    var x = _a.x, y = _a.y, w = _a.w, h = _a.h;
+function makeLightBounds({ x, y, w, h }) {
     return rect_1.rect(x - lightExtentX, y - lightExtentY, w + lightExtentX * 2, h + lightExtentY * 2);
 }
 function drawFaceExtra(batch, pony) {
     if (animationPlayer_1.isAnimationPlaying(pony.cryEffect)) {
-        var flip = entityUtils_1.isFacingRight(pony) ? !pony.ponyState.headTurned : pony.ponyState.headTurned;
-        var maxY = entityUtils_1.isPonyLying(pony) ? 62 : (entityUtils_1.isPonySitting(pony) ? 65 : 0);
+        const flip = entityUtils_1.isFacingRight(pony) ? !pony.ponyState.headTurned : pony.ponyState.headTurned;
+        const maxY = entityUtils_1.isPonyLying(pony) ? 62 : (entityUtils_1.isPonySitting(pony) ? 65 : 0);
         animationPlayer_1.drawAnimation(batch, pony.cryEffect, 0, 0, colors_1.WHITE, flip, maxY);
     }
 }
+//# sourceMappingURL=pony.js.map

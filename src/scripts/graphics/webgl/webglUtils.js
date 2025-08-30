@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var errors_1 = require("../../common/errors");
+const errors_1 = require("../../common/errors");
 function getRenderTargetSize(width, height) {
-    var max = Math.max(width, height);
-    var pow = 256;
+    const max = Math.max(width, height);
+    let pow = 256;
     while (pow < max) {
         pow *= 2;
     }
@@ -11,12 +11,12 @@ function getRenderTargetSize(width, height) {
 }
 exports.getRenderTargetSize = getRenderTargetSize;
 function getWebGLContext(canvas) {
-    var options = {
+    const options = {
         alpha: false,
         premultipliedAlpha: false,
         antialias: false,
     };
-    var gl = canvas.getContext('webgl2', options)
+    const gl = canvas.getContext('webgl2', options)
         || canvas.getContext('webgl', options)
         || canvas.getContext('experimental-webgl', options);
     if (!gl) {
@@ -30,7 +30,7 @@ function isWebGL2(gl) {
 }
 exports.isWebGL2 = isWebGL2;
 function getWebGLError(gl) {
-    var error = gl.getError();
+    const error = gl.getError();
     switch (error) {
         case gl.NO_ERROR: return 'NO_ERROR';
         case gl.INVALID_ENUM: return 'INVALID_ENUM';
@@ -39,14 +39,14 @@ function getWebGLError(gl) {
         case gl.INVALID_FRAMEBUFFER_OPERATION: return 'INVALID_FRAMEBUFFER_OPERATION';
         case gl.OUT_OF_MEMORY: return 'OUT_OF_MEMORY';
         case gl.CONTEXT_LOST_WEBGL: return 'CONTEXT_LOST_WEBGL';
-        default: return "" + error;
+        default: return `${error}`;
     }
 }
 exports.getWebGLError = getWebGLError;
 function unbindAllTexturesAndBuffers(gl) {
     try {
-        var numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS) | 0;
-        for (var i = 0; i < numTextureUnits; i++) {
+        const numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS) | 0;
+        for (let i = 0; i < numTextureUnits; i++) {
             gl.activeTexture(gl.TEXTURE0 + i);
             gl.bindTexture(gl.TEXTURE_2D, null);
         }
@@ -60,3 +60,4 @@ function unbindAllTexturesAndBuffers(gl) {
     }
 }
 exports.unbindAllTexturesAndBuffers = unbindAllTexturesAndBuffers;
+//# sourceMappingURL=webglUtils.js.map

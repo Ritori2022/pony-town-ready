@@ -1,22 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var timsort_1 = require("timsort");
-var utils_1 = require("./utils");
-var ponyAnimations_1 = require("../client/ponyAnimations");
-var pony_1 = require("./pony");
-var positionUtils_1 = require("./positionUtils");
-var paletteManager_1 = require("../graphics/paletteManager");
-var rect_1 = require("./rect");
-var worldMap_1 = require("./worldMap");
-var constants_1 = require("./constants");
-var collision_1 = require("./collision");
+const timsort_1 = require("timsort");
+const utils_1 = require("./utils");
+const ponyAnimations_1 = require("../client/ponyAnimations");
+const pony_1 = require("./pony");
+const positionUtils_1 = require("./positionUtils");
+const paletteManager_1 = require("../graphics/paletteManager");
+const rect_1 = require("./rect");
+const worldMap_1 = require("./worldMap");
+const constants_1 = require("./constants");
+const collision_1 = require("./collision");
 function releaseEntity(entity) {
     if (pony_1.isPony(entity)) {
         pony_1.releasePony(entity);
     }
     if (entity.palettes !== undefined) {
-        for (var _i = 0, _a = entity.palettes; _i < _a.length; _i++) {
-            var palette = _a[_i];
+        for (const palette of entity.palettes) {
             paletteManager_1.releasePalette(palette);
         }
     }
@@ -28,10 +27,10 @@ function addChatBubble(map, entity, says) {
 }
 exports.addChatBubble = addChatBubble;
 function updateEntityVelocity(map, entity, vx, vy) {
-    var wasMoving = isMoving(entity);
+    const wasMoving = isMoving(entity);
     entity.vx = vx;
     entity.vy = vy;
-    var isMovingNow = isMoving(entity);
+    const isMovingNow = isMoving(entity);
     worldMap_1.addOrRemoveFromEntityList(map.entitiesMoving, entity, wasMoving, isMovingNow);
 }
 exports.updateEntityVelocity = updateEntityVelocity;
@@ -48,12 +47,12 @@ function sortEntities(entities) {
 }
 exports.sortEntities = sortEntities;
 function closestEntity(point, entities) {
-    return entities.reduce(function (best, entity) { return utils_1.distance(point, entity) < utils_1.distance(point, best) ? entity : best; }, entities[0]);
+    return entities.reduce((best, entity) => utils_1.distance(point, entity) < utils_1.distance(point, best) ? entity : best, entities[0]);
 }
 exports.closestEntity = closestEntity;
 function getBoopRect(entity) {
-    var right = utils_1.hasFlag(entity.state, 2 /* FacingRight */);
-    var sitting = isPonySitting(entity);
+    const right = utils_1.hasFlag(entity.state, 2 /* FacingRight */);
+    const sitting = isPonySitting(entity);
     return rect_1.rect(entity.x + (right ? 0.6 : -0.9) * (sitting ? 0.6 : 1), entity.y - 0.2, 0.3, 0.4);
 }
 exports.getBoopRect = getBoopRect;
@@ -86,9 +85,9 @@ function entityInRange(entity, player) {
 }
 exports.entityInRange = entityInRange;
 function getInteractBounds(pony) {
-    var boundsWidth = 1;
-    var boundsHeight = 1;
-    var boundsOffset = 0.5 + (isPonySitting(pony) ? -0.3 : (isPonyLying(pony) ? -0.2 : 0));
+    const boundsWidth = 1;
+    const boundsHeight = 1;
+    const boundsOffset = 0.5 + (isPonySitting(pony) ? -0.3 : (isPonyLying(pony) ? -0.2 : 0));
     return rect_1.rect(positionUtils_1.toScreenX(isFacingRight(pony) ? (pony.x + boundsOffset) : (pony.x - boundsOffset - boundsWidth)), positionUtils_1.toScreenY(pony.y - boundsHeight / 2), positionUtils_1.toScreenX(boundsWidth), positionUtils_1.toScreenY(boundsHeight));
 }
 exports.getInteractBounds = getInteractBounds;
@@ -96,9 +95,9 @@ exports.SIT_ON_BOUNDS_WIDTH = 1.2;
 exports.SIT_ON_BOUNDS_HEIGHT = 0.5;
 exports.SIT_ON_BOUNDS_OFFSET = 0.4;
 function getSitOnBounds(pony) {
-    var width = exports.SIT_ON_BOUNDS_WIDTH;
-    var height = exports.SIT_ON_BOUNDS_HEIGHT;
-    var offset = isFacingRight(pony) ? -exports.SIT_ON_BOUNDS_OFFSET : (exports.SIT_ON_BOUNDS_OFFSET - exports.SIT_ON_BOUNDS_WIDTH);
+    const width = exports.SIT_ON_BOUNDS_WIDTH;
+    const height = exports.SIT_ON_BOUNDS_HEIGHT;
+    const offset = isFacingRight(pony) ? -exports.SIT_ON_BOUNDS_OFFSET : (exports.SIT_ON_BOUNDS_OFFSET - exports.SIT_ON_BOUNDS_WIDTH);
     return rect_1.rect(positionUtils_1.toScreenX(pony.x + offset), positionUtils_1.toScreenY(pony.y - exports.SIT_ON_BOUNDS_HEIGHT / 2), positionUtils_1.toScreenX(width), positionUtils_1.toScreenY(height));
 }
 exports.getSitOnBounds = getSitOnBounds;
@@ -151,8 +150,8 @@ function hasHeadTurned(entity) {
 }
 exports.hasHeadTurned = hasHeadTurned;
 function isHeadFacingRight(entity) {
-    var headTurned = hasHeadTurned(entity);
-    var facingRight = isFacingRight(entity);
+    const headTurned = hasHeadTurned(entity);
+    const facingRight = isFacingRight(entity);
     return facingRight ? !headTurned : headTurned;
 }
 exports.isHeadFacingRight = isHeadFacingRight;
@@ -211,3 +210,4 @@ function isCritter(entity) {
     return (entity.flags & 4 /* Critter */) !== 0;
 }
 exports.isCritter = isCritter;
+//# sourceMappingURL=entityUtils.js.map

@@ -7,16 +7,16 @@ function createEmptyTexture(gl, width, height, format, type) {
     if (type === undefined) {
         type = gl.UNSIGNED_BYTE;
     }
-    var maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+    const maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
     if (maxTextureSize != null && (width < 0 || width > maxTextureSize || height < 0 || height > maxTextureSize)) {
         throw new Error('Invalid texture shape');
     }
     if (type === gl.FLOAT && !gl.getExtension('OES_texture_float')) {
         throw new Error('Floating point textures not supported on this platform');
     }
-    var handle = createTextureHandle(gl);
+    const handle = createTextureHandle(gl);
     gl.texImage2D(gl.TEXTURE_2D, 0, format, width, height, 0, format, type, null);
-    return { handle: handle, width: width, height: height, format: format, type: type };
+    return { handle, width, height, format, type };
 }
 exports.createEmptyTexture = createEmptyTexture;
 function createTexture(gl, data, format, type) {
@@ -26,9 +26,9 @@ function createTexture(gl, data, format, type) {
     if (type === undefined) {
         type = gl.UNSIGNED_BYTE;
     }
-    var handle = createTextureHandle(gl);
+    const handle = createTextureHandle(gl);
     gl.texImage2D(gl.TEXTURE_2D, 0, format, format, type, data);
-    return { handle: handle, width: data.width, height: data.height, format: format, type: type };
+    return { handle, width: data.width, height: data.height, format, type };
 }
 exports.createTexture = createTexture;
 function disposeTexture(gl, texture) {
@@ -51,8 +51,8 @@ exports.bindTexture = bindTexture;
 function resizeTexture(gl, texture, width, height) {
     width = width | 0;
     height = height | 0;
-    var format = texture.format, type = texture.type;
-    var maxSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+    const { format, type } = texture;
+    const maxSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
     if (maxSize != null && (width < 0 || width > maxSize || height < 0 || height > maxSize)) {
         throw new Error('Invalid texture size');
     }
@@ -63,7 +63,7 @@ function resizeTexture(gl, texture, width, height) {
 }
 exports.resizeTexture = resizeTexture;
 function createTextureHandle(gl) {
-    var texture = gl.createTexture();
+    const texture = gl.createTexture();
     if (!texture) {
         throw new Error('Failed to create texture');
     }
@@ -74,3 +74,4 @@ function createTextureHandle(gl) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     return texture;
 }
+//# sourceMappingURL=texture2d.js.map

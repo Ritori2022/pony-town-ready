@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var texture2d_1 = require("./texture2d");
+const texture2d_1 = require("./texture2d");
 function createFrameBuffer(gl, width, height) {
-    var handle = gl.createFramebuffer();
+    const handle = gl.createFramebuffer();
     if (!handle) {
         throw new Error('Failed to create frame buffer');
     }
-    var texture = texture2d_1.createEmptyTexture(gl, width, height, gl.RGB);
-    return { handle: handle, texture: texture, width: width, height: height };
+    const texture = texture2d_1.createEmptyTexture(gl, width, height, gl.RGB);
+    return { handle, texture, width, height };
 }
 exports.createFrameBuffer = createFrameBuffer;
 function disposeFrameBuffer(gl, buffer) {
@@ -29,8 +29,7 @@ function resizeFrameBuffer(gl, frameBuffer, width, height) {
     frameBuffer.height = height;
 }
 exports.resizeFrameBuffer = resizeFrameBuffer;
-function bindFrameBuffer(gl, _a) {
-    var handle = _a.handle, texture = _a.texture;
+function bindFrameBuffer(gl, { handle, texture }) {
     gl.bindFramebuffer(gl.FRAMEBUFFER, handle);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture.handle, 0);
 }
@@ -40,3 +39,4 @@ function unbindFrameBuffer(gl) {
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 }
 exports.unbindFrameBuffer = unbindFrameBuffer;
+//# sourceMappingURL=frameBuffer.js.map

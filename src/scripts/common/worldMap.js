@@ -1,45 +1,32 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var interfaces_1 = require("./interfaces");
-var utils_1 = require("./utils");
-var camera_1 = require("./camera");
-var region_1 = require("./region");
-var entities_1 = require("./entities");
-var entityUtils_1 = require("./entityUtils");
-var pony_1 = require("./pony");
-var tileUtils_1 = require("../client/tileUtils");
-var positionUtils_1 = require("./positionUtils");
-var draw_1 = require("../client/draw");
-var constants_1 = require("./constants");
-var collision_1 = require("./collision");
-var timing_1 = require("../client/timing");
-var handlers_1 = require("../client/handlers");
-var ponyStates_1 = require("../client/ponyStates");
-var defaultMapInfo = {
+const interfaces_1 = require("./interfaces");
+const utils_1 = require("./utils");
+const camera_1 = require("./camera");
+const region_1 = require("./region");
+const entities_1 = require("./entities");
+const entityUtils_1 = require("./entityUtils");
+const pony_1 = require("./pony");
+const tileUtils_1 = require("../client/tileUtils");
+const positionUtils_1 = require("./positionUtils");
+const draw_1 = require("../client/draw");
+const constants_1 = require("./constants");
+const collision_1 = require("./collision");
+const timing_1 = require("../client/timing");
+const handlers_1 = require("../client/handlers");
+const ponyStates_1 = require("../client/ponyStates");
+const defaultMapInfo = {
     type: 0 /* None */,
     flags: 0 /* None */,
     regionsX: 0,
     regionsY: 0,
     defaultTile: 0 /* None */,
 };
-function createWorldMap(info, state) {
-    if (info === void 0) { info = defaultMapInfo; }
-    if (state === void 0) { state = __assign({}, interfaces_1.defaultMapState); }
-    var type = info.type, flags = info.flags, regionsX = info.regionsX, regionsY = info.regionsY, defaultTile = info.defaultTile, editableArea = info.editableArea;
-    var map = {
-        type: type,
-        flags: flags,
+function createWorldMap(info = defaultMapInfo, state = Object.assign({}, interfaces_1.defaultMapState)) {
+    const { type, flags, regionsX, regionsY, defaultTile, editableArea } = info;
+    const map = {
+        type,
+        flags,
         tileTime: 0,
         entities: [],
         entitiesDrawable: [],
@@ -51,25 +38,25 @@ function createWorldMap(info, state) {
         entitiesLightSprite: [],
         entitiesById: new Map(),
         poniesToDecode: [],
-        regionsX: regionsX,
-        regionsY: regionsY,
+        regionsX,
+        regionsY,
         regions: utils_1.array(regionsX * regionsY, undefined),
-        defaultTile: defaultTile,
+        defaultTile,
         width: regionsX * constants_1.REGION_SIZE,
         height: regionsY * constants_1.REGION_SIZE,
         minRegionX: 0,
         minRegionY: 0,
         maxRegionX: 0,
         maxRegionY: 0,
-        state: state,
-        editableArea: editableArea,
+        state,
+        editableArea,
     };
     updateMinMaxRegion(map);
     return map;
 }
 exports.createWorldMap = createWorldMap;
 function pickAny(entity, point) {
-    var bounds = entity.interactBounds || entity.bounds;
+    const bounds = entity.interactBounds || entity.bounds;
     return !!bounds && utils_1.contains(entity.x, entity.y, bounds, point);
 }
 function getAnyBounds(entity) {
@@ -80,15 +67,15 @@ function getAnyBounds(entity) {
         entity.lightSpriteBounds,
         entity.collidersBounds,
         entity.triggerBounds && positionUtils_1.rectToScreen(entity.triggerBounds),
-    ].filter(function (x) { return x && x.w > 0 && x.h > 0; })[0];
+    ].filter(x => x && x.w > 0 && x.h > 0)[0];
 }
 exports.getAnyBounds = getAnyBounds;
 function pickAnyEvenLights(entity, point) {
-    var bounds = getAnyBounds(entity);
+    const bounds = getAnyBounds(entity);
     return !!bounds && utils_1.contains(entity.x, entity.y, bounds, point);
 }
 function pick(entity, point, pickHidden, pickEditable) {
-    var editableOrInteractive = pickEditable ?
+    const editableOrInteractive = pickEditable ?
         (entity.type !== constants_1.PONY_TYPE && ((entity.state & 8 /* Editable */) !== 0)) :
         ((entity.flags & 256 /* Interactive */) !== 0);
     return editableOrInteractive && (!entityUtils_1.isHidden(entity) || pickHidden) && pickAny(entity, point);
@@ -101,7 +88,7 @@ function pickByBounds(entity, rect, pickHidden) {
         return false;
     }
     else {
-        var bounds = entity.interactBounds || entity.bounds;
+        const bounds = entity.interactBounds || entity.bounds;
         return !!bounds && utils_1.boundsIntersect(entity.x, entity.y, bounds, 0, 0, rect);
     }
 }
@@ -109,30 +96,28 @@ function pickEntityByBounds(entity, rect, ignorePonies, pickHidden) {
     return (!ignorePonies || entity.type !== constants_1.PONY_TYPE) && pickByBounds(entity, rect, pickHidden);
 }
 function pickAnyEntities(map, point) {
-    return map.entities.filter(function (e) { return pickAnyEvenLights(e, point); }).reverse();
+    return map.entities.filter(e => pickAnyEvenLights(e, point)).reverse();
 }
 exports.pickAnyEntities = pickAnyEntities;
-function pickEntities(map, point, ignorePonies, pickHidden, pickEditable) {
-    if (pickEditable === void 0) { pickEditable = false; }
-    return map.entities.filter(function (e) { return pickEntity(e, point, ignorePonies, pickHidden, pickEditable); }).reverse();
+function pickEntities(map, point, ignorePonies, pickHidden, pickEditable = false) {
+    return map.entities.filter(e => pickEntity(e, point, ignorePonies, pickHidden, pickEditable)).reverse();
 }
 exports.pickEntities = pickEntities;
 function pickEntitiesByRect(map, rect, ignorePonies, pickHidden) {
-    return map.entities.filter(function (e) { return pickEntityByBounds(e, rect, ignorePonies, pickHidden); }).reverse();
+    return map.entities.filter(e => pickEntityByBounds(e, rect, ignorePonies, pickHidden)).reverse();
 }
 exports.pickEntitiesByRect = pickEntitiesByRect;
 function removeRegions(map, coords) {
     if (coords.length === 0)
         return;
-    var entitiesToRemove = new Set();
-    for (var i = 0; i < coords.length; i += 2) {
-        var x = coords[i];
-        var y = coords[i + 1];
-        var index = x + y * map.regionsX;
-        var region = map.regions[index];
+    const entitiesToRemove = new Set();
+    for (let i = 0; i < coords.length; i += 2) {
+        const x = coords[i];
+        const y = coords[i + 1];
+        const index = x + y * map.regionsX;
+        const region = map.regions[index];
         if (region) {
-            for (var _i = 0, _a = region.entities; _i < _a.length; _i++) {
-                var entity = _a[_i];
+            for (const entity of region.entities) {
                 entitiesToRemove.add(entity);
                 entityUtils_1.releaseEntity(entity);
                 map.entitiesById.delete(entity.id);
@@ -147,12 +132,11 @@ function removeRegions(map, coords) {
 exports.removeRegions = removeRegions;
 function setRegion(map, x, y, region) {
     if (x >= 0 && y >= 0 && x < map.regionsX && y < map.regionsY) {
-        var index = x + y * map.regionsX;
-        var oldRegion = map.regions[index];
+        const index = x + y * map.regionsX;
+        const oldRegion = map.regions[index];
         if (oldRegion) {
-            DEVELOPMENT && !TESTS && console.error("Region already set (" + x + ", " + y + ")");
-            for (var _i = 0, _a = oldRegion.entities.slice(); _i < _a.length; _i++) {
-                var e = _a[_i];
+            DEVELOPMENT && !TESTS && console.error(`Region already set (${x}, ${y})`);
+            for (const e of oldRegion.entities.slice()) {
                 releaseAndRemoveEntityFromMap(map, e);
             }
         }
@@ -162,7 +146,7 @@ function setRegion(map, x, y, region) {
         updateMinMaxRegion(map);
     }
     else {
-        DEVELOPMENT && !TESTS && console.error("Invalid region coords (" + x + ", " + y + ")");
+        DEVELOPMENT && !TESTS && console.error(`Invalid region coords (${x}, ${y})`);
     }
 }
 exports.setRegion = setRegion;
@@ -171,9 +155,9 @@ function findEntityById(map, id) {
 }
 exports.findEntityById = findEntityById;
 function addEntity(map, entity) {
-    var region = getRegionGlobal(map, entity.x, entity.y);
+    const region = getRegionGlobal(map, entity.x, entity.y);
     if (!region) {
-        throw new Error("Missing region at " + entity.x + " " + entity.y);
+        throw new Error(`Missing region at ${entity.x} ${entity.y}`);
     }
     else {
         addEntityToMapRegion(map, region, entity);
@@ -190,8 +174,8 @@ function releaseAndRemoveEntityFromMap(map, entity) {
     removeEntityFromEntities(map, entity);
 }
 function removeEntityDirectly(map, entity) {
-    forEachRegion(map, function (region) {
-        var removed = removeEntityFromRegion(region, entity, map);
+    forEachRegion(map, region => {
+        const removed = removeEntityFromRegion(region, entity, map);
         if (removed) {
             entityUtils_1.releaseEntity(entity);
             removeEntityFromEntities(map, entity);
@@ -204,12 +188,12 @@ function removeEntityDirectly(map, entity) {
 }
 exports.removeEntityDirectly = removeEntityDirectly;
 function setTile(map, worldX, worldY, type) {
-    var region = getRegionGlobal(map, worldX, worldY);
+    const region = getRegionGlobal(map, worldX, worldY);
     if (!region)
         return;
-    var x = Math.floor(worldX - region.x * constants_1.REGION_SIZE);
-    var y = Math.floor(worldY - region.y * constants_1.REGION_SIZE);
-    var old = region_1.getRegionTile(region, x, y);
+    const x = Math.floor(worldX - region.x * constants_1.REGION_SIZE);
+    const y = Math.floor(worldY - region.y * constants_1.REGION_SIZE);
+    const old = region_1.getRegionTile(region, x, y);
     region_1.setRegionTile(region, x, y, type);
     setTilesDirty(map, worldX - 1, worldY - 1, 3, 3);
     if (interfaces_1.canWalk(old) !== interfaces_1.canWalk(type)) {
@@ -220,19 +204,19 @@ exports.setTile = setTile;
 function setColliderDirty(map, region, x, y) {
     region.colliderDirty = true;
     if (x === 0) {
-        var r = getRegionUnsafe(map, region.x - 1, region.y);
+        const r = getRegionUnsafe(map, region.x - 1, region.y);
         r && (r.colliderDirty = true);
     }
     else if (x === (constants_1.REGION_SIZE - 1)) {
-        var r = getRegionUnsafe(map, region.x + 1, region.y);
+        const r = getRegionUnsafe(map, region.x + 1, region.y);
         r && (r.colliderDirty = true);
     }
     if (y === 0) {
-        var r = getRegionUnsafe(map, region.x, region.y - 1);
+        const r = getRegionUnsafe(map, region.x, region.y - 1);
         r && (r.colliderDirty = true);
     }
     else if (y === (constants_1.REGION_SIZE - 1)) {
-        var r = getRegionUnsafe(map, region.x, region.y + 1);
+        const r = getRegionUnsafe(map, region.x, region.y + 1);
         r && (r.colliderDirty = true);
     }
 }
@@ -242,30 +226,30 @@ function setTileAtRegion(map, regionX, regionY, x, y, type) {
 }
 exports.setTileAtRegion = setTileAtRegion;
 function setTilesDirty(map, ox, oy, w, h) {
-    for (var y = 0; y < h; y++) {
-        for (var x = 0; x < w; x++) {
-            doRelativeToRegion(map, x + ox, y + oy, function (region, x, y) { return region_1.setRegionTileDirty(region, x, y); });
+    for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+            doRelativeToRegion(map, x + ox, y + oy, (region, x, y) => region_1.setRegionTileDirty(region, x, y));
         }
     }
 }
 exports.setTilesDirty = setTilesDirty;
 function getTileIndex(map, x, y) {
-    var region = getRegionGlobal(map, x, y);
+    const region = getRegionGlobal(map, x, y);
     return region ? region_1.getRegionTileIndex(region, x - region.x * constants_1.REGION_SIZE, y - region.y * constants_1.REGION_SIZE) : 0;
 }
 function getElevation(map, x, y) {
-    var region = getRegionGlobal(map, x, y);
+    const region = getRegionGlobal(map, x, y);
     return region ? region_1.getRegionElevation(region, x - region.x * constants_1.REGION_SIZE, y - region.y * constants_1.REGION_SIZE) : 0;
 }
 exports.getElevation = getElevation;
 function setElevation(map, x, y, value) {
-    doRelativeToRegion(map, x, y, function (region, x, y) { return region_1.setRegionElevation(region, x, y, value); });
+    doRelativeToRegion(map, x, y, (region, x, y) => region_1.setRegionElevation(region, x, y, value));
 }
 exports.setElevation = setElevation;
 function forEachRegion(map, callback) {
-    for (var y = map.minRegionY; y <= map.maxRegionY; y++) {
-        for (var x = map.minRegionX; x <= map.maxRegionX; x++) {
-            var region = getRegion(map, x, y);
+    for (let y = map.minRegionY; y <= map.maxRegionY; y++) {
+        for (let x = map.minRegionX; x <= map.maxRegionX; x++) {
+            const region = getRegion(map, x, y);
             if (region && callback(region) === false) {
                 return;
             }
@@ -278,8 +262,8 @@ function updateMinMaxRegion(map) {
     map.minRegionY = map.regionsY;
     map.maxRegionX = 0;
     map.maxRegionY = 0;
-    for (var y = 0; y < map.regionsY; y++) {
-        for (var x = 0; x < map.regionsX; x++) {
+    for (let y = 0; y < map.regionsY; y++) {
+        for (let x = 0; x < map.regionsX; x++) {
             if (getRegion(map, x, y)) {
                 map.minRegionX = Math.min(x, map.minRegionX);
                 map.minRegionY = Math.min(y, map.minRegionY);
@@ -292,10 +276,10 @@ function updateMinMaxRegion(map) {
     map.maxRegionY = Math.min(map.maxRegionY, map.regionsY - 1);
 }
 function doRelativeToRegion(map, x, y, action) {
-    var region = getRegionGlobal(map, x, y);
+    const region = getRegionGlobal(map, x, y);
     if (region) {
-        var regionX = Math.floor(x - region.x * constants_1.REGION_SIZE);
-        var regionY = Math.floor(y - region.y * constants_1.REGION_SIZE);
+        const regionX = Math.floor(x - region.x * constants_1.REGION_SIZE);
+        const regionY = Math.floor(y - region.y * constants_1.REGION_SIZE);
         action(region, regionX, regionY);
     }
 }
@@ -307,7 +291,7 @@ function addEntityToRegion(region, entity, map) {
     }
 }
 function removeEntityFromRegion(region, entity, map) {
-    var removed = utils_1.removeItemFast(region.entities, entity);
+    const removed = utils_1.removeItemFast(region.entities, entity);
     if (removed && collision_1.canCollideWith(entity)) {
         utils_1.removeItemFast(region.colliders, entity);
         region_1.invalidateRegionsCollider(region, map);
@@ -316,11 +300,11 @@ function removeEntityFromRegion(region, entity, map) {
 }
 function addEntityToMapRegion(map, region, entity) {
     if (entity.id !== 0) {
-        var existing = map.entitiesById.get(entity.id);
+        const existing = map.entitiesById.get(entity.id);
         if (existing) {
-            DEVELOPMENT && !TESTS && console.error("Adding duplicate entity " + entity.id + " (" +
-                (region_1.worldToRegionX(existing.x, map) + ", " + region_1.worldToRegionY(existing.y, map) + " => ") +
-                (region_1.worldToRegionX(entity.x, map) + ", " + region_1.worldToRegionY(entity.y, map) + ")"));
+            DEVELOPMENT && !TESTS && console.error(`Adding duplicate entity ${entity.id} (` +
+                `${region_1.worldToRegionX(existing.x, map)}, ${region_1.worldToRegionY(existing.y, map)} => ` +
+                `${region_1.worldToRegionX(entity.x, map)}, ${region_1.worldToRegionY(entity.y, map)})`);
             removeEntity(map, existing);
         }
         map.entitiesById.set(entity.id, entity);
@@ -373,7 +357,7 @@ function removeEntityFromEntities(map, entity) {
 }
 function removeEntitiesFromEntities(map, set) {
     if (set.size > 0) {
-        var filter = function (entity) { return !set.has(entity); };
+        const filter = (entity) => !set.has(entity);
         map.entities = map.entities.filter(filter);
         map.entitiesDrawable = map.entitiesDrawable.filter(filter);
         map.entitiesWithChat = map.entitiesWithChat.filter(filter);
@@ -386,13 +370,13 @@ function removeEntitiesFromEntities(map, set) {
     }
 }
 function removeEntityFromMapRegion(map, entity) {
-    forEachRegion(map, function (region) { return !removeEntityFromRegion(region, entity, map); });
+    forEachRegion(map, region => !removeEntityFromRegion(region, entity, map));
 }
 function getTile(map, x, y) {
-    var region = getRegionGlobal(map, x, y);
+    const region = getRegionGlobal(map, x, y);
     if (region) {
-        var regionX = Math.floor(x - region.x * constants_1.REGION_SIZE);
-        var regionY = Math.floor(y - region.y * constants_1.REGION_SIZE);
+        const regionX = Math.floor(x - region.x * constants_1.REGION_SIZE);
+        const regionY = Math.floor(y - region.y * constants_1.REGION_SIZE);
         return region_1.getRegionTile(region, regionX, regionY);
     }
     else {
@@ -401,14 +385,14 @@ function getTile(map, x, y) {
 }
 exports.getTile = getTile;
 function getRegionGlobal(map, x, y) {
-    var rx = region_1.worldToRegionX(x, map);
-    var ry = region_1.worldToRegionY(y, map);
+    const rx = region_1.worldToRegionX(x, map);
+    const ry = region_1.worldToRegionY(y, map);
     return getRegion(map, rx, ry);
 }
 exports.getRegionGlobal = getRegionGlobal;
 function getRegion(map, x, y) {
     if (x < 0 || y < 0 || x >= map.regionsX || y >= map.regionsY) {
-        throw new Error("Invalid region coords (" + x + ", " + y + ")");
+        throw new Error(`Invalid region coords (${x}, ${y})`);
     }
     else {
         return map.regions[((x | 0) + (y | 0) * map.regionsX) | 0];
@@ -436,24 +420,23 @@ function addOrRemoveFromEntityList(list, entity, had, has) {
 }
 exports.addOrRemoveFromEntityList = addOrRemoveFromEntityList;
 function updateEntitiesWithNames(map, hover, player) {
-    for (var i = map.entitiesWithNames.length - 1; i >= 0; i--) {
-        var entity = map.entitiesWithNames[i];
+    for (let i = map.entitiesWithNames.length - 1; i >= 0; i--) {
+        const entity = map.entitiesWithNames[i];
         if (!pickAny(entity, hover)) {
             map.entitiesWithNames.splice(i, 1);
         }
     }
-    var regionX = region_1.worldToRegionX(hover.x, map);
-    var regionY = region_1.worldToRegionY(hover.y, map);
-    var minX = Math.max(0, regionX - 1) | 0;
-    var minY = Math.max(0, regionY - 1) | 0;
-    var maxX = Math.min(regionX + 1, map.regionsX - 1) | 0;
-    var maxY = Math.min(regionY + 1, map.regionsY - 1) | 0;
-    for (var ry = minY; ry <= maxY; ry++) {
-        for (var rx = minX; rx <= maxX; rx++) {
-            var region = getRegion(map, rx, ry);
+    const regionX = region_1.worldToRegionX(hover.x, map);
+    const regionY = region_1.worldToRegionY(hover.y, map);
+    const minX = Math.max(0, regionX - 1) | 0;
+    const minY = Math.max(0, regionY - 1) | 0;
+    const maxX = Math.min(regionX + 1, map.regionsX - 1) | 0;
+    const maxY = Math.min(regionY + 1, map.regionsY - 1) | 0;
+    for (let ry = minY; ry <= maxY; ry++) {
+        for (let rx = minX; rx <= maxX; rx++) {
+            const region = getRegion(map, rx, ry);
             if (region !== undefined) {
-                for (var _i = 0, _a = region.entities; _i < _a.length; _i++) {
-                    var e = _a[_i];
+                for (const e of region.entities) {
                     if (e.name !== undefined && e !== player && pickAny(e, hover)) {
                         utils_1.pushUniq(map.entitiesWithNames, e);
                     }
@@ -464,13 +447,12 @@ function updateEntitiesWithNames(map, hover, player) {
 }
 exports.updateEntitiesWithNames = updateEntitiesWithNames;
 function updateEntitiesCoverLifted(map, player, hideObjects, delta) {
-    var playerX = positionUtils_1.toScreenX(player.x);
-    var playerY = positionUtils_1.toScreenYWithZ(player.y, player.z);
-    for (var _i = 0, _a = map.entitiesDrawable; _i < _a.length; _i++) {
-        var e = _a[_i];
+    const playerX = positionUtils_1.toScreenX(player.x);
+    const playerY = positionUtils_1.toScreenYWithZ(player.y, player.z);
+    for (const e of map.entitiesDrawable) {
         if (e.coverBounds !== undefined) {
             e.coverLifted = hideObjects || utils_1.containsPoint(positionUtils_1.toScreenX(e.x), positionUtils_1.toScreenY(e.y), e.coverBounds, playerX, playerY);
-            var lifting = e.coverLifting || 0;
+            const lifting = e.coverLifting || 0;
             if (e.coverLifted && lifting < 1) {
                 e.coverLifting = Math.min(lifting + delta * 2, 1);
             }
@@ -482,25 +464,21 @@ function updateEntitiesCoverLifted(map, player, hideObjects, delta) {
 }
 exports.updateEntitiesCoverLifted = updateEntitiesCoverLifted;
 function updateEntitiesTriggers(map, player, game) {
-    var _loop_1 = function (e) {
-        var on = (e.triggerTall || pony_1.isPonyOnTheGround(player)) &&
+    for (const e of map.entitiesTriggers) {
+        const on = (e.triggerTall || pony_1.isPonyOnTheGround(player)) &&
             utils_1.containsPoint(e.x, e.y, e.triggerBounds, player.x, player.y);
         if (e.triggerOn !== on) {
             if (on) {
-                game.send(function (server) { return server.interact(e.id); });
+                game.send(server => server.interact(e.id));
             }
             e.triggerOn = on;
         }
-    };
-    for (var _i = 0, _a = map.entitiesTriggers; _i < _a.length; _i++) {
-        var e = _a[_i];
-        _loop_1(e);
     }
 }
 exports.updateEntitiesTriggers = updateEntitiesTriggers;
 function updateMap(map, delta) {
     map.tileTime += delta * constants_1.WATER_FPS;
-    forEachRegion(map, function (region) {
+    forEachRegion(map, region => {
         if (region.tilesDirty) {
             tileUtils_1.updateTileIndices(region, map);
         }
@@ -520,32 +498,31 @@ function isInWaterAt(map, x, y) {
 exports.isInWaterAt = isInWaterAt;
 function updateEntities(game, gameTime, delta, safe) {
     TIMING && timing_1.timeStart('updateEntities');
-    var map = game.map;
-    for (var _i = 0, _a = map.entitiesMoving; _i < _a.length; _i++) {
-        var entity = _a[_i];
+    const map = game.map;
+    for (const entity of map.entitiesMoving) {
         collision_1.updatePosition(entity, delta, map);
     }
-    var _loop_2 = function (entity) {
-        var flags = entity.flags;
+    for (const entity of map.entities) {
+        const flags = entity.flags;
         if ((flags & 2048 /* Bobbing */) !== 0) {
-            var bobs = entity.bobs;
-            var frame = (((gameTime / 1000) * entity.bobsFps) | 0) % bobs.length;
+            const bobs = entity.bobs;
+            const frame = (((gameTime / 1000) * entity.bobsFps) | 0) % bobs.length;
             entity.z = positionUtils_1.toWorldZ(bobs[frame]);
         }
         else if ((flags & 32 /* StaticY */) === 0) {
             entity.z = getMapHeightAt(map, entity.x, entity.y, gameTime);
         }
         if (entity.type === constants_1.PONY_TYPE) {
-            var pony_2 = entity;
-            pony_1.updatePonyEntity(pony_2, delta, gameTime, safe);
-            var wasSwimming = pony_2.swimming;
-            pony_2.swimming = !entityUtils_1.isPonyFlying(pony_2) && isInWaterAt(map, pony_2.x, pony_2.y);
-            if (wasSwimming !== pony_2.swimming) {
-                if (ponyStates_1.isFlyingDown(pony_2.animator.state)) {
-                    setTimeout(function () { return handlers_1.playEffect(game, pony_2, entities_1.splash.type); }, 400);
+            const pony = entity;
+            pony_1.updatePonyEntity(pony, delta, gameTime, safe);
+            const wasSwimming = pony.swimming;
+            pony.swimming = !entityUtils_1.isPonyFlying(pony) && isInWaterAt(map, pony.x, pony.y);
+            if (wasSwimming !== pony.swimming) {
+                if (ponyStates_1.isFlyingDown(pony.animator.state)) {
+                    setTimeout(() => handlers_1.playEffect(game, pony, entities_1.splash.type), 400);
                 }
                 else {
-                    handlers_1.playEffect(game, pony_2, entities_1.splash.type);
+                    handlers_1.playEffect(game, pony, entities_1.splash.type);
                 }
             }
         }
@@ -553,7 +530,7 @@ function updateEntities(game, gameTime, delta, safe) {
             entity.update(delta, gameTime);
         }
         if ((flags & 1024 /* OnOff */) !== 0) {
-            var on = (entity.state & 4 /* On */) !== 0;
+            const on = (entity.state & 4 /* On */) !== 0;
             if (entity.lightOn !== undefined) {
                 entity.lightOn = on;
             }
@@ -563,7 +540,7 @@ function updateEntities(game, gameTime, delta, safe) {
         }
         if ((flags & 512 /* Light */) !== 0) {
             if (entity.lightOn) {
-                var move = delta * 0.2;
+                const move = delta * 0.2;
                 if (Math.abs(entity.lightScale - entity.lightTarget) < move) {
                     entity.lightScale = entity.lightTarget;
                     entity.lightTarget = 1 - Math.random() * 0.15;
@@ -573,14 +550,10 @@ function updateEntities(game, gameTime, delta, safe) {
                 }
             }
         }
-    };
-    for (var _b = 0, _c = map.entities; _b < _c.length; _b++) {
-        var entity = _c[_b];
-        _loop_2(entity);
     }
-    for (var i = map.entitiesWithChat.length - 1; i >= 0; i--) {
-        var entity = map.entitiesWithChat[i];
-        var says = entity.says;
+    for (let i = map.entitiesWithChat.length - 1; i >= 0; i--) {
+        const entity = map.entitiesWithChat[i];
+        const says = entity.says;
         if (says.timer) {
             says.timer -= delta;
             if (says.timer < 0) {
@@ -594,8 +567,7 @@ function updateEntities(game, gameTime, delta, safe) {
 }
 exports.updateEntities = updateEntities;
 function invalidatePalettes(entities) {
-    for (var _i = 0, entities_2 = entities; _i < entities_2.length; _i++) {
-        var entity = entities_2[_i];
+    for (const entity of entities) {
         if (pony_1.isPony(entity)) {
             pony_1.invalidatePalettesForPony(entity);
         }
@@ -603,12 +575,12 @@ function invalidatePalettes(entities) {
 }
 exports.invalidatePalettes = invalidatePalettes;
 function ensureAllVisiblePoniesAreDecoded(map, camera, paletteManager) {
-    var poniesToDecode = map.poniesToDecode;
+    const poniesToDecode = map.poniesToDecode;
     if (!poniesToDecode.length)
         return;
-    var decode = new Set();
-    for (var i = 0; i < poniesToDecode.length; i++) {
-        var pony = poniesToDecode[i];
+    const decode = new Set();
+    for (let i = 0; i < poniesToDecode.length; i++) {
+        const pony = poniesToDecode[i];
         if (camera_1.isBoundsVisible(camera, pony.bounds, pony.x, pony.y)) {
             decode.add(i);
         }
@@ -618,7 +590,7 @@ function ensureAllVisiblePoniesAreDecoded(map, camera, paletteManager) {
     if (decode.size > 100) {
         paletteManager.deduplicate = false;
     }
-    map.poniesToDecode = poniesToDecode.filter(function (pony, i) {
+    map.poniesToDecode = poniesToDecode.filter((pony, i) => {
         if (pony.palettePonyInfo !== undefined) {
             return false;
         }
@@ -637,7 +609,7 @@ function ensureAllVisiblePoniesAreDecoded(map, camera, paletteManager) {
 exports.ensureAllVisiblePoniesAreDecoded = ensureAllVisiblePoniesAreDecoded;
 function switchEntityRegion(map, entity, x, y) {
     removeEntityFromMapRegion(map, entity);
-    var region = getRegionGlobal(map, x, y);
+    const region = getRegionGlobal(map, x, y);
     if (region) {
         addEntityToRegion(region, entity, map);
     }
@@ -660,17 +632,17 @@ function updateMapState(map, prevState, newState) {
 }
 exports.updateMapState = updateMapState;
 function removeWeatherEffects(map) {
-    var effects = map.entities.filter(function (e) { return e.id === 0 && e.type === entities_1.weatherRain.type; });
-    for (var _i = 0, effects_1 = effects; _i < effects_1.length; _i++) {
-        var entity = effects_1[_i];
+    const effects = map.entities.filter(e => e.id === 0 && e.type === entities_1.weatherRain.type);
+    for (const entity of effects) {
         removeEntityDirectly(map, entity);
     }
 }
 function addRainEffects(map) {
-    forEachRegion(map, function (region) {
+    forEachRegion(map, region => {
         if (region.x === 3 && region.y === 4) { // TEMP: testing
-            var entity = entities_1.weatherRain((region.x + 0.5) * constants_1.REGION_SIZE, (region.y + 0.5) * constants_1.REGION_SIZE);
+            const entity = entities_1.weatherRain((region.x + 0.5) * constants_1.REGION_SIZE, (region.y + 0.5) * constants_1.REGION_SIZE);
             addEntity(map, entity);
         }
     });
 }
+//# sourceMappingURL=worldMap.js.map

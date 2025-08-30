@@ -229,11 +229,7 @@ function authRoutes(host, server, settings, live, mockLogin, removedDocument) {
     }));
     if (mockLogin) {
         passport_1.use(new passport_local_1.Strategy((login, _pass, done) => db_1.Account.findById(login, done)));
-        app.post('/local', passport_1.authenticate('local', { successRedirect: '/', failureRedirect: '/failed-login' }));
-        app.get('/local/:accountId', (req, res, next) => {
-            req.body = { username: req.params.accountId, password: 'mock' };
-            passport_1.authenticate('local', { successRedirect: '/', failureRedirect: '/failed-login' })(req, res, next);
-        });
+        app.get('/local', passport_1.authenticate('local', { successRedirect: '/', failureRedirect: '/failed-login' }));
     }
     return app;
 }

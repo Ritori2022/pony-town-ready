@@ -1,15 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var gameLoop = undefined;
-function startGameLoop(game, onError) {
-    if (onError === void 0) { onError = function (e) { return console.error(e); }; }
-    var handle;
-    var backup;
-    var cancelled = false;
-    var last = Math.round(performance.now());
-    var lastFps = last;
-    var frames = 0;
-    var fps = 0;
+let gameLoop = undefined;
+function startGameLoop(game, onError = (e) => console.error(e)) {
+    let handle;
+    let backup;
+    let cancelled = false;
+    let last = Math.round(performance.now());
+    let lastFps = last;
+    let frames = 0;
+    let fps = 0;
     function step(now, draw) {
         if (draw) {
             handle = requestAnimationFrame(onFrame);
@@ -49,9 +48,9 @@ function startGameLoop(game, onError) {
     if (gameLoop) {
         gameLoop.cancel();
     }
-    var started = Promise.resolve()
-        .then(function () { return game.load(); })
-        .then(function () {
+    const started = Promise.resolve()
+        .then(() => game.load())
+        .then(() => {
         if (cancelled) {
             throw new Error('Cancelled (loop)');
         }
@@ -61,7 +60,8 @@ function startGameLoop(game, onError) {
             backup = setTimeout(onTimer, 1000 / 10);
         }
     });
-    gameLoop = { started: started, cancel: cancel };
+    gameLoop = { started, cancel };
     return gameLoop;
 }
 exports.startGameLoop = startGameLoop;
+//# sourceMappingURL=gameLoop.js.map

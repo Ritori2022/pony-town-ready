@@ -1,21 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var lodash_1 = require("lodash");
-var base64_js_1 = require("base64-js");
-var ponyInfo_1 = require("./ponyInfo");
-var bitUtils_1 = require("./bitUtils");
-var colors_1 = require("./colors");
-var utils_1 = require("./utils");
-var spriteUtils_1 = require("../client/spriteUtils");
-var sprites = require("../generated/sprites");
-var color_1 = require("./color");
-var ponyUtils_1 = require("../client/ponyUtils");
-var constants_1 = require("./constants");
+const lodash_1 = require("lodash");
+const base64_js_1 = require("base64-js");
+const ponyInfo_1 = require("./ponyInfo");
+const bitUtils_1 = require("./bitUtils");
+const colors_1 = require("./colors");
+const utils_1 = require("./utils");
+const spriteUtils_1 = require("../client/spriteUtils");
+const sprites = require("../generated/sprites");
+const color_1 = require("./color");
+const ponyUtils_1 = require("../client/ponyUtils");
+const constants_1 = require("./constants");
 exports.VERSION = 4;
-var identity = function (x) { return x; };
-var not = function (x) { return !x; };
+const identity = (x) => x;
+const not = (x) => !x;
 function emptyOrUnlocked(set) {
-    return !set || !set.type || !set.lockFills || set.lockFills.every(function (x) { return !x; });
+    return !set || !set.type || !set.lockFills || set.lockFills.every(x => !x);
 }
 function emptyOrZeroLocked(set, customOutlines) {
     return !set || (set.type === 0 && set.pattern === 0 && set.lockFills !== undefined && set.lockFills[0] === true &&
@@ -38,14 +38,14 @@ function omitFrontHooves(info) {
     return empty(info.frontHooves) && emptyOrUnlocked(info.backHooves);
 }
 function readTimes(read, count, bitsPerItem) {
-    var result = [];
-    for (var i = 0; i < count; i++) {
+    const result = [];
+    for (let i = 0; i < count; i++) {
         result[i] = read(bitsPerItem);
     }
     return result;
 }
 // NOTE: do not reorder or remove
-var setFields = [
+const setFields = [
     { name: 'extraAccessory', sets: ponyUtils_1.mergedExtraAccessories, preserveOnZero: true },
     { name: 'nose', sets: sprites.noses[0], preserveOnZero: true },
     { name: 'ears', sets: sprites.ears, preserveOnZero: true },
@@ -62,7 +62,7 @@ var setFields = [
     { name: 'faceAccessory', sets: sprites.faceAccessories },
     { name: 'neckAccessory', sets: sprites.neckAccessories[1] },
     { name: 'frontLegAccessory', sets: sprites.frontLegAccessories[1] },
-    { name: 'backLegAccessory', sets: sprites.backLegAccessories[1], omit: function (info) { return !!info.lockBackLegAccessory; } },
+    { name: 'backLegAccessory', sets: sprites.backLegAccessories[1], omit: info => !!info.lockBackLegAccessory },
     { name: 'backAccessory', sets: ponyUtils_1.mergedBackAccessories },
     { name: 'waistAccessory', sets: sprites.waistAccessories[1] },
     { name: 'chestAccessory', sets: sprites.chestAccessories[1] },
@@ -71,105 +71,105 @@ var setFields = [
     {
         name: 'frontLegAccessoryRight',
         sets: sprites.frontLegAccessories[1],
-        omit: function (info) { return !info.unlockFrontLegAccessory; },
+        omit: info => !info.unlockFrontLegAccessory,
     },
     {
         name: 'backLegAccessoryRight',
         sets: sprites.backLegAccessories[1],
-        omit: function (info) { return !info.unlockBackLegAccessory || !!info.lockBackLegAccessory; },
+        omit: info => !info.unlockBackLegAccessory || !!info.lockBackLegAccessory,
     },
 ];
-var booleanFields = [
+const booleanFields = [
     { name: 'customOutlines' },
     { name: 'lockEyes' },
     { name: 'lockEyeColor' },
-    { name: 'lockCoatOutline', omit: function (info) { return !info.customOutlines; } },
+    { name: 'lockCoatOutline', omit: info => !info.customOutlines },
     {
-        name: 'lockBackLegAccessory', omit: function (info) {
-            return empty(info.frontLegAccessory) && empty(info.backLegAccessory) &&
-                empty(info.frontLegAccessoryRight) && empty(info.backLegAccessoryRight);
-        }
+        name: 'lockBackLegAccessory', omit: info => empty(info.frontLegAccessory) && empty(info.backLegAccessory) &&
+            empty(info.frontLegAccessoryRight) && empty(info.backLegAccessoryRight)
     },
     { name: 'eyeshadow' },
-    { name: 'cmFlip', omit: function (info) { return info.cm === undefined || info.cm.every(not); } },
+    { name: 'cmFlip', omit: info => info.cm === undefined || info.cm.every(not) },
     { name: 'unlockEyeWhites' },
     { name: 'freeOutlines' },
     { name: 'unlockFrontLegAccessory' },
-    { name: 'unlockBackLegAccessory', omit: function (info) { return !!info.lockBackLegAccessory; } },
+    { name: 'unlockBackLegAccessory', omit: info => !!info.lockBackLegAccessory },
     { name: 'unlockEyelashColor' },
-    { name: 'darkenLockedOutlines', omit: function (info) { return !info.freeOutlines; } },
+    { name: 'darkenLockedOutlines', omit: info => !info.freeOutlines },
 ];
-var numberFields = [
+const numberFields = [
     { name: 'eyelashes' },
     { name: 'eyeOpennessRight' },
-    { name: 'eyeOpennessLeft', omit: function (info) { return !!info.lockEyes; } },
+    { name: 'eyeOpennessLeft', omit: info => !!info.lockEyes },
     { name: 'fangs' },
     { name: 'muzzle' },
     { name: 'freckles', dontSave: true },
 ];
-var colorFields = [
+const colorFields = [
     { name: 'coatFill' },
-    { name: 'coatOutline', omit: function (info) { return !info.customOutlines || !!info.lockCoatOutline; } },
+    { name: 'coatOutline', omit: info => !info.customOutlines || !!info.lockCoatOutline },
     { name: 'eyeColorRight' },
-    { name: 'eyeColorLeft', omit: function (info) { return !!info.lockEyeColor; } },
+    { name: 'eyeColorLeft', omit: info => !!info.lockEyeColor },
     { name: 'eyeWhites', default: colors_1.WHITE },
-    { name: 'eyeshadowColor', omit: function (info) { return !info.eyeshadow; } },
-    { name: 'frecklesColor', omit: function (info) { return !info.freckles; }, dontSave: true },
-    { name: 'eyeWhitesLeft', default: colors_1.WHITE, omit: function (info) { return !info.unlockEyeWhites; } },
+    { name: 'eyeshadowColor', omit: info => !info.eyeshadow },
+    { name: 'frecklesColor', omit: info => !info.freckles, dontSave: true },
+    { name: 'eyeWhitesLeft', default: colors_1.WHITE, omit: info => !info.unlockEyeWhites },
     { name: 'eyelashColor' },
-    { name: 'eyelashColorLeft', omit: function (info) { return !info.unlockEyelashColor; } },
+    { name: 'eyelashColorLeft', omit: info => !info.unlockEyelashColor },
     { name: 'magicColor', default: colors_1.WHITE },
 ];
-var omittableFields = setFields.concat(booleanFields, numberFields, colorFields).filter(function (f) { return !!f.omit; });
-var VERSION_BITS = 6; // max 63
-var COLORS_LENGTH_BITS = 10; // max 1024
-var BOOLEAN_FIELDS_LENGTH_BITS = 4; // max 15
-var NUMBER_FIELDS_LENGTH_BITS = 4; // max 15
-var COLOR_FIELDS_LENGTH_BITS = 4; // max 15
-var SET_FIELDS_LENGTH_BITS = 6; // max 63
-var CM_LENGTH_BITS = 5; // max 31
-var NUMBERS_BITS = 6; // max 63
+const omittableFields = [
+    ...setFields,
+    ...booleanFields,
+    ...numberFields,
+    ...colorFields,
+].filter(f => !!f.omit);
+const VERSION_BITS = 6; // max 63
+const COLORS_LENGTH_BITS = 10; // max 1024
+const BOOLEAN_FIELDS_LENGTH_BITS = 4; // max 15
+const NUMBER_FIELDS_LENGTH_BITS = 4; // max 15
+const COLOR_FIELDS_LENGTH_BITS = 4; // max 15
+const SET_FIELDS_LENGTH_BITS = 6; // max 63
+const CM_LENGTH_BITS = 5; // max 31
+const NUMBERS_BITS = 6; // max 63
 /* istanbul ignore next */
 if (DEVELOPMENT) {
     (function () {
         function verifyFields(obj, lengthBits, defs, verify) {
-            var missing = Object.keys(obj)
-                .filter(function (key) { return verify(obj[key]); })
-                .filter(function (key) { return defs.every(function (d) { return d.name !== key; }); });
-            var unnecessary = defs
-                .filter(function (_a) {
-                var name = _a.name;
-                return !verify(obj[name]);
-            });
+            const missing = Object.keys(obj)
+                .filter(key => verify(obj[key]))
+                .filter(key => defs.every(d => d.name !== key));
+            const unnecessary = defs
+                .filter(({ name }) => !verify(obj[name]));
             if (missing.length || unnecessary.length) {
-                throw new Error("Incorrect fields (" + missing + " / " + unnecessary + ")");
+                throw new Error(`Incorrect fields (${missing} / ${unnecessary})`);
             }
             if (lengthBits < bitUtils_1.countBits(defs.length)) {
-                throw new Error("Incorrect field length bits (" + lengthBits + "/" + bitUtils_1.countBits(defs.length) + ")");
+                throw new Error(`Incorrect field length bits (${lengthBits}/${bitUtils_1.countBits(defs.length)})`);
             }
         }
-        var defaultPony = ponyInfo_1.createBasePony();
-        verifyFields(defaultPony, SET_FIELDS_LENGTH_BITS, setFields, function (f) { return f.type !== undefined; });
+        const defaultPony = ponyInfo_1.createBasePony();
+        verifyFields(defaultPony, SET_FIELDS_LENGTH_BITS, setFields, f => f.type !== undefined);
         verifyFields(defaultPony, COLOR_FIELDS_LENGTH_BITS, colorFields, lodash_1.isString);
         verifyFields(defaultPony, NUMBER_FIELDS_LENGTH_BITS, numberFields, lodash_1.isNumber);
         verifyFields(defaultPony, BOOLEAN_FIELDS_LENGTH_BITS, booleanFields, lodash_1.isBoolean);
-        if (setFields.some(function (f) { return !f.sets; })) {
-            throw new Error("Undefined set in set field (" + setFields.find(function (f) { return !f.sets; }).name + ")");
+        if (setFields.some(f => !f.sets)) {
+            throw new Error(`Undefined set in set field (${setFields.find(f => !f.sets).name})`);
         }
     })();
 }
 function trimRight(items) {
-    var index = lodash_1.findLastIndex(items, function (x) { return !!x; });
+    const index = lodash_1.findLastIndex(items, x => !!x);
     return (index !== (items.length - 1)) ? items.slice(0, index + 1) : items;
 }
 function precompressCM(cm, addColor) {
-    var result = [];
+    const result = [];
     if (cm) {
-        var length_1 = constants_1.CM_SIZE * constants_1.CM_SIZE;
-        while (length_1 > 0 && !cm[length_1 - 1]) {
-            length_1--;
+        let length = constants_1.CM_SIZE * constants_1.CM_SIZE;
+        while (length > 0 && !cm[length - 1]) {
+            length--;
         }
-        for (var i = 0; i < length_1; i++) {
+        for (let i = 0; i < length; i++) {
             result.push(addColor(cm[i]));
         }
     }
@@ -178,13 +178,13 @@ function precompressCM(cm, addColor) {
 exports.precompressCM = precompressCM;
 // lock sets
 function compressLockSet(set, count) {
-    var locks = set && set.slice ? set.slice(0, count) : [];
-    return locks.reduce(function (result, l, i) { return result | (l ? (1 << i) : 0); }, 0);
+    const locks = set && set.slice ? set.slice(0, count) : [];
+    return locks.reduce((result, l, i) => result | (l ? (1 << i) : 0), 0);
 }
 exports.compressLockSet = compressLockSet;
 function decompressLockSet(set, count, defaultValues) {
-    var result = [];
-    for (var i = 0; i < MAX_COLORS; i++) {
+    const result = [];
+    for (let i = 0; i < MAX_COLORS; i++) {
         result[i] = i < count ? !!(set & (1 << i)) : defaultValues[i];
     }
     return result;
@@ -192,11 +192,11 @@ function decompressLockSet(set, count, defaultValues) {
 exports.decompressLockSet = decompressLockSet;
 // colors
 function precompressColorSet(set, count, locks, defaultColor, addColor) {
-    var result = [];
+    const result = [];
     if (set) {
-        for (var i = 0; i < count; i++) {
+        for (let i = 0; i < count; i++) {
             if ((locks & (1 << i)) === 0) {
-                var color = set[i];
+                const color = set[i];
                 result.push(!color || color === defaultColor ? 0 : addColor(color));
             }
         }
@@ -205,36 +205,36 @@ function precompressColorSet(set, count, locks, defaultColor, addColor) {
 }
 exports.precompressColorSet = precompressColorSet;
 function postdecompressColorSet(colors, count, locks, colorList, parseColor) {
-    var result = [];
-    for (var i = 0, j = 0; i < count; i++) {
-        var locked = (locks & (1 << i)) !== 0;
+    const result = [];
+    for (let i = 0, j = 0; i < count; i++) {
+        const locked = (locks & (1 << i)) !== 0;
         result.push(parseColor((locked ? 0 : colorList[colors[j++] - 1]) || colors_1.BLACK));
     }
     return result;
 }
 exports.postdecompressColorSet = postdecompressColorSet;
 // set
-var MAX_COLORS = 6;
-var ALL_UNLOCKED = utils_1.array(MAX_COLORS, false);
-var ALL_LOCKED = utils_1.array(MAX_COLORS, true);
+const MAX_COLORS = 6;
+const ALL_UNLOCKED = utils_1.array(MAX_COLORS, false);
+const ALL_LOCKED = utils_1.array(MAX_COLORS, true);
 function precompressSet(set, def, customOutlines, defaultColor, addColor) {
     if (!set)
         return undefined;
-    var type = utils_1.clamp(utils_1.toInt(set.type), 0, def.sets.length - 1);
+    const type = utils_1.clamp(utils_1.toInt(set.type), 0, def.sets.length - 1);
     if (type === 0 && !def.preserveOnZero)
         return undefined;
-    var patterns = utils_1.at(def.sets, type);
-    var pattern = utils_1.clamp(utils_1.toInt(set.pattern), 0, patterns ? patterns.length - 1 : 0);
-    var sprite = utils_1.att(patterns, pattern);
-    var colors = Math.max(spriteUtils_1.getColorCount(sprite), def.minColors || 0);
+    const patterns = utils_1.at(def.sets, type);
+    const pattern = utils_1.clamp(utils_1.toInt(set.pattern), 0, patterns ? patterns.length - 1 : 0);
+    const sprite = utils_1.att(patterns, pattern);
+    const colors = Math.max(spriteUtils_1.getColorCount(sprite), def.minColors || 0);
     /* istanbul ignore next */
     if (type === 0 && pattern === 0 && colors === 0)
         return undefined;
-    var fillLocks = compressLockSet(set.lockFills, colors);
-    var fills = precompressColorSet(set.fills, colors, fillLocks, defaultColor, addColor);
-    var outlineLocks = customOutlines ? compressLockSet(set.lockOutlines, colors) : 0;
-    var outlines = customOutlines ? precompressColorSet(set.outlines, colors, outlineLocks, defaultColor, addColor) : [];
-    return { type: type, pattern: pattern, colors: colors, fillLocks: fillLocks, fills: fills, outlineLocks: outlineLocks, outlines: outlines };
+    const fillLocks = compressLockSet(set.lockFills, colors);
+    const fills = precompressColorSet(set.fills, colors, fillLocks, defaultColor, addColor);
+    const outlineLocks = customOutlines ? compressLockSet(set.lockOutlines, colors) : 0;
+    const outlines = customOutlines ? precompressColorSet(set.outlines, colors, outlineLocks, defaultColor, addColor) : [];
+    return { type, pattern, colors, fillLocks, fills, outlineLocks, outlines };
 }
 exports.precompressSet = precompressSet;
 function postdecompressSet(set, _def, customOutlines, colorList, parseColor) {
@@ -252,7 +252,7 @@ function postdecompressSet(set, _def, customOutlines, colorList, parseColor) {
 exports.postdecompressSet = postdecompressSet;
 // helpers
 function precompressFields(data, defs, defaultValue, encode) {
-    return trimRight(defs.map(function (def) {
+    return trimRight(defs.map(def => {
         if (def.dontSave || (def.omit && def.omit(data))) {
             return defaultValue;
         }
@@ -262,32 +262,32 @@ function precompressFields(data, defs, defaultValue, encode) {
     }));
 }
 function postdecompressFields(result, defs, values, defaultValue, decode) {
-    for (var i = 0; i < defs.length; i++) {
-        var def = defs[i];
-        var value = i >= values.length ? undefined : values[i];
+    for (let i = 0; i < defs.length; i++) {
+        const def = defs[i];
+        const value = i >= values.length ? undefined : values[i];
         result[def.name] = decode(value === undefined ? defaultValue : value, def);
     }
 }
 function precompressPony(info, defaultColor, parseColor) {
-    var colors = [];
-    var customOutlines = !!info.customOutlines;
-    var addColor = function (color) {
-        var c = color === undefined ? 0 : parseColor(color);
+    const colors = [];
+    const customOutlines = !!info.customOutlines;
+    const addColor = (color) => {
+        const c = color === undefined ? 0 : parseColor(color);
         return c === 0 ? 0 : utils_1.pushUniq(colors, c);
     };
     return {
         version: exports.VERSION,
-        colors: colors,
-        booleanFields: precompressFields(info, booleanFields, false, function (x) { return !!x; }),
+        colors,
+        booleanFields: precompressFields(info, booleanFields, false, x => !!x),
         numberFields: precompressFields(info, numberFields, 0, utils_1.toInt),
-        colorFields: precompressFields(info, colorFields, 0, function (x, def) { return (x === undefined || parseColor(x) === (def.default || colors_1.BLACK)) ? 0 : addColor(x); }),
-        setFields: precompressFields(info, setFields, undefined, function (x, def) { return precompressSet(x, def, customOutlines, defaultColor, addColor); }),
+        colorFields: precompressFields(info, colorFields, 0, (x, def) => (x === undefined || parseColor(x) === (def.default || colors_1.BLACK)) ? 0 : addColor(x)),
+        setFields: precompressFields(info, setFields, undefined, (x, def) => precompressSet(x, def, customOutlines, defaultColor, addColor)),
         cm: precompressCM(info.cm, addColor),
     };
 }
 exports.precompressPony = precompressPony;
-var frecklesToPattern = [0, 1, 1, 2, 2, 2, 1];
-var frecklesToColor = [[], [1], [1, 2], [2], [1], [1, 2], [2]];
+const frecklesToPattern = [0, 1, 1, 2, 2, 2, 1];
+const frecklesToColor = [[], [1], [1, 2], [2], [1], [1, 2], [2]];
 function fixVersion(result, data, parseColor) {
     if (data.version < 3) {
         result.head = {
@@ -298,7 +298,7 @@ function fixVersion(result, data, parseColor) {
             lockFills: [true, true, true, true, true, true],
             lockOutlines: [true, true, true, true, true, true],
         };
-        frecklesToColor[result.freckles || 0].forEach(function (index) {
+        frecklesToColor[result.freckles || 0].forEach(index => {
             result.head.fills[index] = result.frecklesColor || parseColor(colors_1.BLACK);
             result.head.lockFills[index] = false;
         });
@@ -312,39 +312,41 @@ function createPostDecompressPony() {
         '  var result = [];',
         '  for(var i = 0; i < cm.length; i++) { result.push(getColor(colors, cm[i] - 1) || 0); }',
         '  return result;',
-        '}'
-    ].concat(omittableFields.map(function (def, i) { return "var omit_" + def.name + " = ommitableFields[" + i + "].omit;"; }), [
+        '}',
+        ...omittableFields.map((def, i) => `var omit_${def.name} = ommitableFields[${i}].omit;`),
         'return function (data) {',
         '  var dataColors = data.colors;',
         '  var bools = data.booleanFields;',
         '  var numbers = data.numberFields;',
         '  var colors = data.colorFields;',
         '  var sets = data.setFields;',
-        '  var result = {};'
-    ], booleanFields.map(function (def, i) { return "  result." + def.name + " = bools.length > " + i + " ? bools[" + i + "] : false;"; }), numberFields.map(function (def, i) { return "  result." + def.name + " = numbers.length > " + i + " ? numbers[" + i + "] : 0;"; }), colorFields.map(function (def, i) { return "  result." + def.name + " = colors.length > " + i + " ? " +
-        ("getColor(dataColors, colors[" + i + "] - 1) || " + (def.default || colors_1.BLACK) + " : " + (def.default || colors_1.BLACK) + ";"); }), [
-        '  var customOutlines = !!result.customOutlines;'
-    ], setFields.map(function (def, i) { return "  result." + def.name + " = sets.length > " + i + " && sets[" + i + "] !== undefined ? " +
-        ("postdecompressSet(sets[" + i + "], setFields[" + i + "], customOutlines, data.colors, identity) : undefined;"); }), [
-        "  result.cm = data.cm.length ? getCM(data.cm, dataColors) : undefined;"
-    ], omittableFields.map(function (def) { return "  if (omit_" + def.name + "(result)) result." + def.name + " = undefined;"; }), [
+        '  var result = {};',
+        ...booleanFields.map((def, i) => `  result.${def.name} = bools.length > ${i} ? bools[${i}] : false;`),
+        ...numberFields.map((def, i) => `  result.${def.name} = numbers.length > ${i} ? numbers[${i}] : 0;`),
+        ...colorFields.map((def, i) => `  result.${def.name} = colors.length > ${i} ? ` +
+            `getColor(dataColors, colors[${i}] - 1) || ${def.default || colors_1.BLACK} : ${def.default || colors_1.BLACK};`),
+        '  var customOutlines = !!result.customOutlines;',
+        ...setFields.map((def, i) => `  result.${def.name} = sets.length > ${i} && sets[${i}] !== undefined ? ` +
+            `postdecompressSet(sets[${i}], setFields[${i}], customOutlines, data.colors, identity) : undefined;`),
+        `  result.cm = data.cm.length ? getCM(data.cm, dataColors) : undefined;`,
+        ...omittableFields.map(def => `  if (omit_${def.name}(result)) result.${def.name} = undefined;`),
         '  fixVersion(result, data, identity);',
         '  return result;',
         '};',
-    ]).join('\n'));
+    ].join('\n'));
 }
 exports.createPostDecompressPony = createPostDecompressPony;
 exports.fastPostdecompressPony = createPostDecompressPony()(postdecompressSet, setFields, omittableFields, fixVersion);
 function postdecompressPony(data, parseColor) {
     // NOTE: when updating also update createPostDecompressPony()
-    var result = {};
+    const result = {};
     postdecompressFields(result, booleanFields, data.booleanFields, false, identity);
     postdecompressFields(result, numberFields, data.numberFields, 0, identity);
-    postdecompressFields(result, colorFields, data.colorFields, 0, function (x, def) { return parseColor(data.colors[x - 1] || def.default || colors_1.BLACK); });
-    var customOutlines = !!result.customOutlines;
-    postdecompressFields(result, setFields, data.setFields, undefined, function (x, def) { return x === undefined ? undefined : postdecompressSet(x, def, customOutlines, data.colors, parseColor); });
-    result.cm = data.cm.length ? data.cm.map(function (x) { return parseColor(data.colors[x - 1] || colors_1.TRANSPARENT); }) : undefined;
-    omittableFields.forEach(function (def) {
+    postdecompressFields(result, colorFields, data.colorFields, 0, (x, def) => parseColor(data.colors[x - 1] || def.default || colors_1.BLACK));
+    const customOutlines = !!result.customOutlines;
+    postdecompressFields(result, setFields, data.setFields, undefined, (x, def) => x === undefined ? undefined : postdecompressSet(x, def, customOutlines, data.colors, parseColor));
+    result.cm = data.cm.length ? data.cm.map(x => parseColor(data.colors[x - 1] || colors_1.TRANSPARENT)) : undefined;
+    omittableFields.forEach(def => {
         if (def.omit && def.omit(result)) {
             result[def.name] = undefined;
         }
@@ -354,9 +356,9 @@ function postdecompressPony(data, parseColor) {
 }
 exports.postdecompressPony = postdecompressPony;
 // set
-var TYPE_BITS = 5; // max 31
-var PATTERN_BITS = 4; // max 15
-var COLORS_BITS = 3; // max 7
+const TYPE_BITS = 5; // max 31
+const PATTERN_BITS = 4; // max 15
+const COLORS_BITS = 3; // max 7
 function writeSet(write, colorBits, customOutlines, set) {
     write(set ? 1 : 0, 1);
     if (set) {
@@ -364,25 +366,25 @@ function writeSet(write, colorBits, customOutlines, set) {
         write(set.pattern, PATTERN_BITS);
         write(set.colors - 1, COLORS_BITS);
         write(set.fillLocks, set.colors);
-        set.fills.forEach(function (c) { return write(c, colorBits); });
+        set.fills.forEach(c => write(c, colorBits));
         if (customOutlines) {
             write(set.outlineLocks, set.colors);
-            set.outlines.forEach(function (c) { return write(c, colorBits); });
+            set.outlines.forEach(c => write(c, colorBits));
         }
     }
 }
 exports.writeSet = writeSet;
 function readSet(read, colorBits, customOutlines) {
-    var has = read(1);
+    const has = read(1);
     if (has) {
-        var type = read(TYPE_BITS);
-        var pattern = read(PATTERN_BITS);
-        var colors = read(COLORS_BITS) + 1;
-        var fillLocks = read(colors);
-        var fills = readTimes(read, colors - bitUtils_1.countBits(fillLocks), colorBits);
-        var outlineLocks = customOutlines ? read(colors) : 0;
-        var outlines = customOutlines ? readTimes(read, colors - bitUtils_1.countBits(outlineLocks), colorBits) : [];
-        return { type: type, pattern: pattern, colors: colors, fillLocks: fillLocks, fills: fills, outlineLocks: outlineLocks, outlines: outlines };
+        const type = read(TYPE_BITS);
+        const pattern = read(PATTERN_BITS);
+        const colors = read(COLORS_BITS) + 1;
+        const fillLocks = read(colors);
+        const fills = readTimes(read, colors - bitUtils_1.countBits(fillLocks), colorBits);
+        const outlineLocks = customOutlines ? read(colors) : 0;
+        const outlines = customOutlines ? readTimes(read, colors - bitUtils_1.countBits(outlineLocks), colorBits) : [];
+        return { type, pattern, colors, fillLocks, fills, outlineLocks, outlines };
     }
     else {
         return undefined;
@@ -395,49 +397,49 @@ function writeFields(write, lengthBits, fields, writeField) {
     fields.forEach(writeField);
 }
 function readFields(read, lengthBits, readField) {
-    var length = read(lengthBits);
-    var result = [];
-    for (var i = 0; i < length; i++) {
+    const length = read(lengthBits);
+    const result = [];
+    for (let i = 0; i < length; i++) {
         result.push(readField(read));
     }
     return result;
 }
 // pony
 function writePony(write, data) {
-    var colorBits = Math.max(bitUtils_1.numberToBitCount(data.colors.length), 1);
-    var customOutlines = !!data.booleanFields[0];
+    const colorBits = Math.max(bitUtils_1.numberToBitCount(data.colors.length), 1);
+    const customOutlines = !!data.booleanFields[0];
     write(data.version, VERSION_BITS);
-    writeFields(write, COLORS_LENGTH_BITS, data.colors, function (x) { return write(x >> 8, 24); });
-    writeFields(write, BOOLEAN_FIELDS_LENGTH_BITS, data.booleanFields, function (x) { return write(x ? 1 : 0, 1); });
-    writeFields(write, NUMBER_FIELDS_LENGTH_BITS, data.numberFields, function (x) { return write(x, NUMBERS_BITS); });
-    writeFields(write, COLOR_FIELDS_LENGTH_BITS, data.colorFields, function (x) { return write(x, colorBits); });
-    writeFields(write, SET_FIELDS_LENGTH_BITS, data.setFields, function (x) { return writeSet(write, colorBits, customOutlines, x); });
-    writeFields(write, CM_LENGTH_BITS, data.cm, function (x) { return write(x, colorBits); });
+    writeFields(write, COLORS_LENGTH_BITS, data.colors, x => write(x >> 8, 24));
+    writeFields(write, BOOLEAN_FIELDS_LENGTH_BITS, data.booleanFields, x => write(x ? 1 : 0, 1));
+    writeFields(write, NUMBER_FIELDS_LENGTH_BITS, data.numberFields, x => write(x, NUMBERS_BITS));
+    writeFields(write, COLOR_FIELDS_LENGTH_BITS, data.colorFields, x => write(x, colorBits));
+    writeFields(write, SET_FIELDS_LENGTH_BITS, data.setFields, x => writeSet(write, colorBits, customOutlines, x));
+    writeFields(write, CM_LENGTH_BITS, data.cm, x => write(x, colorBits));
 }
 exports.writePony = writePony;
-var readColorValue = function (read) { return ((read(24) << 8) | 0xff) >>> 0; };
-var readBoolean = function (read) { return !!read(1); };
-var readBits = function (bits) { return function (read) { return read(bits); }; };
-var readNumber = readBits(NUMBERS_BITS);
+const readColorValue = (read) => ((read(24) << 8) | 0xff) >>> 0;
+const readBoolean = (read) => !!read(1);
+const readBits = (bits) => (read) => read(bits);
+const readNumber = readBits(NUMBERS_BITS);
 function readPony(read) {
-    var version = read(VERSION_BITS);
+    const version = read(VERSION_BITS);
     if (version > exports.VERSION) {
         throw new Error('Invalid version');
     }
-    var colors = readFields(read, COLORS_LENGTH_BITS, readColorValue);
-    var colorBits = Math.max(bitUtils_1.numberToBitCount(colors.length), 1);
-    var readColor = readBits(colorBits);
-    var booleanFields = readFields(read, BOOLEAN_FIELDS_LENGTH_BITS, readBoolean);
-    var customOutlines = !!booleanFields[0];
-    var numberFields = readFields(read, NUMBER_FIELDS_LENGTH_BITS, readNumber);
-    var colorFields = readFields(read, COLOR_FIELDS_LENGTH_BITS, readColor);
-    var setFields = readFields(read, version < 4 ? 5 : SET_FIELDS_LENGTH_BITS, function (read) { return readSet(read, colorBits, customOutlines); });
-    var cm = readFields(read, CM_LENGTH_BITS, readColor);
-    return { version: version, colors: colors, booleanFields: booleanFields, numberFields: numberFields, colorFields: colorFields, setFields: setFields, cm: cm };
+    const colors = readFields(read, COLORS_LENGTH_BITS, readColorValue);
+    const colorBits = Math.max(bitUtils_1.numberToBitCount(colors.length), 1);
+    const readColor = readBits(colorBits);
+    const booleanFields = readFields(read, BOOLEAN_FIELDS_LENGTH_BITS, readBoolean);
+    const customOutlines = !!booleanFields[0];
+    const numberFields = readFields(read, NUMBER_FIELDS_LENGTH_BITS, readNumber);
+    const colorFields = readFields(read, COLOR_FIELDS_LENGTH_BITS, readColor);
+    const setFields = readFields(read, version < 4 ? 5 : SET_FIELDS_LENGTH_BITS, read => readSet(read, colorBits, customOutlines));
+    const cm = readFields(read, CM_LENGTH_BITS, readColor);
+    return { version, colors, booleanFields, numberFields, colorFields, setFields, cm };
 }
 exports.readPony = readPony;
 function writePonyToString(data) {
-    return base64_js_1.fromByteArray(bitUtils_1.bitWriter(function (write) { return writePony(write, data); }));
+    return base64_js_1.fromByteArray(bitUtils_1.bitWriter(write => writePony(write, data)));
 }
 function readPonyFromBuffer(info) {
     return readPony(bitUtils_1.bitReader(info));
@@ -459,8 +461,8 @@ function compressPony(info) {
 }
 exports.compressPony = compressPony;
 function decompressPony(info) {
-    var data = typeof info === 'string' ? readPonyFromString(info) : readPonyFromBuffer(info);
-    var pony = exports.fastPostdecompressPony(data); // postdecompressPony(data, identity);
+    const data = typeof info === 'string' ? readPonyFromString(info) : readPonyFromBuffer(info);
+    const pony = exports.fastPostdecompressPony(data); // postdecompressPony(data, identity);
     return ponyInfo_1.syncLockedPonyInfoNumber(pony);
 }
 exports.decompressPony = decompressPony;
@@ -475,11 +477,10 @@ function compressPonyString(info) {
     return writePonyToString(precompressPony(info, '000000', parseColorFastSafe));
 }
 exports.compressPonyString = compressPonyString;
-function decompressPonyString(info, editable) {
-    if (editable === void 0) { editable = false; }
-    var data = readPonyFromString(info);
-    var pony = postdecompressPony(data, colorToString);
-    var result = editable ? lodash_1.merge(ponyInfo_1.createBasePony(), pony) : pony;
+function decompressPonyString(info, editable = false) {
+    const data = readPonyFromString(info);
+    const pony = postdecompressPony(data, colorToString);
+    const result = editable ? lodash_1.merge(ponyInfo_1.createBasePony(), pony) : pony;
     return ponyInfo_1.syncLockedPonyInfo(result);
 }
 exports.decompressPonyString = decompressPonyString;
@@ -488,3 +489,4 @@ function decodePonyInfo(info, paletteManager) {
     return ponyInfo_1.toPaletteNumber(decompressPony(info), paletteManager);
 }
 exports.decodePonyInfo = decodePonyInfo;
+//# sourceMappingURL=compressPony.js.map

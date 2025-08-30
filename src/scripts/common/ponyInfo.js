@@ -1,60 +1,46 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var sprites = require("../generated/sprites");
-var paletteManager_1 = require("../graphics/paletteManager");
-var utils_1 = require("./utils");
-var constants_1 = require("./constants");
-var color_1 = require("./color");
-var colors_1 = require("./colors");
-var ponyUtils_1 = require("../client/ponyUtils");
-var MAX_COLORS = 6;
-var FILLS = ['1e90ff', '32cd32', 'da70d6', 'dc143c', '7fffd4'];
-var frontHooves = sprites.frontLegHooves[1];
-var backHooves = sprites.backLegHooves[1];
-var frontLegAccessories = sprites.frontLegAccessories[1];
-var backLegAccessories = sprites.backLegAccessories[1];
-var frontLegSleeves = sprites.frontLegSleeves[1];
+const sprites = require("../generated/sprites");
+const paletteManager_1 = require("../graphics/paletteManager");
+const utils_1 = require("./utils");
+const constants_1 = require("./constants");
+const color_1 = require("./color");
+const colors_1 = require("./colors");
+const ponyUtils_1 = require("../client/ponyUtils");
+const MAX_COLORS = 6;
+const FILLS = ['1e90ff', '32cd32', 'da70d6', 'dc143c', '7fffd4'];
+const frontHooves = sprites.frontLegHooves[1];
+const backHooves = sprites.backLegHooves[1];
+const frontLegAccessories = sprites.frontLegAccessories[1];
+const backLegAccessories = sprites.backLegAccessories[1];
+const frontLegSleeves = sprites.frontLegSleeves[1];
 exports.mockPaletteManager = {
-    add: function (colors) {
+    add(colors) {
         return this.addArray(new Uint32Array(colors));
     },
-    addArray: function (colors) {
+    addArray(colors) {
         return paletteManager_1.createPalette(colors);
     },
-    init: function () {
+    init() {
     }
 };
-function spriteSet(type, lockFirstFill, fill, otherFills) {
-    if (lockFirstFill === void 0) { lockFirstFill = true; }
-    if (fill === void 0) { fill = 'ffd700'; }
-    if (otherFills === void 0) { otherFills = FILLS; }
+function spriteSet(type, lockFirstFill = true, fill = 'ffd700', otherFills = FILLS) {
     if (otherFills.length !== (MAX_COLORS - 1))
         throw new Error('Invalid fills count');
-    var fills = [fill].concat(otherFills);
-    var outlines = fills.map(colors_1.fillToOutline);
+    const fills = [fill, ...otherFills];
+    const outlines = fills.map(colors_1.fillToOutline);
     return {
-        type: type,
+        type,
         pattern: 0,
-        fills: fills,
-        outlines: outlines,
-        lockFills: [lockFirstFill].concat(utils_1.array(MAX_COLORS - 1, false)),
+        fills,
+        outlines,
+        lockFills: [lockFirstFill, ...utils_1.array(MAX_COLORS - 1, false)],
         lockOutlines: utils_1.array(MAX_COLORS, true),
     };
 }
 exports.spriteSet = spriteSet;
 function createDefaultPony() {
-    var pony = createBasePony();
+    const pony = createBasePony();
     pony.mane.type = 2;
     pony.backMane.type = 1;
     pony.tail.type = 1;
@@ -89,7 +75,7 @@ function createBasePony() {
         waistAccessory: spriteSet(0, false, '95856f', ['674b43', '4f4f4f', '525252', 'c37850', '8a3d34']),
         chestAccessory: spriteSet(0, false, 'ee82ee'),
         sleeveAccessory: spriteSet(0, true, 'ee82ee'),
-        extraAccessory: __assign({}, spriteSet(0, true, 'ff0000', ['daa520', 'ffd700', 'ffd700', 'ffd700', 'ffd700']), { lockFills: utils_1.array(5, true) }),
+        extraAccessory: Object.assign({}, spriteSet(0, true, 'ff0000', ['daa520', 'ffd700', 'ffd700', 'ffd700', 'ffd700']), { lockFills: utils_1.array(5, true) }),
         coatFill: 'ff0000',
         coatOutline: '8b0000',
         lockCoatOutline: true,
@@ -132,21 +118,21 @@ exports.getBaseOutline = getBaseOutline;
 function syncLockedSpriteSet(set, customOutlines, fillToOutline, baseFill, baseOutline) {
     if (set === undefined)
         return;
-    var fills = set.fills;
+    const fills = set.fills;
     if (!fills)
         return;
-    var lockFills = set.lockFills;
+    const lockFills = set.lockFills;
     if (lockFills) {
-        for (var i = 0; i < lockFills.length; i++) {
+        for (let i = 0; i < lockFills.length; i++) {
             if (lockFills[i]) {
                 fills[i] = i === 0 ? baseFill : fills[0];
             }
         }
     }
-    var outlines = set.outlines;
-    var lockOutlines = set.lockOutlines;
+    const outlines = set.outlines;
+    const lockOutlines = set.lockOutlines;
     if (outlines && lockOutlines) {
-        for (var i = 0; i < lockOutlines.length; i++) {
+        for (let i = 0; i < lockOutlines.length; i++) {
             if (!customOutlines) {
                 lockOutlines[i] = true;
             }
@@ -164,14 +150,14 @@ function syncLockedSpriteSet(set, customOutlines, fillToOutline, baseFill, baseO
 exports.syncLockedSpriteSet = syncLockedSpriteSet;
 function syncLockedSpritesSet2(set, fillToOutline, baseFills, baseOutlines) {
     if (set && set.fills && set.lockFills) {
-        set.lockFills.forEach(function (locked, i) {
+        set.lockFills.forEach((locked, i) => {
             if (locked) {
                 set.fills[i] = baseFills[i];
             }
         });
     }
     if (set && set.fills && set.outlines && set.lockOutlines) {
-        set.lockOutlines.forEach(function (locked, i) {
+        set.lockOutlines.forEach((locked, i) => {
             if (locked) {
                 if (baseOutlines[i] && set.lockFills && set.lockFills[i]) {
                     set.outlines[i] = baseOutlines[i];
@@ -190,7 +176,7 @@ function getOutlineOf2(set, defaultColor) {
     return set && set.type && set.outlines && set.outlines[0] || defaultColor;
 }
 function syncLockedBasePonyInfo(info, fillToOutline, defaultColor) {
-    var customOutlines = !!info.customOutlines;
+    const customOutlines = !!info.customOutlines;
     if (!customOutlines || info.lockCoatOutline) {
         info.coatOutline = fillToOutline(info.coatFill);
     }
@@ -214,8 +200,8 @@ function syncLockedBasePonyInfo(info, fillToOutline, defaultColor) {
     syncLockedSpriteSet(info.frontHooves, customOutlines, fillToOutline, info.coatFill, info.coatOutline);
     syncLockedSpriteSet(info.backHooves, customOutlines, fillToOutline, getBaseFill(info.frontHooves), getBaseOutline(info.frontHooves));
     syncLockedSpriteSet(info.mane, customOutlines, fillToOutline);
-    var baseManeFill = getBaseFill(info.mane);
-    var baseManeOutline = getBaseOutline(info.mane);
+    const baseManeFill = getBaseFill(info.mane);
+    const baseManeOutline = getBaseOutline(info.mane);
     syncLockedSpriteSet(info.backMane, customOutlines, fillToOutline, baseManeFill, baseManeOutline);
     syncLockedSpriteSet(info.tail, customOutlines, fillToOutline, baseManeFill, baseManeOutline);
     syncLockedSpriteSet(info.facialHair, customOutlines, fillToOutline, baseManeFill, baseManeOutline);
@@ -257,8 +243,8 @@ function syncLockedBasePonyInfo(info, fillToOutline, defaultColor) {
     return info;
 }
 function syncLockedPonyInfo(info) {
-    var darkenLocked = !!info.freeOutlines && !!info.darkenLockedOutlines;
-    var fillToOutlineFunc = darkenLocked ? colors_1.fillToOutlineWithDarken : colors_1.fillToOutline;
+    const darkenLocked = !!info.freeOutlines && !!info.darkenLockedOutlines;
+    const fillToOutlineFunc = darkenLocked ? colors_1.fillToOutlineWithDarken : colors_1.fillToOutline;
     return syncLockedBasePonyInfo(info, fillToOutlineFunc, '000000');
 }
 exports.syncLockedPonyInfo = syncLockedPonyInfo;
@@ -269,8 +255,8 @@ function fillToOutlineSafeWithDarken(color) {
     return darkenForOutline(colors_1.fillToOutlineColor((color === undefined || color === 0) ? colors_1.BLACK : color));
 }
 function syncLockedPonyInfoNumber(info) {
-    var darkenLocked = !!info.freeOutlines && !!info.darkenLockedOutlines;
-    var fillToOutlineFunc = darkenLocked ? fillToOutlineSafeWithDarken : fillToOutlineSafe;
+    const darkenLocked = !!info.freeOutlines && !!info.darkenLockedOutlines;
+    const fillToOutlineFunc = darkenLocked ? fillToOutlineSafeWithDarken : fillToOutlineSafe;
     return syncLockedBasePonyInfo(info, fillToOutlineFunc, colors_1.BLACK);
 }
 exports.syncLockedPonyInfoNumber = syncLockedPonyInfoNumber;
@@ -282,27 +268,27 @@ function parseCMColor(color) {
     return color ? color_1.parseColorFast(color) : colors_1.TRANSPARENT;
 }
 function toColorList(colors) {
-    var result = new Uint32Array(colors.length + 1);
-    for (var i = 0; i < colors.length; i++) {
+    const result = new Uint32Array(colors.length + 1);
+    for (let i = 0; i < colors.length; i++) {
         result[i + 1] = parseFast(colors[i]);
     }
     return result;
 }
 exports.toColorList = toColorList;
 function darkenForOutline(color) {
-    var mult = (159 / 255);
-    var r = (mult * color_1.getR(color)) | 0;
-    var g = (mult * color_1.getG(color)) | 0;
-    var b = (mult * color_1.getB(color)) | 0;
-    var a = color_1.getAlpha(color);
+    const mult = (159 / 255);
+    const r = (mult * color_1.getR(color)) | 0;
+    const g = (mult * color_1.getG(color)) | 0;
+    const b = (mult * color_1.getB(color)) | 0;
+    const a = color_1.getAlpha(color);
     return color_1.colorFromRGBA(r, g, b, a);
 }
 exports.darkenForOutline = darkenForOutline;
 function getColorsGeneric(fillColors, outlineColors, defaultColor, length, darken) {
-    var fills = fillColors || [];
-    var outlines = outlineColors || [];
-    var colors = utils_1.array(length * 2, defaultColor);
-    for (var i = 0; i < length; i++) {
+    const fills = fillColors || [];
+    const outlines = outlineColors || [];
+    const colors = utils_1.array(length * 2, defaultColor);
+    for (let i = 0; i < length; i++) {
         colors[i * 2] = fills[i] || defaultColor;
         if (darken) {
             colors[i * 2 + 1] = outlines[i] ? color_1.colorToHexRGB(darkenForOutline(color_1.parseColorFast(outlines[i]))) : defaultColor;
@@ -313,30 +299,29 @@ function getColorsGeneric(fillColors, outlineColors, defaultColor, length, darke
     }
     return colors;
 }
-function getColorsFromSet(_a, defaultColor, darken) {
-    var fills = _a.fills, outlines = _a.outlines;
-    var length = Math.max(fills ? fills.length : 0, outlines ? outlines.length : 0);
+function getColorsFromSet({ fills, outlines }, defaultColor, darken) {
+    const length = Math.max(fills ? fills.length : 0, outlines ? outlines.length : 0);
     return getColorsGeneric(fills, outlines, defaultColor, length, darken);
 }
 exports.getColorsFromSet = getColorsFromSet;
 function toColorListNumber(colors) {
-    var result = new Uint32Array(colors.length + 1);
-    for (var i = 0; i < colors.length; i++) {
+    const result = new Uint32Array(colors.length + 1);
+    for (let i = 0; i < colors.length; i++) {
         result[i + 1] = colors[i] || colors_1.BLACK;
     }
     return result;
 }
 exports.toColorListNumber = toColorListNumber;
-exports.getColorsForSet = function (set, count, darken) {
-    var t = getColorsGeneric(set.fills, set.outlines, '000000', count, darken);
+exports.getColorsForSet = (set, count, darken) => {
+    const t = getColorsGeneric(set.fills, set.outlines, '000000', count, darken);
     return toColorList(t);
 };
-var emptyArray = [];
-exports.getColorsForSetNumber = function (set, length, darken) {
-    var fills = set.fills || emptyArray;
-    var outlines = set.outlines || emptyArray;
-    var result = new Uint32Array(length * 2 + 1);
-    for (var i = 0; i < length; i++) {
+const emptyArray = [];
+exports.getColorsForSetNumber = (set, length, darken) => {
+    const fills = set.fills || emptyArray;
+    const outlines = set.outlines || emptyArray;
+    const result = new Uint32Array(length * 2 + 1);
+    for (let i = 0; i < length; i++) {
         result[((i << 1) + 1) | 0] = i < fills.length ? (fills[i] || colors_1.BLACK) : colors_1.BLACK;
         if (darken) {
             result[((i << 1) + 2) | 0] = i < outlines.length ? darkenForOutline(outlines[i] || colors_1.BLACK) : colors_1.BLACK;
@@ -348,13 +333,13 @@ exports.getColorsForSetNumber = function (set, length, darken) {
     return result;
 };
 function getExtraPalette(pattern, manager) {
-    var extraPalette = pattern && pattern.palettes && pattern.palettes[0];
+    const extraPalette = pattern && pattern.palettes && pattern.palettes[0];
     return extraPalette && manager.addArray(new Uint32Array(extraPalette));
 }
 function toPaletteSet(set, sets, manager, getColorsForSet, hasExtra, darken) {
-    var pattern = utils_1.att(utils_1.att(sets, set.type), set.pattern);
-    var colorCount = pattern !== undefined && pattern.colors !== undefined ? ((pattern.colors - 1) >> 1) : 0;
-    var colors = getColorsForSet(set, colorCount, darken);
+    const pattern = utils_1.att(utils_1.att(sets, set.type), set.pattern);
+    const colorCount = pattern !== undefined && pattern.colors !== undefined ? ((pattern.colors - 1) >> 1) : 0;
+    const colors = getColorsForSet(set, colorCount, darken);
     return {
         type: utils_1.toInt(set.type),
         pattern: utils_1.toInt(set.pattern),
@@ -364,24 +349,22 @@ function toPaletteSet(set, sets, manager, getColorsForSet, hasExtra, darken) {
 }
 exports.toPaletteSet = toPaletteSet;
 function createCMPalette(cm, manager, parseColor) {
-    var size = constants_1.CM_SIZE * constants_1.CM_SIZE;
+    const size = constants_1.CM_SIZE * constants_1.CM_SIZE;
     if (cm === undefined || cm.length === 0 || cm.length > size)
         return undefined;
-    var result = new Uint32Array(size);
-    for (var i = 0; i < cm.length; i++) {
+    const result = new Uint32Array(size);
+    for (let i = 0; i < cm.length; i++) {
         result[i] = parseColor(cm[i]);
     }
     return manager.addArray(result);
 }
-var defaultPalette = new Uint32Array(sprites.defaultPalette);
-exports.createToPaletteSet = function (manager, getColorsForSet, extra, darken) {
-    return function (set, sets) { return set === undefined ? undefined : toPaletteSet(set, sets, manager, getColorsForSet, extra, darken); };
-};
+const defaultPalette = new Uint32Array(sprites.defaultPalette);
+exports.createToPaletteSet = (manager, getColorsForSet, extra, darken) => (set, sets) => set === undefined ? undefined : toPaletteSet(set, sets, manager, getColorsForSet, extra, darken);
 function toPaletteGeneric(info, manager, toColorList, getColorsForSet, blackColor, whiteColor, parseCMColor) {
-    var darken = !info.freeOutlines;
-    var toSet = exports.createToPaletteSet(manager, getColorsForSet, false, darken);
-    var toSetExtra = exports.createToPaletteSet(manager, getColorsForSet, true, darken);
-    var defaultSet = { type: 0, pattern: 0, fills: [info.coatFill], outlines: [info.coatOutline] };
+    const darken = !info.freeOutlines;
+    const toSet = exports.createToPaletteSet(manager, getColorsForSet, false, darken);
+    const toSetExtra = exports.createToPaletteSet(manager, getColorsForSet, true, darken);
+    const defaultSet = { type: 0, pattern: 0, fills: [info.coatFill], outlines: [info.coatOutline] };
     // const defaultSet = { type: 0, pattern: 1, fills: [info.coatFill, whiteColor], outlines: [info.coatOutline, blackColor] };
     return {
         body: toSet(defaultSet, sprites.body[1]),
@@ -461,27 +444,24 @@ function toPaletteGeneric(info, manager, toColorList, getColorsForSet, blackColo
     };
 }
 exports.toPaletteGeneric = toPaletteGeneric;
-function toPalette(info, manager) {
-    if (manager === void 0) { manager = exports.mockPaletteManager; }
+function toPalette(info, manager = exports.mockPaletteManager) {
     return toPaletteGeneric(info, manager, toColorList, exports.getColorsForSet, '000000', 'ffffff', parseCMColor);
 }
 exports.toPalette = toPalette;
-function toPaletteNumber(info, manager) {
-    if (manager === void 0) { manager = exports.mockPaletteManager; }
-    return toPaletteGeneric(info, manager, toColorListNumber, exports.getColorsForSetNumber, colors_1.BLACK, colors_1.WHITE, function (x) { return x; });
+function toPaletteNumber(info, manager = exports.mockPaletteManager) {
+    return toPaletteGeneric(info, manager, toColorListNumber, exports.getColorsForSetNumber, colors_1.BLACK, colors_1.WHITE, x => x);
 }
 exports.toPaletteNumber = toPaletteNumber;
 function releasePalettes(info) {
-    for (var _i = 0, _a = Object.keys(info); _i < _a.length; _i++) {
-        var key = _a[_i];
-        var value = info[key]; // undefined | number | string | PaletteSpriteSet | Palette;
+    for (const key of Object.keys(info)) {
+        const value = info[key]; // undefined | number | string | PaletteSpriteSet | Palette;
         if (value && typeof value === 'object') {
             if ('refs' in value) {
-                var palette = value;
+                const palette = value;
                 paletteManager_1.releasePalette(palette);
             }
             else if ('palette' in value) {
-                var set = value;
+                const set = value;
                 paletteManager_1.releasePalette(set.palette);
                 paletteManager_1.releasePalette(set.extraPalette);
             }
@@ -489,3 +469,4 @@ function releasePalettes(info) {
     }
 }
 exports.releasePalettes = releasePalettes;
+//# sourceMappingURL=ponyInfo.js.map

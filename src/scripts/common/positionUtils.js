@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var constants_1 = require("./constants");
+const constants_1 = require("./constants");
 function toScreenX(x) {
     return Math.floor(x * constants_1.tileWidth) | 0;
 }
@@ -25,24 +25,21 @@ function toWorldZ(z) {
     return z / constants_1.tileElevation;
 }
 exports.toWorldZ = toWorldZ;
-function pointToScreen(_a) {
-    var x = _a.x, y = _a.y;
+function pointToScreen({ x, y }) {
     return {
         x: toScreenX(x),
         y: toScreenY(y),
     };
 }
 exports.pointToScreen = pointToScreen;
-function pointToWorld(_a) {
-    var x = _a.x, y = _a.y;
+function pointToWorld({ x, y }) {
     return {
         x: toWorldX(x),
         y: toWorldY(y),
     };
 }
 exports.pointToWorld = pointToWorld;
-function rectToScreen(_a) {
-    var x = _a.x, y = _a.y, w = _a.w, h = _a.h;
+function rectToScreen({ x, y, w, h }) {
     return {
         x: toScreenX(x),
         y: toScreenY(y),
@@ -72,3 +69,4 @@ function roundPosition(point) {
     point.y = roundPositionY(point.y);
 }
 exports.roundPosition = roundPosition;
+//# sourceMappingURL=positionUtils.js.map

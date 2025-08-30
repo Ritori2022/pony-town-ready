@@ -1,39 +1,31 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = require("@angular/core");
-var icons_1 = require("../../../client/icons");
-var MenuItem = /** @class */ (function () {
-    function MenuItem() {
+const tslib_1 = require("tslib");
+const core_1 = require("@angular/core");
+const icons_1 = require("../../../client/icons");
+let MenuItem = class MenuItem {
+    constructor() {
         this.icon = icons_1.emptyIcon;
     }
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Object)
-    ], MenuItem.prototype, "route", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", String)
-    ], MenuItem.prototype, "name", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", Object)
-    ], MenuItem.prototype, "icon", void 0);
-    MenuItem = __decorate([
-        core_1.Component({
-            selector: 'menu-item',
-            template: '<div class="navbar-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: route === \'/\' }"><a [routerLink]="route" tabindex linkCurrent><div class="d-none d-sm-inline">{{name}}</div><fa-icon class="d-inline-block d-sm-none" [icon]="icon" [title]="name" [attr.aria-label]="name" [fixedWidth]="true" size="lg"></fa-icon></a></div>',
-            styleUrls: ['menu-item.scss'],
-        })
-    ], MenuItem);
-    return MenuItem;
-}());
+};
+tslib_1.__decorate([
+    core_1.Input(),
+    tslib_1.__metadata("design:type", Object)
+], MenuItem.prototype, "route", void 0);
+tslib_1.__decorate([
+    core_1.Input(),
+    tslib_1.__metadata("design:type", String)
+], MenuItem.prototype, "name", void 0);
+tslib_1.__decorate([
+    core_1.Input(),
+    tslib_1.__metadata("design:type", Object)
+], MenuItem.prototype, "icon", void 0);
+MenuItem = tslib_1.__decorate([
+    core_1.Component({
+        selector: 'menu-item',
+        templateUrl: 'menu-item.pug',
+        styleUrls: ['menu-item.scss'],
+    })
+], MenuItem);
 exports.MenuItem = MenuItem;
+//# sourceMappingURL=menu-item.js.map

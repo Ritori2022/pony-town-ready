@@ -2,48 +2,48 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 function createShader(gl, source) {
     if (typeof source === 'string') {
-        var index = source.indexOf('// FRAGMENT');
+        const index = source.indexOf('// FRAGMENT');
         if (index === -1) {
-            throw new Error("Missing fragment shader separator");
+            throw new Error(`Missing fragment shader separator`);
         }
         source = {
             vertex: source.substring(0, index),
             fragment: source.substring(index),
         };
     }
-    var vertexShader = createWebGLShader(gl, gl.VERTEX_SHADER, source.vertex);
-    var fragmentShader = createWebGLShader(gl, gl.FRAGMENT_SHADER, source.fragment);
-    var program = gl.createProgram();
+    const vertexShader = createWebGLShader(gl, gl.VERTEX_SHADER, source.vertex);
+    const fragmentShader = createWebGLShader(gl, gl.FRAGMENT_SHADER, source.fragment);
+    const program = gl.createProgram();
     if (!program) {
         throw new Error('Failed to create shader program');
     }
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
-    var attribs = source.vertex.match(/^attribute [a-zA-Z0-9_]+ ([a-zA-Z0-9_]+)/mg);
+    const attribs = source.vertex.match(/^attribute [a-zA-Z0-9_]+ ([a-zA-Z0-9_]+)/mg);
     for (var i = 0; i < attribs.length; ++i) {
-        var _a = /attribute [a-zA-Z0-9_]+ ([a-zA-Z0-9_]+)/.exec(attribs[i]), name_1 = _a[1];
-        gl.bindAttribLocation(program, i, name_1);
+        const [, name] = /attribute [a-zA-Z0-9_]+ ([a-zA-Z0-9_]+)/.exec(attribs[i]);
+        gl.bindAttribLocation(program, i, name);
     }
     gl.linkProgram(program);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
         throw new Error('Failed to link shader program');
     }
     gl.useProgram(program);
-    var uniforms = {};
-    var samplers = [];
-    for (var i_1 = 0; i_1 < gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS); i_1++) {
-        var info = gl.getActiveUniform(program, i_1);
+    const uniforms = {};
+    const samplers = [];
+    for (let i = 0; i < gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS); i++) {
+        const info = gl.getActiveUniform(program, i);
         uniforms[info.name] = gl.getUniformLocation(program, info.name);
         if (!uniforms[info.name]) {
-            throw new Error("Failed to get uniform location (" + info.name + ")");
+            throw new Error(`Failed to get uniform location (${info.name})`);
         }
         if (info.type === gl.SAMPLER_2D) {
             samplers.push(info.name);
         }
     }
-    samplers.sort().forEach(function (name, i) { return gl.uniform1i(uniforms[name], i); });
+    samplers.sort().forEach((name, i) => gl.uniform1i(uniforms[name], i));
     gl.useProgram(null);
-    return { program: program, vertexShader: vertexShader, fragmentShader: fragmentShader, uniforms: uniforms };
+    return { program, vertexShader, fragmentShader, uniforms };
 }
 exports.createShader = createShader;
 function disposeShader(gl, shader) {
@@ -61,7 +61,7 @@ function disposeShader(gl, shader) {
 }
 exports.disposeShader = disposeShader;
 function createWebGLShader(gl, type, source) {
-    var shader = gl.createShader(type);
+    const shader = gl.createShader(type);
     if (!shader) {
         throw new Error('Failed to create shader');
     }
@@ -72,3 +72,4 @@ function createWebGLShader(gl, type, source) {
     }
     return shader;
 }
+//# sourceMappingURL=shader.js.map

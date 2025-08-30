@@ -1,18 +1,10 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = require("@angular/core");
+const tslib_1 = require("tslib");
+const core_1 = require("@angular/core");
 /* istanbul ignore next */
-var StorageService = /** @class */ (function () {
-    function StorageService() {
+let StorageService = class StorageService {
+    constructor() {
         this.data = undefined;
         try {
             if (typeof localStorage === 'undefined') {
@@ -23,21 +15,21 @@ var StorageService = /** @class */ (function () {
             this.data = new Map();
         }
     }
-    StorageService.prototype.getItem = function (key) {
+    getItem(key) {
         if (this.data) {
             return this.data.get(key);
         }
         else {
             try {
-                var value = localStorage.getItem(key);
+                const value = localStorage.getItem(key);
                 return value == null ? undefined : value;
             }
             catch (_a) {
                 return undefined;
             }
         }
-    };
-    StorageService.prototype.setItem = function (key, data) {
+    }
+    setItem(key, data) {
         try {
             localStorage.setItem(key, data);
             this.data = undefined;
@@ -48,8 +40,8 @@ var StorageService = /** @class */ (function () {
             }
             this.data.set(key, data);
         }
-    };
-    StorageService.prototype.removeItem = function (key) {
+    }
+    removeItem(key) {
         if (this.data) {
             this.data.delete(key);
         }
@@ -59,8 +51,8 @@ var StorageService = /** @class */ (function () {
             }
             catch (_a) { }
         }
-    };
-    StorageService.prototype.clear = function () {
+    }
+    clear() {
         if (this.data) {
             this.data.clear();
         }
@@ -70,39 +62,39 @@ var StorageService = /** @class */ (function () {
             }
             catch (_a) { }
         }
-    };
-    StorageService.prototype.getJSON = function (key, defaultValue) {
+    }
+    getJSON(key, defaultValue) {
         try {
             return JSON.parse(this.getItem(key) || '');
         }
         catch (_a) {
             return defaultValue;
         }
-    };
-    StorageService.prototype.setJSON = function (key, value) {
+    }
+    setJSON(key, value) {
         this.setItem(key, JSON.stringify(value));
-    };
-    StorageService.prototype.getInt = function (key) {
+    }
+    getInt(key) {
         return parseInt(this.getItem(key) || '0', 10) | 0;
-    };
-    StorageService.prototype.setInt = function (key, value) {
+    }
+    setInt(key, value) {
         this.setItem(key, value.toString(10));
-    };
-    StorageService.prototype.getBoolean = function (key) {
+    }
+    getBoolean(key) {
         return this.getItem(key) === 'true';
-    };
-    StorageService.prototype.setBoolean = function (key, value) {
+    }
+    setBoolean(key, value) {
         if (value) {
             this.setItem(key, 'true');
         }
         else {
             this.removeItem(key);
         }
-    };
-    StorageService = __decorate([
-        core_1.Injectable({ providedIn: 'root' }),
-        __metadata("design:paramtypes", [])
-    ], StorageService);
-    return StorageService;
-}());
+    }
+};
+StorageService = tslib_1.__decorate([
+    core_1.Injectable({ providedIn: 'root' }),
+    tslib_1.__metadata("design:paramtypes", [])
+], StorageService);
 exports.StorageService = StorageService;
+//# sourceMappingURL=storageService.js.map

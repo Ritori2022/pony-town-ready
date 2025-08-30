@@ -258,7 +258,7 @@ if (config_1.args.login) {
         + `frame-src 'self';`
         + `frame-ancestors 'self';`
         + `worker-src ${config_1.config.host}sw.js;`
-        + `script-src 'unsafe-eval' 'self' ${script} ${scriptES} ${analytics};`;
+        + `script-src 'unsafe-eval' ${script} ${scriptES} ${analytics};`;
     const linkPreloads = [
         ...userPage.preload,
     ];
@@ -269,13 +269,6 @@ if (config_1.args.login) {
     app.use('/api2', api2_1.default(settings_1.settings, liveSettings_1.liveSettings, stats));
     const loginApi = internal_login_1.createInternalLoginApi(settings_1.settings, liveSettings_1.liveSettings, stats, settings_1.reloadSettings, removedDocument);
     app.use('/api-internal-login', requestUtils_1.internal(config_1.config, config_1.server), requestUtils_1.wrapApi(config_1.server, loginApi));
-    // Handle all template file requests with safe fallback
-    app.get('*.pug', (req, res) => {
-        res.type('text/html').send('<div>Template placeholder</div>');
-    });
-    app.get('*.scss', (req, res) => {
-        res.type('text/css').send('/* Empty stylesheet */');
-    });
     app.get('/assets-admin/*', requestUtils_1.notFound);
     app.get('/assets/*', requestUtils_1.notFound);
     app.get('/auth/*', requestUtils_1.notFound);

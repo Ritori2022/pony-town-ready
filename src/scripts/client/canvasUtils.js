@@ -1,19 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var file_saver_1 = require("file-saver");
+const file_saver_1 = require("file-saver");
 /* istanbul ignore next */
-exports.createCanvas = function (width, height) {
-    var canvas = document.createElement('canvas');
+exports.createCanvas = (width, height) => {
+    const canvas = document.createElement('canvas');
     canvas.width = width | 0;
     canvas.height = height | 0;
     return canvas;
 };
 /* istanbul ignore next */
-exports.loadImage = function (src) {
-    return new Promise(function (resolve, reject) {
-        var img = new Image();
-        img.addEventListener('load', function () { return resolve(img); });
-        img.addEventListener('error', function () { return reject(new Error("Error loading image (" + src + ")")); });
+exports.loadImage = (src) => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.addEventListener('load', () => resolve(img));
+        img.addEventListener('error', () => reject(new Error(`Error loading image (${src})`)));
         img.src = src;
     });
 };
@@ -25,9 +25,9 @@ function canUseImageBitmap() {
 }
 /* istanbul ignore next */
 if (canUseImageBitmap()) {
-    exports.loadImage = function (src) { return fetch(src)
-        .then(function (response) { return response.blob(); })
-        .then(createImageBitmap); };
+    exports.loadImage = src => fetch(src)
+        .then(response => response.blob())
+        .then(createImageBitmap);
 }
 function setup(methods) {
     exports.createCanvas = methods.createCanvas;
@@ -35,7 +35,7 @@ function setup(methods) {
 }
 exports.setup = setup;
 /* istanbul ignore next */
-exports.getPixelRatio = SERVER ? function () { return 1; } : function () { return window.devicePixelRatio; };
+exports.getPixelRatio = SERVER ? () => 1 : () => window.devicePixelRatio;
 function resizeCanvas(canvas, width, height) {
     if (canvas.width !== width || canvas.height !== height) {
         canvas.width = width;
@@ -43,12 +43,11 @@ function resizeCanvas(canvas, width, height) {
     }
 }
 exports.resizeCanvas = resizeCanvas;
-function resizeCanvasWithRatio(canvas, width, height, updateStyle) {
-    if (updateStyle === void 0) { updateStyle = true; }
-    var ratio = exports.getPixelRatio();
-    var w = Math.round(width * ratio);
-    var h = Math.round(height * ratio);
-    var resized = false;
+function resizeCanvasWithRatio(canvas, width, height, updateStyle = true) {
+    const ratio = exports.getPixelRatio();
+    const w = Math.round(width * ratio);
+    const h = Math.round(height * ratio);
+    let resized = false;
     if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;
@@ -64,8 +63,8 @@ function resizeCanvasWithRatio(canvas, width, height, updateStyle) {
 exports.resizeCanvasWithRatio = resizeCanvasWithRatio;
 /* istanbul ignore next */
 function canvasToSource(canvas) {
-    return new Promise(function (resolve, reject) {
-        canvas.toBlob(function (blob) {
+    return new Promise((resolve, reject) => {
+        canvas.toBlob(blob => {
             if (blob) {
                 resolve(URL.createObjectURL(blob));
             }
@@ -78,7 +77,7 @@ function canvasToSource(canvas) {
 exports.canvasToSource = canvasToSource;
 /* istanbul ignore next */
 function saveCanvas(canvas, name) {
-    canvas.toBlob(function (blob) { return blob && file_saver_1.saveAs(blob, name); });
+    canvas.toBlob(blob => blob && file_saver_1.saveAs(blob, name));
 }
 exports.saveCanvas = saveCanvas;
 /* istanbul ignore next */
@@ -93,3 +92,4 @@ function disableImageSmoothing(context) {
     }
 }
 exports.disableImageSmoothing = disableImageSmoothing;
+//# sourceMappingURL=canvasUtils.js.map

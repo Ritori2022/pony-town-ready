@@ -1,24 +1,11 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var baseSpriteBatch_1 = require("./baseSpriteBatch");
-var color_1 = require("../common/color");
-var spriteUtils_1 = require("../client/spriteUtils");
-var paletteManager_1 = require("./paletteManager");
-var defaultRectSprite = spriteUtils_1.createSprite(0, 0, 1, 1, 0, 0, 3);
-var types = new Float32Array([
+const baseSpriteBatch_1 = require("./baseSpriteBatch");
+const color_1 = require("../common/color");
+const spriteUtils_1 = require("../client/spriteUtils");
+const paletteManager_1 = require("./paletteManager");
+const defaultRectSprite = spriteUtils_1.createSprite(0, 0, 1, 1, 0, 0, 3);
+const types = new Float32Array([
     color_1.colorToFloat(color_1.colorFromRGBA(255, 0, 0, 0)),
     color_1.colorToFloat(color_1.colorFromRGBA(0, 0, 255, 0)),
     color_1.colorToFloat(color_1.colorFromRGBA(0, 0, 0, 0)),
@@ -70,21 +57,21 @@ function pushQuad(
 */
 function pushQuad(vertices, //_verticesUint32: Uint32Array,
 transform, index, type, color, palette, sx, sy, sw, sh, dx, dy, dw, dh) {
-    var c1 = types[type];
-    var y2 = dy + dh;
-    var x2 = dx + dw;
-    var u1 = sx + 0.1;
-    var v1 = sy + 0.1;
-    var u2 = sx + sw;
-    var v2 = sy + sh;
-    var pu = palette.u; // + palette.v * 1024;
-    var pv = palette.v;
-    var t0 = transform[0];
-    var t1 = transform[1];
-    var t2 = transform[2];
-    var t3 = transform[3];
-    var t4 = transform[4];
-    var t5 = transform[5];
+    const c1 = types[type];
+    const y2 = dy + dh;
+    const x2 = dx + dw;
+    const u1 = sx + 0.1;
+    const v1 = sy + 0.1;
+    const u2 = sx + sw;
+    const v2 = sy + sh;
+    const pu = palette.u; // + palette.v * 1024;
+    const pv = palette.v;
+    const t0 = transform[0];
+    const t1 = transform[1];
+    const t2 = transform[2];
+    const t3 = transform[3];
+    const t4 = transform[4];
+    const t5 = transform[5];
     // pushVertex(vertices, index, dx, dy, u1, v1, pu, pv, color, c1, transform);
     vertices[(index + 0) | 0] = t0 * dx + t2 * dy + t4;
     vertices[(index + 1) | 0] = t1 * dx + t3 * dy + t5;
@@ -127,20 +114,18 @@ transform, index, type, color, palette, sx, sy, sw, sh, dx, dy, dw, dh) {
 // 	return ((color & 0xffffff00) | (((color & 0xff) * alpha) & 0xff)) >>> 0;
 // }
 exports.PALETTE_BATCH_BYTES_PER_VERTEX = 2 * 4 + 4 * 4 + 4 + 4;
-var PaletteSpriteBatch = /** @class */ (function (_super) {
-    __extends(PaletteSpriteBatch, _super);
-    function PaletteSpriteBatch(gl, capacity, buffer, vertexBuffer, indexBuffer) {
-        var _this = _super.call(this, gl, capacity, buffer, vertexBuffer, indexBuffer, [
+class PaletteSpriteBatch extends baseSpriteBatch_1.BaseSpriteBatch {
+    constructor(gl, capacity, buffer, vertexBuffer, indexBuffer) {
+        super(gl, capacity, buffer, vertexBuffer, indexBuffer, [
             { name: 'position', size: 2 },
             { name: 'texcoord0', size: 4 },
             { name: 'color', size: 4, type: gl.UNSIGNED_BYTE, normalized: true },
             { name: 'color1', size: 4, type: gl.UNSIGNED_BYTE, normalized: true },
-        ]) || this;
-        _this.palette = true;
-        _this.defaultPalette = paletteManager_1.createPalette(new Uint32Array(0));
-        return _this;
+        ]);
+        this.palette = true;
+        this.defaultPalette = paletteManager_1.createPalette(new Uint32Array(0));
     }
-    PaletteSpriteBatch.prototype.drawImage = function (type, color, palette, sx, sy, sw, sh, dx, dy, dw, dh) {
+    drawImage(type, color, palette, sx, sy, sw, sh, dx, dy, dw, dh) {
         if (this.capacity <= this.spritesCount) {
             this.flush();
         }
@@ -148,38 +133,38 @@ var PaletteSpriteBatch = /** @class */ (function (_super) {
         this.transform, this.index, type, baseSpriteBatch_1.getColorFloat(color, this.globalAlpha), palette || this.defaultPalette, sx, sy, sw, sh, dx, dy, dw, dh);
         this.spritesCount++;
         this.tris += 2;
-    };
-    PaletteSpriteBatch.prototype.drawRect = function (color, x, y, w, h) {
+    }
+    drawRect(color, x, y, w, h) {
         if (w !== 0 && h !== 0) {
             if (this.capacity <= this.spritesCount) {
                 this.flush();
             }
-            var s = this.rectSprite || defaultRectSprite;
+            const s = this.rectSprite || defaultRectSprite;
             this.index = pushQuad(this.vertices, //this.verticesUint32,
             this.transform, this.index, s.type, baseSpriteBatch_1.getColorFloat(color, this.globalAlpha), this.defaultPalette, s.x, s.y, s.w, s.h, x, y, w, h);
             this.spritesCount++;
             this.tris += 2;
         }
-    };
-    PaletteSpriteBatch.prototype.drawSprite = function (s, color, palette, x, y) {
+    }
+    drawSprite(s, color, palette, x, y) {
         if (s.w !== 0 && s.h !== 0) {
             if (this.capacity <= this.spritesCount) {
                 this.flush();
             }
             if (this.hasCrop) {
-                var crop = this.cropRect;
-                var sx = s.x;
-                var sy = s.y;
-                var w = s.w;
-                var h = s.h;
-                var dx = x + s.ox;
-                var dy = y + s.oy;
-                var cropX = crop.x; // - this.transform[4];
-                var cropY = crop.y; // - this.transform[5];
-                var shiftLeft = cropX - dx;
-                var shiftTop = cropY - dy;
-                var shiftRight = (dx + w) - (cropX + crop.w);
-                var shiftBottom = (dy + h) - (cropY + crop.h);
+                const crop = this.cropRect;
+                let sx = s.x;
+                let sy = s.y;
+                let w = s.w;
+                let h = s.h;
+                let dx = x + s.ox;
+                let dy = y + s.oy;
+                const cropX = crop.x; // - this.transform[4];
+                const cropY = crop.y; // - this.transform[5];
+                const shiftLeft = cropX - dx;
+                const shiftTop = cropY - dy;
+                const shiftRight = (dx + w) - (cropX + crop.w);
+                const shiftBottom = (dy + h) - (cropY + crop.h);
                 if (shiftLeft > 0) {
                     sx += shiftLeft;
                     dx += shiftLeft;
@@ -210,7 +195,7 @@ var PaletteSpriteBatch = /** @class */ (function (_super) {
                 this.tris += 2;
             }
         }
-    };
-    return PaletteSpriteBatch;
-}(baseSpriteBatch_1.BaseSpriteBatch));
+    }
+}
 exports.PaletteSpriteBatch = PaletteSpriteBatch;
+//# sourceMappingURL=paletteSpriteBatch.js.map

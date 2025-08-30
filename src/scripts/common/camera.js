@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var constants_1 = require("./constants");
-var utils_1 = require("./utils");
-var positionUtils_1 = require("./positionUtils");
-var graphicsUtils_1 = require("../graphics/graphicsUtils");
-var cameraPadding = 0.3;
+const constants_1 = require("./constants");
+const utils_1 = require("./utils");
+const positionUtils_1 = require("./positionUtils");
+const graphicsUtils_1 = require("../graphics/graphicsUtils");
+const cameraPadding = 0.3;
 exports.characterHeight = 25;
 function createCamera() {
     return {
@@ -28,31 +28,31 @@ function setupCamera(camera, x, y, width, height, map) {
 }
 exports.setupCamera = setupCamera;
 function updateCamera(camera, player, map) {
-    var cameraWith = camera.w;
-    var cameraHeight = camera.h;
-    var cameraHeightShifted = Math.ceil(camera.h - camera.offset);
-    var playerX = positionUtils_1.toScreenX(player.x);
-    var playerY = positionUtils_1.toScreenY(player.y);
-    var mapWidth = positionUtils_1.toScreenX(map.width);
-    var mapHeight = positionUtils_1.toScreenY(map.height);
-    var minX = Math.min(0, (mapWidth - cameraWith) / 2);
-    var minY = Math.min(0, (mapHeight - cameraHeight) / 2);
-    var minYShifted = Math.min(0, (mapHeight - cameraHeightShifted) / 2);
-    var maxX = Math.max(mapWidth - cameraWith, minX);
-    var maxY = Math.max(mapHeight - cameraHeight, minY);
-    var maxYShifted = Math.max(mapHeight - cameraHeightShifted, minY);
-    var hSpace = Math.floor(cameraWith * cameraPadding);
-    var vSpace = Math.floor(cameraHeight * cameraPadding);
-    var vSpaceShifted = Math.floor(cameraHeightShifted * cameraPadding);
-    var hPad = (cameraWith - hSpace) / 2;
-    var vPad = (cameraHeight - vSpace) / 2;
-    var vPadShifted = (cameraHeightShifted - vSpaceShifted) / 2;
-    var minCamX = utils_1.clamp(playerX - (hSpace + hPad), minX, maxX);
-    var maxCamX = utils_1.clamp(playerX - hPad, minX, maxX);
-    var minCamY = utils_1.clamp(playerY - (vSpace + vPad) - exports.characterHeight, minY, maxY);
-    var maxCamY = utils_1.clamp(playerY - vPad - exports.characterHeight, minY, maxY);
-    var minCamYShifted = utils_1.clamp(playerY - (vSpaceShifted + vPadShifted) - exports.characterHeight, minYShifted, maxYShifted);
-    var maxCamYShifted = utils_1.clamp(playerY - vPadShifted - exports.characterHeight, minYShifted, maxYShifted);
+    const cameraWith = camera.w;
+    const cameraHeight = camera.h;
+    const cameraHeightShifted = Math.ceil(camera.h - camera.offset);
+    const playerX = positionUtils_1.toScreenX(player.x);
+    const playerY = positionUtils_1.toScreenY(player.y);
+    const mapWidth = positionUtils_1.toScreenX(map.width);
+    const mapHeight = positionUtils_1.toScreenY(map.height);
+    const minX = Math.min(0, (mapWidth - cameraWith) / 2);
+    const minY = Math.min(0, (mapHeight - cameraHeight) / 2);
+    const minYShifted = Math.min(0, (mapHeight - cameraHeightShifted) / 2);
+    const maxX = Math.max(mapWidth - cameraWith, minX);
+    const maxY = Math.max(mapHeight - cameraHeight, minY);
+    const maxYShifted = Math.max(mapHeight - cameraHeightShifted, minY);
+    const hSpace = Math.floor(cameraWith * cameraPadding);
+    const vSpace = Math.floor(cameraHeight * cameraPadding);
+    const vSpaceShifted = Math.floor(cameraHeightShifted * cameraPadding);
+    const hPad = (cameraWith - hSpace) / 2;
+    const vPad = (cameraHeight - vSpace) / 2;
+    const vPadShifted = (cameraHeightShifted - vSpaceShifted) / 2;
+    const minCamX = utils_1.clamp(playerX - (hSpace + hPad), minX, maxX);
+    const maxCamX = utils_1.clamp(playerX - hPad, minX, maxX);
+    const minCamY = utils_1.clamp(playerY - (vSpace + vPad) - exports.characterHeight, minY, maxY);
+    const maxCamY = utils_1.clamp(playerY - vPad - exports.characterHeight, minY, maxY);
+    const minCamYShifted = utils_1.clamp(playerY - (vSpaceShifted + vPadShifted) - exports.characterHeight, minYShifted, maxYShifted);
+    const maxCamYShifted = utils_1.clamp(playerY - vPadShifted - exports.characterHeight, minYShifted, maxYShifted);
     camera.x = Math.floor(utils_1.clamp(camera.x, minCamX, maxCamX));
     camera.y = Math.floor(utils_1.clamp(camera.y, minCamY, maxCamY));
     camera.shiftTarget = Math.floor(utils_1.clamp(camera.shiftTarget, minCamYShifted, maxCamYShifted));
@@ -119,3 +119,4 @@ exports.worldToScreen = worldToScreen;
 // export function mapDepth(camera: Camera, y: number): number {
 // 	return (toScreenY(y) - camera.actualY) - camera.maxDepth;
 // }
+//# sourceMappingURL=camera.js.map

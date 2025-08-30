@@ -1,20 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var lodash_1 = require("lodash");
-var constants_1 = require("../common/constants");
-var stringUtils_1 = require("../common/stringUtils");
-var data_1 = require("./data");
-var rxjs_1 = require("../../../node_modules/rxjs");
-var positionUtils_1 = require("../common/positionUtils");
-var utils_1 = require("../common/utils");
+const lodash_1 = require("lodash");
+const constants_1 = require("../common/constants");
+const stringUtils_1 = require("../common/stringUtils");
+const data_1 = require("./data");
+const rxjs_1 = require("../../../node_modules/rxjs");
+const positionUtils_1 = require("../common/positionUtils");
+const utils_1 = require("../common/utils");
 exports.matchCyrillic = /[\u0400-\u04FF]/g;
 exports.containsCyrillic = stringUtils_1.matcher(exports.matchCyrillic);
-var otherValid = [
+const otherValid = [
     '♂♀⚲⚥⚧☿♁⚨⚩⚦⚢⚣⚤',
     '™®♥♦♣♠❥♡♢♤♧ღஐ·´°•◦✿❀◆◇◈◉◊｡¥€«»，：■□—',
     '〈〉「」『』【】《》♪♫☼►◄↕‼¶§▬↨↑↓→←∟↔▲▼№●○◌★☆✰✦✧▪▫･',
     '\u1160\u3000\u3164',
-].join('').split('').reduce(function (set, c) { return (set.add(c.charCodeAt(0)), set); }, new Set());
+].join('').split('').reduce((set, c) => (set.add(c.charCodeAt(0)), set), new Set());
 function isValid(c) {
     return (c >= 0x0020 && c <= 0x007e) // latin
         || (c >= 0x00a0 && c <= 0x00ff) // latin 1 supplement
@@ -88,7 +88,7 @@ function isValidForMessage(c) {
     return (isValid(c) || isValid2(c)) && !isInvalid(c);
 }
 exports.matchRomaji = /[\uff01-\uff5e]/g;
-var matchOtherWhitespace = /[\u1160\u2800\u3000\u3164\uffa0]+/g;
+const matchOtherWhitespace = /[\u1160\u2800\u3000\u3164\uffa0]+/g;
 function replaceRomaji(match) {
     return String.fromCharCode(match.charCodeAt(0) - 0xfee0);
 }
@@ -112,12 +112,12 @@ function cleanMessage(text) {
 exports.cleanMessage = cleanMessage;
 function filterString(value, filter) {
     value = value || '';
-    for (var i = 0; i < value.length; i++) {
-        var code = value.charCodeAt(i);
-        var size = 1;
-        var invalidSurrogate = false;
+    for (let i = 0; i < value.length; i++) {
+        let code = value.charCodeAt(i);
+        let size = 1;
+        let invalidSurrogate = false;
         if (stringUtils_1.isSurrogate(code) && (i + 1) < value.length) {
-            var extra = value.charCodeAt(i + 1);
+            const extra = value.charCodeAt(i + 1);
             if (stringUtils_1.isLowSurrogate(extra)) {
                 code = stringUtils_1.fromSurrogate(code, extra);
                 i++;
@@ -139,22 +139,21 @@ function validatePonyName(name) {
     return !!name && !!name.length && name.length <= constants_1.PLAYER_NAME_MAX_LENGTH && !/^[.,_-]+$/.test(name);
 }
 exports.validatePonyName = validatePonyName;
-function toSocialSiteInfo(_a) {
-    var id = _a.id, name = _a.name, url = _a.url, provider = _a.provider;
-    var oauth = data_1.oauthProviders.find(function (p) { return p.id === provider; });
+function toSocialSiteInfo({ id, name, url, provider }) {
+    const oauth = data_1.oauthProviders.find(p => p.id === provider);
     return {
-        id: id,
-        name: name,
-        url: url,
+        id,
+        name,
+        url,
         icon: oauth && oauth.id,
         color: oauth && oauth.color,
     };
 }
 exports.toSocialSiteInfo = toSocialSiteInfo;
 function isMultipleMatch(message, last) {
-    var minMessageLength = 4;
+    const minMessageLength = 4;
     if (message.length >= minMessageLength && last.length >= minMessageLength) {
-        var current = last;
+        let current = last;
         while (current.length < message.length) {
             current += last;
         }
@@ -168,7 +167,7 @@ function checkTrailing(message, last) {
     return message.indexOf(last) === 0 && (message.length - last.length) < 3;
 }
 function isTrailingMatch(message, last) {
-    var minMessageLength = 5;
+    const minMessageLength = 5;
     if (message.length > last.length && last.length > minMessageLength) {
         return checkTrailing(message, last);
     }
@@ -181,7 +180,7 @@ function isTrailingMatch(message, last) {
 }
 function isSpamMessage(message, lastMessages) {
     if (!/^\//.test(message) && lastMessages.length) {
-        return lastMessages.some(function (last) { return message === last || isMultipleMatch(message, last) || isTrailingMatch(message, last); });
+        return lastMessages.some(last => message === last || isMultipleMatch(message, last) || isTrailingMatch(message, last));
     }
     else {
         return false;
@@ -192,15 +191,12 @@ function getSaysTime(message) {
     return constants_1.SAYS_TIME_MIN + lodash_1.clamp(message.length / constants_1.SAY_MAX_LENGTH, 0, 1) * (constants_1.SAYS_TIME_MAX - constants_1.SAYS_TIME_MIN);
 }
 exports.getSaysTime = getSaysTime;
-function createExpression(right, left, muzzle, rightIris, leftIris, extra) {
-    if (rightIris === void 0) { rightIris = 0 /* Forward */; }
-    if (leftIris === void 0) { leftIris = 0 /* Forward */; }
-    if (extra === void 0) { extra = 0 /* None */; }
-    return { right: right, left: left, muzzle: muzzle, rightIris: rightIris, leftIris: leftIris, extra: extra };
+function createExpression(right, left, muzzle, rightIris = 0 /* Forward */, leftIris = 0 /* Forward */, extra = 0 /* None */) {
+    return { right, left, muzzle, rightIris, leftIris, extra };
 }
 exports.createExpression = createExpression;
-exports.isAndroidBrowser = (function () {
-    var ua = typeof navigator === 'undefined' ? '' : navigator.userAgent;
+exports.isAndroidBrowser = (() => {
+    const ua = typeof navigator === 'undefined' ? '' : navigator.userAgent;
     // Android browser
     // Mozilla/5.0 (Linux; U; Android 4.4.2; es-ar; LG-D375AR Build/KOT49I)
     // AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/30.0.1599.103 Mobile Safari/537.36
@@ -210,12 +206,12 @@ exports.isAndroidBrowser = (function () {
     return false;
 })();
 /* istanbul ignore next */
-exports.isBrowserOutdated = (function () {
-    var ua = typeof navigator === 'undefined' ? '' : navigator.userAgent;
+exports.isBrowserOutdated = (() => {
+    const ua = typeof navigator === 'undefined' ? '' : navigator.userAgent;
     // Safari <= 8
     // Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1)
     // AppleWebKit/600.1.25 (KHTML, like Gecko) Version/8.0 Safari/600.1.25
-    var safari = /Version\/(\d+)\.[0-9.]+ Safari/.exec(ua);
+    const safari = /Version\/(\d+)\.[0-9.]+ Safari/.exec(ua);
     if (safari && parseInt(safari[1], 10) <= 8) {
         return true;
     }
@@ -236,8 +232,8 @@ function getLocale() {
 exports.getLocale = getLocale;
 /* istanbul ignore next */
 function isLanguage(lang) {
-    var languages = navigator.languages || [navigator.language];
-    return languages.some(function (l) { return l === lang; });
+    const languages = navigator.languages || [navigator.language];
+    return languages.some(l => l === lang);
 }
 exports.isLanguage = isLanguage;
 /* istanbul ignore next */
@@ -252,10 +248,10 @@ function sortServersForRussian(a, b) {
 }
 exports.sortServersForRussian = sortServersForRussian;
 function readFileAsText(file) {
-    return new Promise(function (resolve, reject) {
-        var reader = new FileReader();
-        reader.onload = function (e) { return resolve(e.target && e.target.result || ''); };
-        reader.onerror = function () { return reject(new Error('Failed to read file')); };
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target && e.target.result || '');
+        reader.onerror = () => reject(new Error('Failed to read file'));
         reader.readAsText(file);
     });
 }
@@ -279,12 +275,12 @@ exports.setIsIncognitoMode = setIsIncognitoMode;
 function checkIncognitoMode(wnd) {
     if (!wnd || !wnd.chrome)
         return;
-    var fs = wnd.RequestFileSystem || wnd.webkitRequestFileSystem;
+    const fs = wnd.RequestFileSystem || wnd.webkitRequestFileSystem;
     if (!fs)
         return;
-    fs(wnd.TEMPORARY, 100, function () { }, function () { return exports.isInIncognitoMode = true; });
+    fs(wnd.TEMPORARY, 100, () => { }, () => exports.isInIncognitoMode = true);
 }
-var focused = true;
+let focused = true;
 /* istanbul ignore next */
 function isFocused() {
     return focused;
@@ -293,8 +289,8 @@ exports.isFocused = isFocused;
 /* istanbul ignore next */
 if (typeof window !== 'undefined') {
     checkIncognitoMode(window);
-    window.addEventListener('focus', function () { return focused = true; });
-    window.addEventListener('blur', function () { return focused = false; });
+    window.addEventListener('focus', () => focused = true);
+    window.addEventListener('blur', () => focused = false);
 }
 /* istanbul ignore next */
 function isStandalone() {
@@ -316,18 +312,18 @@ exports.supportsLetAndConst = supportsLetAndConst;
 function registerServiceWorker(url, onUpdate) {
     try {
         if ('serviceWorker' in navigator && typeof navigator.serviceWorker.register === 'function') {
-            var hadWorker_1 = false;
+            let hadWorker = false;
             navigator.serviceWorker.register(url)
-                .then(function (worker) {
-                hadWorker_1 = !!worker.active;
-                worker.addEventListener('updatefound', function () {
-                    if (hadWorker_1) {
+                .then(worker => {
+                hadWorker = !!worker.active;
+                worker.addEventListener('updatefound', () => {
+                    if (hadWorker) {
                         onUpdate();
                     }
                 });
             });
-            navigator.serviceWorker.addEventListener('controllerchange', function () {
-                if (hadWorker_1) {
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (hadWorker) {
                     location.reload();
                 }
             });
@@ -342,9 +338,8 @@ exports.registerServiceWorker = registerServiceWorker;
 function unregisterServiceWorker() {
     if ('serviceWorker' in navigator && typeof navigator.serviceWorker.getRegistrations === 'function') {
         return navigator.serviceWorker.getRegistrations()
-            .then(function (registrations) {
-            for (var _i = 0, registrations_1 = registrations; _i < registrations_1.length; _i++) {
-                var registration = registrations_1[_i];
+            .then(registrations => {
+            for (const registration of registrations) {
                 registration.unregister();
             }
         });
@@ -362,19 +357,18 @@ function attachDebugMethod(name, method) {
 }
 exports.attachDebugMethod = attachDebugMethod;
 /* istanbul ignore next */
-function updateRangeIndicator(range, _a) {
-    var player = _a.player, scale = _a.scale, camera = _a.camera;
-    var e = document.getElementById('range-indicator');
+function updateRangeIndicator(range, { player, scale, camera }) {
+    const e = document.getElementById('range-indicator');
     if (player && !constants_1.isChatlogRangeUnlimited(range)) {
-        var x = (positionUtils_1.toScreenX(player.x) - camera.x) * scale;
-        var y = (positionUtils_1.toScreenY(player.y) - camera.actualY) * scale;
-        var w = positionUtils_1.toScreenX(range) * scale * 2;
-        var h = positionUtils_1.toScreenY(range) * scale * 2;
-        e.style.width = w + "px";
-        e.style.height = h + "px";
-        e.style.left = -w / 2 + "px";
-        e.style.top = -h / 2 + "px";
-        e.style.transform = "translate3d(" + x + "px, " + y + "px, 0)";
+        const x = (positionUtils_1.toScreenX(player.x) - camera.x) * scale;
+        const y = (positionUtils_1.toScreenY(player.y) - camera.actualY) * scale;
+        const w = positionUtils_1.toScreenX(range) * scale * 2;
+        const h = positionUtils_1.toScreenY(range) * scale * 2;
+        e.style.width = `${w}px`;
+        e.style.height = `${h}px`;
+        e.style.left = `${-w / 2}px`;
+        e.style.top = `${-h / 2}px`;
+        e.style.transform = `translate3d(${x}px, ${y}px, 0)`;
         e.style.display = 'block';
     }
     else {
@@ -385,9 +379,9 @@ exports.updateRangeIndicator = updateRangeIndicator;
 /* istanbul ignore next */
 function checkIframeKey(iframeId, expectedKey) {
     try {
-        var iframe = document.getElementById(iframeId);
-        var doc = iframe && iframe.contentWindow && iframe.contentWindow.document;
-        var key = doc && doc.body && doc.body.getAttribute('data-key');
+        const iframe = document.getElementById(iframeId);
+        const doc = iframe && iframe.contentWindow && iframe.contentWindow.document;
+        const key = doc && doc.body && doc.body.getAttribute('data-key');
         return key === expectedKey;
     }
     catch (e) {
@@ -398,7 +392,7 @@ function checkIframeKey(iframeId, expectedKey) {
     }
 }
 exports.checkIframeKey = checkIframeKey;
-var flags = {};
+let flags = {};
 exports.featureFlagsChanged = new rxjs_1.Subject();
 function initFeatureFlags(newFlags) {
     flags = newFlags;
@@ -411,11 +405,11 @@ function hasFeatureFlag(flag) {
 exports.hasFeatureFlag = hasFeatureFlag;
 function hardReload() {
     unregisterServiceWorker()
-        .then(function () { return location.reload(true); });
+        .then(() => location.reload(true));
 }
 exports.hardReload = hardReload;
-var LOGGING = false;
-var logger = function (_) { };
+const LOGGING = false;
+let logger = (_) => { };
 function initLogger(newLogger) {
     if (LOGGING) {
         logger = newLogger;
@@ -434,7 +428,7 @@ function isSupporterOrPastSupporter(account) {
 exports.isSupporterOrPastSupporter = isSupporterOrPastSupporter;
 function supporterTitle(account) {
     if (account && account.supporter) {
-        return "Supporter Tier " + account.supporter;
+        return `Supporter Tier ${account.supporter}`;
     }
     else if (account && utils_1.hasFlag(account.flags, 4 /* PastSupporter */)) {
         return 'Past supporter';
@@ -446,7 +440,7 @@ function supporterTitle(account) {
 exports.supporterTitle = supporterTitle;
 function supporterClass(account) {
     if (account && account.supporter) {
-        return "supporter-" + account.supporter;
+        return `supporter-${account.supporter}`;
     }
     else if (account && utils_1.hasFlag(account.flags, 4 /* PastSupporter */)) {
         return 'supporter-past';
@@ -468,3 +462,4 @@ function supporterRewards(account) {
     }
 }
 exports.supporterRewards = supporterRewards;
+//# sourceMappingURL=clientUtils.js.map

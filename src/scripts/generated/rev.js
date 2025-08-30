@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.REV = {
-    'images/avatars.jpg': '83793a0774',
-    'images/logo-120.png': '8eea5c2f57',
+    'images/avatars.jpg': '0f8cf8266f',
+    'images/logo-120.png': '7a0c0f7a38',
     'images/logo-64.png': '64a63307c9',
     'images/logo-gray.png': '7d4473f069',
-    'images/logo-large.png': '5e4e7b856e',
+    'images/logo-large.png': 'ef5e56ccc9',
     'images/logo-small.png': '770b141d9d',
-    'images/logo.png': 'f1cbf81467',
+    'images/logo.png': 'e8acd7e9bf',
     'images/pony.png': '541b24abea',
-    'images/pony2.png': 'f370ad056d',
+    'images/pony2.png': 'a176e755fd',
     'images/pony2a.png': 'a6292b4e18',
     'music/ambient.mp3': 'd37b620d70',
     'music/ambient.webm': '4dbe61d738',
@@ -76,3 +76,4 @@ exports.REV = {
     'music/xmas-presents.mp3': '5efe475f4f',
     'music/xmas-presents.webm': '9eea1ab5c0'
 };
+//# sourceMappingURL=rev.js.map

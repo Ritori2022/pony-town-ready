@@ -1,38 +1,26 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = require("@angular/core");
-var router_1 = require("@angular/router");
-var LinkCurrent = /** @class */ (function () {
-    function LinkCurrent(routerLinkActive) {
+const tslib_1 = require("tslib");
+const core_1 = require("@angular/core");
+const router_1 = require("@angular/router");
+let LinkCurrent = class LinkCurrent {
+    constructor(routerLinkActive) {
         this.routerLinkActive = routerLinkActive;
     }
-    Object.defineProperty(LinkCurrent.prototype, "current", {
-        get: function () {
-            return this.routerLinkActive.isActive ? 'true' : undefined;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    __decorate([
-        core_1.HostBinding('attr.aria-current'),
-        __metadata("design:type", Object),
-        __metadata("design:paramtypes", [])
-    ], LinkCurrent.prototype, "current", null);
-    LinkCurrent = __decorate([
-        core_1.Directive({
-            selector: '[linkCurrent]',
-        }),
-        __metadata("design:paramtypes", [router_1.RouterLinkActive])
-    ], LinkCurrent);
-    return LinkCurrent;
-}());
+    get current() {
+        return this.routerLinkActive.isActive ? 'true' : undefined;
+    }
+};
+tslib_1.__decorate([
+    core_1.HostBinding('attr.aria-current'),
+    tslib_1.__metadata("design:type", Object),
+    tslib_1.__metadata("design:paramtypes", [])
+], LinkCurrent.prototype, "current", null);
+LinkCurrent = tslib_1.__decorate([
+    core_1.Directive({
+        selector: '[linkCurrent]',
+    }),
+    tslib_1.__metadata("design:paramtypes", [router_1.RouterLinkActive])
+], LinkCurrent);
 exports.LinkCurrent = LinkCurrent;
+//# sourceMappingURL=linkCurrent.js.map
